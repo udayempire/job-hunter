@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: job-hunter-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: job_hunter
+      POSTGRES_PASSWORD: job_hunter
+      POSTGRES_DB: job_hunter
+    ports:
+      - "5433:5432"
+    volumes:
+      - job_hunter_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  job_hunter_postgres_data:

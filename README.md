@@ -23,6 +23,19 @@ Open `docs` at [http://localhost:3000](http://localhost:3000) and `web` at [http
 
 Run `bun build`, `bun lint`, and `bun check-types` from the repository root to build, lint, and type-check all packages.
 
+## Database
+
+The database package lives in `packages/db` and uses Prisma with PostgreSQL.
+
+```sh
+docker compose up -d postgres
+bun install
+bun db:generate
+bun db:migrate --name init
+```
+
+Use `bun db:studio` to inspect the local database. Copy `.env.example` to `.env` when setting up a new checkout.
+
 ## What's inside?
 
 This Turborepo includes the following packages/apps:
