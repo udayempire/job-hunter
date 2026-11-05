@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum JobStatus {
@@ -28,22 +27,22 @@ enum ApplicationStatus {
 }
 
 model Job {
-  id             String        @id @default(cuid())
-  company        String
-  title          String
-  url            String        @unique
-  source         String?
-  location       String?
-  description    String        @db.Text
-  requirements   Json?
-  fitScore       Int?
-  matchReason    String?       @db.Text
-  missingSkills  Json?
-  resumeVersion  String?
-  status         JobStatus     @default(SAVED)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  applications   Application[]
+  id            String        @id @default(cuid())
+  company       String
+  title         String
+  url           String        @unique
+  source        String?
+  location      String?
+  description   String        @db.Text
+  requirements  Json?
+  fitScore      Int?
+  matchReason   String?       @db.Text
+  missingSkills Json?
+  resumeVersion String?
+  status        JobStatus     @default(SAVED)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  applications  Application[]
 
   @@index([status])
   @@index([fitScore])
@@ -51,19 +50,19 @@ model Job {
 }
 
 model Application {
-  id                String            @id @default(cuid())
-  jobId             String
-  resumeVersion     String?
-  coverLetter       String?           @db.Text
-  recruiterMessage  String?           @db.Text
-  answers           Json?
-  status            ApplicationStatus @default(DRAFT)
-  appliedAt         DateTime?
-  followUpAt        DateTime?
-  notes             String?           @db.Text
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  job               Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  id               String            @id @default(cuid())
+  jobId            String
+  resumeVersion    String?
+  coverLetter      String?           @db.Text
+  recruiterMessage String?           @db.Text
+  answers          Json?
+  status           ApplicationStatus @default(DRAFT)
+  appliedAt        DateTime?
+  followUpAt       DateTime?
+  notes            String?           @db.Text
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  job              Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
   @@index([status])
   @@index([followUpAt])
