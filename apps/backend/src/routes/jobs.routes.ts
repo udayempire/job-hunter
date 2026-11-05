@@ -1,12 +1,13 @@
-import express, { type Request, type Response } from "express";
+import express, { type Request, type Response, type Router } from "express";
 import { db, JobStatus, Prisma } from "@repo/db";
 
-const jobRouter = express.Router();
+const jobRouter: Router = express.Router();
 
 const jobStatuses = new Set(Object.values(JobStatus));
 
 function stringValue(value: unknown): string | undefined {
-  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+  const candidate = Array.isArray(value) ? value[0] : value;
+  return typeof candidate === "string" && candidate.trim() ? candidate.trim() : undefined;
 }
 
 function statusValue(value: unknown): JobStatus | undefined {
@@ -47,8 +48,13 @@ jobRouter.get("/", async (request: Request, response: Response) => {
 });
 
 jobRouter.get("/:id", async (request: Request, response: Response) => {
+  const id = stringValue(request.params.id);
+  if (!id) {
+    response.status(400).json({ error: "Job id is required" });
+    return;
+  }
   const job = await db.job.findUnique({
-    where: { id: request.params.id },
+    where: { id },
     include: { applications: true },
   });
 
@@ -99,6 +105,11 @@ jobRouter.post("/", async (request: Request, response: Response) => {
 });
 
 jobRouter.patch("/:id", async (request: Request, response: Response) => {
+  const id = stringValue(request.params.id);
+  if (!id) {
+    response.status(400).json({ error: "Job id is required" });
+    return;
+  }
   const data: Prisma.JobUpdateInput = {};
   const textFields = ["company", "title", "url", "source", "location", "description", "matchReason", "resumeVersion"];
 
@@ -143,7 +154,7 @@ jobRouter.patch("/:id", async (request: Request, response: Response) => {
   }
 
   try {
-    const job = await db.job.update({ where: { id: request.params.id }, data });
+    const job = await db.job.update({ where: { id }, data });
     response.json({ data: job });
   } catch (error) {
     if (isRecordNotFoundError(error)) {
@@ -159,8 +170,13 @@ jobRouter.patch("/:id", async (request: Request, response: Response) => {
 });
 
 jobRouter.delete("/:id", async (request: Request, response: Response) => {
+  const id = stringValue(request.params.id);
+  if (!id) {
+    response.status(400).json({ error: "Job id is required" });
+    return;
+  }
   try {
-    await db.job.delete({ where: { id: request.params.id } });
+    await db.job.delete({ where: { id } });
     response.status(204).send();
   } catch (error) {
     if (isRecordNotFoundError(error)) {

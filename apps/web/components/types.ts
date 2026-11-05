@@ -2,6 +2,7 @@ export type JobStatus = "Saved" | "Reviewing" | "Apply" | "Applied";
 
 export type Job = {
   id: string;
+  url?: string;
   company: string;
   title: string;
   location: string;

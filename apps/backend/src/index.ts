@@ -1,6 +1,6 @@
 import cors from "cors";
 import express from "express";
-import apiRouter from "./routes/routes.index.js";
+import apiRouter from "./routes/index.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
