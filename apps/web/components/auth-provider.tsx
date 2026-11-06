@@ -1,7 +1,11 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { getCurrentUser, logout as logoutAccount, type AuthUser } from "../lib/auth-api";
+import {
+  getCurrentUser,
+  logout as logoutAccount,
+  type AuthUser,
+} from "../lib/auth-api";
 
 type AuthContextValue = {
   user: AuthUser | null;
@@ -16,17 +20,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getCurrentUser().then(setUser).catch(() => setUser(null)).finally(() => setLoading(false));
+    getCurrentUser()
+      .then(setUser)
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
   }, []);
 
-  const value = useMemo(() => ({
-    user,
-    loading,
-    logout: async () => {
-      await logoutAccount();
-      setUser(null);
-    },
-  }), [loading, user]);
+  const value = useMemo(
+    () => ({
+      user,
+      loading,
+      logout: async () => {
+        await logoutAccount();
+        setUser(null);
+      },
+    }),
+    [loading, user],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

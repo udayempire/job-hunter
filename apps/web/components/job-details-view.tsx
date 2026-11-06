@@ -54,10 +54,14 @@ export function JobDetailsView({
   job,
   shared = false,
   onStatusChange,
+  headerAction,
+  editAction,
 }: {
   job: JobDetails;
   shared?: boolean;
   onStatusChange?: (status: JobStatus) => Promise<void> | void;
+  headerAction?: React.ReactNode;
+  editAction?: React.ReactNode;
 }) {
   const [status, setStatus] = useState(job.status);
 
@@ -78,7 +82,7 @@ export function JobDetailsView({
               Job Hunter
             </span>
           </Link>
-          {!shared && <AuthStatus />}
+          {headerAction ?? (!shared && <AuthStatus />)}
         </header>
         <Link
           href={shared ? "/" : "/"}
@@ -128,7 +132,7 @@ export function JobDetailsView({
             <ExternalLink href={job.applyLink} label="Apply now" />
             <ExternalLink href={job.detailsUrl} label="Job details" />
             {!shared && <ShareJobButton jobId={job.id} variant="icon" />}
-            {!shared && <ShareJobButton jobId={job.id} variant="light" />}
+            {editAction}
           </div>
         </section>
         <div className="mt-6 grid gap-5 lg:grid-cols-[1.4fr_0.8fr]">
@@ -218,7 +222,9 @@ export function JobDetailsView({
                   <div className="flex justify-between gap-4">
                     <dt className="text-[#8b817b]">Visibility</dt>
                     <dd className="text-right text-[#403733]">
-                      {job.visibility === "PRIVATE" ? "Private" : "Public profile"}
+                      {job.visibility === "PRIVATE"
+                        ? "Private"
+                        : "Public profile"}
                     </dd>
                   </div>
                 )}

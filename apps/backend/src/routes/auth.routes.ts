@@ -18,19 +18,19 @@ authRouter.get("/google/callback", async (request, response) => {
     const existing = await db.user.findFirst({ where: { OR: [{ googleId: googleUser.googleId }, { email: googleUser.email }] } });
     const user = existing
       ? await db.user.update({
-          where: { id: existing.id },
-          data: {
-            ...googleUser,
-            emailVerified: true,
-          },
-        })
+        where: { id: existing.id },
+        data: {
+          ...googleUser,
+          emailVerified: true,
+        },
+      })
       : await db.user.create({
-          data: {
-            ...googleUser,
-            emailVerified: true,
-            profile: { create: { handle: await uniqueHandle(googleUser.name ?? googleUser.email.split("@")[0] ?? "user") } },
-          },
-        });
+        data: {
+          ...googleUser,
+          emailVerified: true,
+          profile: { create: { handle: await uniqueHandle(googleUser.name ?? googleUser.email.split("@")[0] ?? "user") } },
+        },
+      });
 
     if (!existing) {
       // The profile is created with the first account insert above.

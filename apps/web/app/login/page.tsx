@@ -1,22 +1,36 @@
 import Link from "next/link";
 
-const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/?$/, "") ?? "http://localhost:4000";
+const backendUrl =
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/?$/, "") ??
+  "http://localhost:4000";
 
 export default function LoginPage() {
   return (
     <main className="grid min-h-screen place-items-center bg-[#f7f4ef] px-5 text-[#302a28]">
       <section className="w-full max-w-md rounded-[2rem] bg-white p-8 shadow-[0_24px_80px_rgba(48,42,40,0.12)] sm:p-10">
-        <Link href="/" className="text-sm font-medium text-[#847a74]">← Back to Job Hunter</Link>
-        <p className="mt-12 text-xs font-semibold uppercase tracking-[0.2em] text-[#a87556]">Welcome back</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.06em]">Keep your search moving.</h1>
-        <p className="mt-3 text-sm leading-6 text-[#847a74]">Sign in to save jobs, update application status, and build your private job board.</p>
+        <Link href="/" className="text-sm font-medium text-[#847a74]">
+          ← Back to Job Hunter
+        </Link>
+        <p className="mt-12 text-xs font-semibold uppercase tracking-[0.2em] text-[#a87556]">
+          Welcome back
+        </p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.06em]">
+          Keep your search moving.
+        </h1>
+        <p className="mt-3 text-sm leading-6 text-[#847a74]">
+          Sign in to save jobs, update application status, and build your
+          private job board.
+        </p>
         <a
           href={`${backendUrl}/api/auth/google`}
           className="mt-8 flex h-12 items-center justify-center rounded-xl bg-[#292323] text-sm font-semibold text-white transition hover:bg-[#3b3330]"
         >
           Continue with Google
         </a>
-        <p className="mt-5 text-center text-xs leading-5 text-[#9a908a]">We only use Google to create your Job Hunter account. No password is stored here.</p>
+        <p className="mt-5 text-center text-xs leading-5 text-[#9a908a]">
+          We only use Google to create your Job Hunter account. No password is
+          stored here.
+        </p>
       </section>
     </main>
   );

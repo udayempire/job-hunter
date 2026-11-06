@@ -42,12 +42,12 @@ jobRouter.get("/", async (request: Request, response: Response) => {
       ...(status ? { status } : {}),
       ...(search
         ? {
-            OR: [
-              { title: { contains: search, mode: "insensitive" } },
-              { company: { contains: search, mode: "insensitive" } },
-              { description: { contains: search, mode: "insensitive" } },
-            ],
-          }
+          OR: [
+            { title: { contains: search, mode: "insensitive" } },
+            { company: { contains: search, mode: "insensitive" } },
+            { description: { contains: search, mode: "insensitive" } },
+          ],
+        }
         : {}),
     },
     orderBy: { createdAt: "desc" },
@@ -156,16 +156,18 @@ jobRouter.patch("/:id", async (request: Request, response: Response) => {
     return;
   }
   const data: Prisma.JobUpdateInput = {};
+  if ("detailsUrl" in request.body && !("url" in request.body)) request.body.url = request.body.detailsUrl;
   const textFields = ["company", "title", "applyLink", "url", "source", "location", "salary", "companyWebsite", "companyLinkedin", "companyX", "description", "personalNotes", "matchReason", "resumeVersion"];
+  const requiredTextFields = new Set(["company", "title", "applyLink"]);
 
   for (const field of textFields) {
     if (field in request.body) {
       const value = stringValue(request.body[field]);
-      if (!value) {
+      if (!value && requiredTextFields.has(field)) {
         response.status(400).json({ error: `${field} cannot be empty` });
         return;
       }
-      (data as Record<string, unknown>)[field] = value;
+      (data as Record<string, unknown>)[field] = value ?? null;
     }
   }
 

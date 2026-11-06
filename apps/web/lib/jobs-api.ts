@@ -91,11 +91,30 @@ export async function getSharedJob(token: string): Promise<JobDetails> {
   return mapJobDetails({ ...payload.data, personalNotes: null });
 }
 
+export async function cloneSharedJob(token: string): Promise<Job> {
+  const response = await fetch(`${apiUrl}/shared/jobs/${encodeURIComponent(token)}/clone`, { method: "POST", credentials: "include" });
+  if (!response.ok) throw new Error("Unable to save shared job");
+  const payload = (await response.json()) as { data: ApiJob };
+  return mapJob(payload.data);
+}
+
 export async function createJobShareLink(id: string): Promise<string> {
   const response = await fetch(`${apiUrl}/jobs/${encodeURIComponent(id)}/share`, { method: "POST", credentials: "include" });
   if (!response.ok) throw new Error("Unable to create share link");
   const payload = (await response.json()) as { data: { url: string } };
   return payload.data.url;
+}
+
+export async function updateJob(id: string, input: JobDraft): Promise<Job> {
+  const response = await fetch(`${apiUrl}/jobs/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(input),
+  });
+  if (!response.ok) throw new Error("Unable to update job");
+  const payload = (await response.json()) as { data: ApiJob };
+  return mapJob(payload.data);
 }
 
 export async function createJob(input: JobDraft): Promise<Job> {

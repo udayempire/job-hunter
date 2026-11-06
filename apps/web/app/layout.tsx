@@ -6,7 +6,8 @@ import { AuthProvider } from "../components/auth-provider";
 
 export const metadata: Metadata = {
   title: "Job Hunter | Your application workspace",
-  description: "Capture, score, and move the job opportunities worth your attention.",
+  description:
+    "Capture, score, and move the job opportunities worth your attention.",
 };
 
 export default function RootLayout({
@@ -16,7 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={GeistSans.className}><AuthProvider>{children}</AuthProvider></body>
+      <body className={GeistSans.className}>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }
