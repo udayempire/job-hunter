@@ -4,12 +4,12 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum JobStatus {
   SAVED
-  REVIEWING
-  APPLY
+  REVIEW
   APPLIED
   REJECTED
   ARCHIVED
@@ -26,27 +26,131 @@ enum ApplicationStatus {
   WITHDRAWN
 }
 
+enum JobVisibility {
+  PRIVATE
+  PROFILE
+  LINK
+}
+
+enum ShareLinkType {
+  PROFILE
+  JOB
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  emailVerified Boolean    @default(false)
+  name         String?
+  image        String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  profile      Profile?
+  jobs         Job[]
+  shareLinks   ShareLink[]
+  authSessions AuthSession[]
+}
+
+model AuthSession {
+  id               String    @id @default(cuid())
+  userId           String
+  refreshTokenHash String    @unique
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([revokedAt])
+}
+
+model Profile {
+  id          String      @id @default(cuid())
+  userId      String      @unique
+  handle      String      @unique
+  displayName String?
+  headline    String?
+  bio         String?     @db.Text
+  location    String?
+  website     String?
+  isPublic    Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shareLinks  ShareLink[]
+
+  @@index([isPublic])
+}
+
 model Job {
   id            String        @id @default(cuid())
   company       String
   title         String
-  url           String        @unique
+  applyLink     String?
+  url           String?
   source        String?
   location      String?
-  description   String        @db.Text
+  salary        String?
+  companyWebsite String?
+  companyLinkedin String?
+  companyX      String?
+  description   String?       @db.Text
+  personalNotes String?       @db.Text
   requirements  Json?
   fitScore      Int?
   matchReason   String?       @db.Text
   missingSkills Json?
   resumeVersion String?
   status        JobStatus     @default(SAVED)
+  visibility    JobVisibility @default(PRIVATE)
+  ownerId       String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   applications  Application[]
+  recruiters    RecruiterContact[]
+  owner         User?         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  shareLinks    ShareLink[]
 
+  @@unique([ownerId, url])
+  @@index([ownerId])
   @@index([status])
+  @@index([visibility])
   @@index([fitScore])
   @@index([createdAt])
+}
+
+model RecruiterContact {
+  id        String   @id @default(cuid())
+  jobId     String
+  role      String?
+  email     String?
+  link      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+}
+
+model ShareLink {
+  id        String        @id @default(cuid())
+  token     String        @unique @default(cuid())
+  type      ShareLinkType
+  userId    String
+  profileId String?
+  jobId     String?
+  expiresAt DateTime?
+  revokedAt DateTime?
+  createdAt DateTime      @default(now())
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profile   Profile?      @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  job       Job?          @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([profileId])
+  @@index([jobId])
+  @@index([revokedAt])
 }
 
 model Application {
