@@ -1,11 +1,12 @@
 import express, { type Request, type Response, type Router } from "express";
-import { db, JobStatus, Prisma } from "@repo/db";
+import { db, JobStatus, JobVisibility, Prisma } from "@repo/db";
 import { requireAuth, type AuthenticatedRequest } from "../auth/require-auth.js";
 
 const jobRouter: Router = express.Router();
 jobRouter.use(requireAuth);
 
 const jobStatuses = new Set(Object.values(JobStatus));
+const jobVisibilities = new Set(Object.values(JobVisibility));
 
 function stringValue(value: unknown): string | undefined {
   const candidate = Array.isArray(value) ? value[0] : value;
@@ -15,6 +16,11 @@ function stringValue(value: unknown): string | undefined {
 function statusValue(value: unknown): JobStatus | undefined {
   const status = stringValue(value)?.toUpperCase();
   return status && jobStatuses.has(status as JobStatus) ? (status as JobStatus) : undefined;
+}
+
+function visibilityValue(value: unknown): JobVisibility | undefined {
+  const visibility = stringValue(value)?.toUpperCase();
+  return visibility && jobVisibilities.has(visibility as JobVisibility) ? visibility as JobVisibility : undefined;
 }
 
 function paginationValue(value: unknown, fallback: number, max: number): number {
@@ -106,6 +112,7 @@ jobRouter.post("/", async (request: Request, response: Response) => {
         requirements: request.body.requirements,
         resumeVersion: stringValue(request.body.resumeVersion),
         recruiters: { create: recruiterContacts(request.body.recruiters) },
+        visibility: visibilityValue(request.body.visibility) ?? JobVisibility.PRIVATE,
       },
     });
 
@@ -170,6 +177,15 @@ jobRouter.patch("/:id", async (request: Request, response: Response) => {
       return;
     }
     data.status = status;
+  }
+
+  if ("visibility" in request.body) {
+    const visibility = visibilityValue(request.body.visibility);
+    if (!visibility) {
+      response.status(400).json({ error: `visibility must be one of: ${[...jobVisibilities].join(", ")}` });
+      return;
+    }
+    data.visibility = visibility;
   }
 
   if (!Object.keys(data).length) {

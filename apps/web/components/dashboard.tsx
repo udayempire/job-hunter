@@ -6,7 +6,7 @@ import { Icon } from "./icon";
 import { JobList } from "./job-list";
 import { starterJobs } from "./job-data";
 import { StatCard } from "./stat-card";
-import type { Job, JobStatus } from "./types";
+import type { Job, JobDraft, JobStatus } from "./types";
 import { createJob, getJobs, updateJobStatus } from "../lib/jobs-api";
 import { AuthStatus } from "./auth-status";
 import { useAuth } from "./auth-provider";
@@ -24,12 +24,34 @@ export function Dashboard() {
     }).catch(() => undefined);
   }, [authLoading, user]);
 
-  async function handleAdd(job: Job) {
+  async function handleAdd(draft: JobDraft) {
     try {
-      const createdJob = await createJob({ company: job.company, title: job.title, applyLink: job.url ?? `https://job-hunter.local/${job.id}`, description: job.summary });
+      const createdJob = await createJob(draft);
       setJobs((current) => [createdJob, ...current]);
     } catch {
-      setJobs((current) => [job, ...current]);
+      const fallbackJob: Job = {
+        id: `job-${Date.now()}`,
+        url: draft.applyLink,
+        applyLink: draft.applyLink,
+        company: draft.company,
+        title: draft.title,
+        location: draft.location ?? "Location not specified",
+        source: "Manual entry",
+        score: 0,
+        status: "Saved",
+        age: "Added just now",
+        tags: [],
+        summary: draft.description ?? "No description added.",
+        detailsUrl: draft.detailsUrl,
+        salary: draft.salary,
+        companyWebsite: draft.companyWebsite,
+        companyLinkedin: draft.companyLinkedin,
+        companyX: draft.companyX,
+        personalNotes: draft.personalNotes,
+        recruiters: draft.recruiters,
+        visibility: draft.visibility,
+      };
+      setJobs((current) => [fallbackJob, ...current]);
     }
   }
 

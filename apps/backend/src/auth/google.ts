@@ -1,10 +1,13 @@
 const scopes = ["openid", "email", "profile"];
 
 function client() {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
   const redirectUri = process.env.GOOGLE_REDIRECT_URI ?? "http://localhost:4000/api/auth/google/callback";
-  if (!clientId || !clientSecret) throw new Error("Google OAuth credentials are not configured");
+  if (!clientId || !clientSecret) {
+    const missing = [!clientId && "GOOGLE_CLIENT_ID", !clientSecret && "GOOGLE_CLIENT_SECRET"].filter(Boolean).join(", ");
+    throw new Error(`Google OAuth credentials are not configured: missing ${missing}`);
+  }
   return { clientId, clientSecret, redirectUri };
 }
 

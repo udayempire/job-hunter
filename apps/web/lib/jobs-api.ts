@@ -1,4 +1,4 @@
-import type { Job, JobStatus } from "../components/types";
+import type { Job, JobDraft, JobStatus } from "../components/types";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
 
@@ -10,7 +10,16 @@ type ApiJob = {
   source: string | null;
   fitScore: number | null;
   status: string;
-  description: string;
+  applyLink: string | null;
+  url: string | null;
+  salary: string | null;
+  companyWebsite: string | null;
+  companyLinkedin: string | null;
+  companyX: string | null;
+  description: string | null;
+  personalNotes: string | null;
+  recruiters?: Array<{ role: string | null; email: string | null; link: string | null }>;
+  visibility: "PRIVATE" | "PROFILE" | "LINK";
   createdAt: string;
 };
 
@@ -27,6 +36,8 @@ function mapStatus(status: string): JobStatus {
 function mapJob(job: ApiJob): Job {
   return {
     id: job.id,
+    url: job.applyLink ?? undefined,
+    applyLink: job.applyLink ?? undefined,
     company: job.company,
     title: job.title,
     location: job.location ?? "Location not specified",
@@ -35,7 +46,15 @@ function mapJob(job: ApiJob): Job {
     status: mapStatus(job.status),
     age: new Date(job.createdAt).toLocaleDateString(),
     tags: [],
-    summary: job.description,
+    summary: job.description ?? "No description added.",
+    detailsUrl: job.url ?? undefined,
+    salary: job.salary ?? undefined,
+    companyWebsite: job.companyWebsite ?? undefined,
+    companyLinkedin: job.companyLinkedin ?? undefined,
+    companyX: job.companyX ?? undefined,
+    personalNotes: job.personalNotes ?? undefined,
+    recruiters: (job.recruiters ?? []).map((recruiter) => ({ role: recruiter.role ?? undefined, email: recruiter.email ?? undefined, link: recruiter.link ?? undefined })),
+    visibility: job.visibility,
   };
 }
 
@@ -46,7 +65,7 @@ export async function getJobs(): Promise<Job[]> {
   return payload.data.map(mapJob);
 }
 
-export async function createJob(input: { company: string; title: string; applyLink: string; description?: string; location?: string; source?: string }): Promise<Job> {
+export async function createJob(input: JobDraft): Promise<Job> {
   const response = await fetch(`${apiUrl}/jobs`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
