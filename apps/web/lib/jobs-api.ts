@@ -17,9 +17,9 @@ type ApiJob = {
 function mapStatus(status: string): JobStatus {
   const statuses: Record<string, JobStatus> = {
     SAVED: "Saved",
-    REVIEWING: "Reviewing",
-    APPLY: "Apply",
+    REVIEW: "Review",
     APPLIED: "Applied",
+    REJECTED: "Rejected",
   };
   return statuses[status] ?? "Saved";
 }
@@ -40,16 +40,17 @@ function mapJob(job: ApiJob): Job {
 }
 
 export async function getJobs(): Promise<Job[]> {
-  const response = await fetch(`${apiUrl}/jobs`, { cache: "no-store" });
+  const response = await fetch(`${apiUrl}/jobs`, { cache: "no-store", credentials: "include" });
   if (!response.ok) throw new Error("Unable to load jobs");
   const payload = (await response.json()) as { data: ApiJob[] };
   return payload.data.map(mapJob);
 }
 
-export async function createJob(input: { company: string; title: string; url: string; description: string; location?: string; source?: string }): Promise<Job> {
+export async function createJob(input: { company: string; title: string; applyLink: string; description?: string; location?: string; source?: string }): Promise<Job> {
   const response = await fetch(`${apiUrl}/jobs`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(input),
   });
   if (!response.ok) throw new Error("Unable to create job");
@@ -58,10 +59,11 @@ export async function createJob(input: { company: string; title: string; url: st
 }
 
 export async function updateJobStatus(id: string, status: JobStatus): Promise<void> {
-  const statusMap: Record<JobStatus, string> = { Saved: "SAVED", Reviewing: "REVIEWING", Apply: "APPLY", Applied: "APPLIED" };
+  const statusMap: Record<JobStatus, string> = { Saved: "SAVED", Review: "REVIEW", Applied: "APPLIED", Rejected: "REJECTED" };
   const response = await fetch(`${apiUrl}/jobs/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ status: statusMap[status] }),
   });
   if (!response.ok) throw new Error("Unable to update job status");

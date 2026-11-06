@@ -1,7 +1,9 @@
 import express, { type Request, type Response, type Router } from "express";
 import { db, JobStatus, Prisma } from "@repo/db";
+import { requireAuth, type AuthenticatedRequest } from "../auth/require-auth.js";
 
 const jobRouter: Router = express.Router();
+jobRouter.use(requireAuth);
 
 const jobStatuses = new Set(Object.values(JobStatus));
 
@@ -21,6 +23,7 @@ function paginationValue(value: unknown, fallback: number, max: number): number 
 }
 
 jobRouter.get("/", async (request: Request, response: Response) => {
+  const userId = (request as AuthenticatedRequest).userId;
   const status = statusValue(request.query.status);
   const search = stringValue(request.query.search);
   const skip = paginationValue(request.query.skip, 0, 10_000);
@@ -28,6 +31,7 @@ jobRouter.get("/", async (request: Request, response: Response) => {
 
   const jobs = await db.job.findMany({
     where: {
+      ownerId: userId,
       ...(status ? { status } : {}),
       ...(search
         ? {
@@ -42,20 +46,22 @@ jobRouter.get("/", async (request: Request, response: Response) => {
     orderBy: { createdAt: "desc" },
     skip,
     take,
+    include: { recruiters: true },
   });
 
   response.json({ data: jobs, pagination: { skip, take, count: jobs.length } });
 });
 
 jobRouter.get("/:id", async (request: Request, response: Response) => {
+  const userId = (request as AuthenticatedRequest).userId;
   const id = stringValue(request.params.id);
   if (!id) {
     response.status(400).json({ error: "Job id is required" });
     return;
   }
   const job = await db.job.findUnique({
-    where: { id },
-    include: { applications: true },
+    where: { id, ownerId: userId },
+    include: { applications: true, recruiters: true },
   });
 
   if (!job) {
@@ -67,14 +73,16 @@ jobRouter.get("/:id", async (request: Request, response: Response) => {
 });
 
 jobRouter.post("/", async (request: Request, response: Response) => {
+  const userId = (request as AuthenticatedRequest).userId;
   const company = stringValue(request.body.company);
   const title = stringValue(request.body.title);
-  const url = stringValue(request.body.url);
+  const applyLink = stringValue(request.body.applyLink);
+  const detailsUrl = stringValue(request.body.detailsUrl ?? request.body.url);
   const description = stringValue(request.body.description);
 
-  if (!company || !title || !url || !description) {
+  if (!company || !title || !applyLink) {
     response.status(400).json({
-      error: "company, title, url, and description are required",
+      error: "company, title, and applyLink are required",
     });
     return;
   }
@@ -84,12 +92,20 @@ jobRouter.post("/", async (request: Request, response: Response) => {
       data: {
         company,
         title,
-        url,
+        owner: { connect: { id: userId } },
+        applyLink,
+        url: detailsUrl,
         description,
         source: stringValue(request.body.source),
         location: stringValue(request.body.location),
+        salary: stringValue(request.body.salary),
+        companyWebsite: stringValue(request.body.companyWebsite),
+        companyLinkedin: stringValue(request.body.companyLinkedin),
+        companyX: stringValue(request.body.companyX),
+        personalNotes: stringValue(request.body.personalNotes),
         requirements: request.body.requirements,
         resumeVersion: stringValue(request.body.resumeVersion),
+        recruiters: { create: recruiterContacts(request.body.recruiters) },
       },
     });
 
@@ -105,13 +121,14 @@ jobRouter.post("/", async (request: Request, response: Response) => {
 });
 
 jobRouter.patch("/:id", async (request: Request, response: Response) => {
+  const userId = (request as AuthenticatedRequest).userId;
   const id = stringValue(request.params.id);
   if (!id) {
     response.status(400).json({ error: "Job id is required" });
     return;
   }
   const data: Prisma.JobUpdateInput = {};
-  const textFields = ["company", "title", "url", "source", "location", "description", "matchReason", "resumeVersion"];
+  const textFields = ["company", "title", "applyLink", "url", "source", "location", "salary", "companyWebsite", "companyLinkedin", "companyX", "description", "personalNotes", "matchReason", "resumeVersion"];
 
   for (const field of textFields) {
     if (field in request.body) {
@@ -128,6 +145,13 @@ jobRouter.patch("/:id", async (request: Request, response: Response) => {
     if (field in request.body) {
       (data as Record<string, unknown>)[field] = request.body[field];
     }
+  }
+
+  if ("recruiters" in request.body) {
+    (data as Record<string, unknown>).recruiters = {
+      deleteMany: {},
+      create: recruiterContacts(request.body.recruiters),
+    };
   }
 
   if ("fitScore" in request.body) {
@@ -154,6 +178,11 @@ jobRouter.patch("/:id", async (request: Request, response: Response) => {
   }
 
   try {
+    const ownedJob = await db.job.findFirst({ where: { id, ownerId: userId }, select: { id: true } });
+    if (!ownedJob) {
+      response.status(404).json({ error: "Job not found" });
+      return;
+    }
     const job = await db.job.update({ where: { id }, data });
     response.json({ data: job });
   } catch (error) {
@@ -170,12 +199,18 @@ jobRouter.patch("/:id", async (request: Request, response: Response) => {
 });
 
 jobRouter.delete("/:id", async (request: Request, response: Response) => {
+  const userId = (request as AuthenticatedRequest).userId;
   const id = stringValue(request.params.id);
   if (!id) {
     response.status(400).json({ error: "Job id is required" });
     return;
   }
   try {
+    const ownedJob = await db.job.findFirst({ where: { id, ownerId: userId }, select: { id: true } });
+    if (!ownedJob) {
+      response.status(404).json({ error: "Job not found" });
+      return;
+    }
     await db.job.delete({ where: { id } });
     response.status(204).send();
   } catch (error) {
@@ -197,6 +232,18 @@ function isRecordNotFoundError(error: unknown): boolean {
 
 function isPrismaError(error: unknown, code: string): boolean {
   return typeof error === "object" && error !== null && "code" in error && error.code === code;
+}
+
+function recruiterContacts(value: unknown): Array<{ role?: string; email?: string; link?: string }> {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((contact): contact is Record<string, unknown> => typeof contact === "object" && contact !== null)
+    .map((contact) => ({
+      role: stringValue(contact.role),
+      email: stringValue(contact.email),
+      link: stringValue(contact.link),
+    }))
+    .filter((contact) => contact.role || contact.email || contact.link);
 }
 
 export default jobRouter;

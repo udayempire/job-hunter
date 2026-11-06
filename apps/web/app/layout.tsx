@@ -2,6 +2,7 @@ import "@repo/ui/styles.css";
 import "./globals.css";
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
+import { AuthProvider } from "../components/auth-provider";
 
 export const metadata: Metadata = {
   title: "Job Hunter | Your application workspace",
@@ -15,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={GeistSans.className}>{children}</body>
+      <body className={GeistSans.className}><AuthProvider>{children}</AuthProvider></body>
     </html>
   );
 }

@@ -1,4 +1,4 @@
-export type JobStatus = "Saved" | "Reviewing" | "Apply" | "Applied";
+export type JobStatus = "Saved" | "Review" | "Applied" | "Rejected";
 
 export type Job = {
   id: string;

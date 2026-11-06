@@ -36,6 +36,8 @@ bun db:migrate --name init
 
 Use `bun db:studio` to inspect the local database. Copy `.env.example` to `.env` when setting up a new checkout.
 
+Google sign-in will use the backend callback URL `http://localhost:4000/api/auth/callback/google` during local development. Add the matching redirect URI to the Google OAuth web application credentials, then set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in the backend environment.
+
 ## What's inside?
 
 This Turborepo includes the following packages/apps:

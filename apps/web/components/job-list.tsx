@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { JobCard } from "./job-card";
 import type { Job, JobStatus } from "./types";
 
-const filters: Array<"All" | JobStatus> = ["All", "Saved", "Reviewing", "Apply", "Applied"];
+const filters: Array<"All" | JobStatus> = ["All", "Saved", "Review", "Applied", "Rejected"];
 
 export function JobList({ jobs, onStatusChange }: { jobs: Job[]; onStatusChange: (id: string, status: JobStatus) => void }) {
   const [active, setActive] = useState<(typeof filters)[number]>("All");
