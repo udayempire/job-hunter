@@ -2,7 +2,7 @@ import type { Job, JobDraft, JobStatus } from "../components/types";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
 
-type ApiJob = {
+export type ApiJob = {
   id: string;
   company: string;
   title: string;
@@ -21,6 +21,14 @@ type ApiJob = {
   recruiters?: Array<{ role: string | null; email: string | null; link: string | null }>;
   visibility: "PRIVATE" | "PROFILE" | "LINK";
   createdAt: string;
+  updatedAt?: string;
+  applications?: Array<{ id: string; status: string; appliedAt: string | null; followUpAt: string | null; notes: string | null }>;
+};
+
+export type JobDetails = Job & {
+  createdAt: string;
+  updatedAt: string;
+  applications: Array<{ id: string; status: string; appliedAt: string | null; followUpAt: string | null; notes: string | null }>;
 };
 
 function mapStatus(status: string): JobStatus {
@@ -58,11 +66,29 @@ function mapJob(job: ApiJob): Job {
   };
 }
 
+function mapJobDetails(job: ApiJob): JobDetails {
+  return { ...mapJob(job), createdAt: job.createdAt, updatedAt: job.updatedAt ?? job.createdAt, applications: job.applications ?? [] };
+}
+
 export async function getJobs(): Promise<Job[]> {
   const response = await fetch(`${apiUrl}/jobs`, { cache: "no-store", credentials: "include" });
   if (!response.ok) throw new Error("Unable to load jobs");
   const payload = (await response.json()) as { data: ApiJob[] };
   return payload.data.map(mapJob);
+}
+
+export async function getJob(id: string): Promise<JobDetails> {
+  const response = await fetch(`${apiUrl}/jobs/${encodeURIComponent(id)}`, { cache: "no-store", credentials: "include" });
+  if (!response.ok) throw new Error(response.status === 401 ? "Authentication required" : "Unable to load job");
+  const payload = (await response.json()) as { data: ApiJob };
+  return mapJobDetails(payload.data);
+}
+
+export async function getSharedJob(token: string): Promise<JobDetails> {
+  const response = await fetch(`${apiUrl}/shared/jobs/${encodeURIComponent(token)}`, { cache: "no-store" });
+  if (!response.ok) throw new Error(response.status === 404 ? "Shared job not found" : "Unable to load shared job");
+  const payload = (await response.json()) as { data: ApiJob };
+  return mapJobDetails({ ...payload.data, personalNotes: null });
 }
 
 export async function createJob(input: JobDraft): Promise<Job> {
