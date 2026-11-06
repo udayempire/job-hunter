@@ -34,13 +34,13 @@ export function AuthStatus() {
         </p>
         <p className="text-xs text-[#958b85]">Your workspace</p>
       </div>
-      <div className="grid size-9 place-items-center overflow-hidden rounded-full bg-[#e7d6c7] text-xs font-semibold text-[#76513a]">
+      <Link href="/profile" aria-label="Open profile" className="grid size-9 place-items-center overflow-hidden rounded-full bg-[#e7d6c7] text-xs font-semibold text-[#76513a]">
         {user.image ? (
           <img src={user.image} alt="" className="size-full object-cover" />
         ) : (
           initials
         )}
-      </div>
+      </Link>
       <button
         type="button"
         disabled={signingOut}
