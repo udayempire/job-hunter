@@ -29,7 +29,6 @@ enum ApplicationStatus {
 enum JobVisibility {
   PRIVATE
   PROFILE
-  LINK
 }
 
 enum ShareLinkType {

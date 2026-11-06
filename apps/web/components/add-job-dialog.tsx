@@ -70,7 +70,10 @@ export function AddJobDialog({ onAdd }: { onAdd: (job: JobDraft) => Promise<void
   }
 
   return <>
-    <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 rounded-full bg-[#292323] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#463d3b]"><Icon name="plus" size={16} /> Add job</button>
+    <button type="button" onClick={() =>
+      setOpen(true)} className="inline-flex items-center gap-2 rounded-full bg-[#292323] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#463d3b]">
+      <Icon name="plus" size={16} /> Add job
+    </button>
     {open && <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#211b1b]/30 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="add-job-title"><div className="relative z-10 max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-black/10 bg-[#fffdf9] p-6 shadow-2xl sm:p-7"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9b6b4b]">Capture opportunity</p><h2 id="add-job-title" className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[#292323]">Add a job to review</h2><p className="mt-2 text-sm text-[#8b817b]">Start with the essentials. Add context when it helps you decide later.</p></div><button type="button" onClick={() => setOpen(false)} className="rounded-full px-2 py-1 text-xl text-[#827873] hover:bg-black/5" aria-label="Close">×</button></div><form ref={formRef} onSubmit={addJob} className="mt-6">
       <div className="grid gap-3 sm:grid-cols-2"><TextField id="job-company" name="company" label="Company" placeholder="e.g. Orbit Labs" optional={false} /><TextField id="job-title" name="title" label="Role title" placeholder="e.g. Applied AI Engineer" optional={false} /></div>
       <div className="mt-3"><TextField id="job-apply-link" name="applyLink" label="Apply link" type="url" placeholder="https://company.com/apply/…" optional={false} /></div>
@@ -78,15 +81,36 @@ export function AddJobDialog({ onAdd }: { onAdd: (job: JobDraft) => Promise<void
       <div className="mt-3"><TextAreaField id="job-description" name="description" label="Job description" placeholder="Paste the job description…" /></div>
 
       <div className="my-6 border-t border-black/8" />
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9b6b4b]">Helpful context</p>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2"><TextField id="job-salary" name="salary" label="Salary" placeholder="e.g. ₹12–18 LPA" /><TextField id="job-location" name="location" label="Location" placeholder="e.g. Bengaluru · Remote" /></div>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2"><TextField id="job-company-website" name="companyWebsite" label="Company website" type="url" placeholder="https://company.com" /><TextField id="job-company-linkedin" name="companyLinkedin" label="Company LinkedIn" type="url" placeholder="https://linkedin.com/company/…" /></div>
-      <div className="mt-3"><TextField id="job-company-x" name="companyX" label="Company X" type="url" placeholder="https://x.com/company" /></div>
-      <div className="mt-3"><TextAreaField id="job-personal-notes" name="personalNotes" label="Personal notes" placeholder="Only you will see these notes…" /></div>
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9b6b4b]">
+        Helpful context
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <TextField id="job-salary" name="salary" label="Salary" placeholder="e.g. ₹12–18 LPA" />
+        <TextField id="job-location" name="location" label="Location" placeholder="e.g. Bengaluru · Remote" />
+      </div>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <TextField id="job-company-website" name="companyWebsite" label="Company website" type="url" placeholder="https://company.com" />
+        <TextField id="job-company-linkedin" name="companyLinkedin" label="Company LinkedIn" type="url" placeholder="https://linkedin.com/company/…" />
+      </div>
+      <div className="mt-3">
+        <TextField id="job-company-x" name="companyX" label="Company X" type="url" placeholder="https://x.com/company" />
+      </div>
+      <div className="mt-3">
+        <TextAreaField id="job-personal-notes" name="personalNotes" label="Personal notes" placeholder="Only you will see these notes…" />
+      </div>
 
-      <div className="mt-5 rounded-2xl bg-[#f7f2ed] p-4"><div className="flex items-start justify-between gap-4"><div><p className="text-sm font-medium text-[#403733]">Recruiter contacts</p><p className="mt-1 text-xs leading-5 text-[#8b817b]">Add a role, email, or link for each recruiter.</p></div><button type="button" onClick={() => setRecruiterCount((count) => count + 1)} className="shrink-0 rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#6d4d3a] shadow-sm transition hover:bg-[#fffaf5]">+ Add contact</button></div>{recruiterCount > 0 && <div className="mt-4 space-y-3">{Array.from({ length: recruiterCount }, (_, index) => <div key={index} className="rounded-xl border border-black/8 bg-white p-3"><div className="mb-2 flex items-center justify-between"><span className="text-xs font-medium text-[#817773]">Recruiter {index + 1}</span><button type="button" onClick={() => setRecruiterCount((count) => count - 1)} className="text-xs text-[#a05c5c] hover:underline">Remove</button></div><div className="grid gap-2 sm:grid-cols-3"><input name={`recruiters.${index}.role`} placeholder="Role" className={inputClass} /><input name={`recruiters.${index}.email`} type="email" placeholder="Email" className={inputClass} /><input name={`recruiters.${index}.link`} type="url" placeholder="Profile link" className={inputClass} /></div></div>)}</div>}</div>
+      <div className="mt-5 rounded-2xl bg-[#f7f2ed] p-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-[#403733]">Recruiter contacts</p>
+            <p className="mt-1 text-xs leading-5 text-[#8b817b]">Add a role, email, or link for each recruiter.</p>
+          </div>
+          <button type="button" onClick={() =>
+            setRecruiterCount((count) => count + 1)} className="shrink-0 rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#6d4d3a] shadow-sm transition hover:bg-[#fffaf5]">+ Add contact
+          </button>
+        </div>{recruiterCount > 0 && <div className="mt-4 space-y-3">{Array.from({ length: recruiterCount }, (_, index) => <div key={index} className="rounded-xl border border-black/8 bg-white p-3"><div className="mb-2 flex items-center justify-between"><span className="text-xs font-medium text-[#817773]">Recruiter {index + 1}</span><button type="button" onClick={() => setRecruiterCount((count) => count - 1)} className="text-xs text-[#a05c5c] hover:underline">Remove</button></div><div className="grid gap-2 sm:grid-cols-3"><input name={`recruiters.${index}.role`} placeholder="Role" className={inputClass} /><input name={`recruiters.${index}.email`} type="email" placeholder="Email" className={inputClass} /><input name={`recruiters.${index}.link`} type="url" placeholder="Profile link" className={inputClass} /></div></div>)}</div>}</div>
 
-      <div className="mt-5"><FieldLabel htmlFor="job-visibility">Who can see this job?</FieldLabel><select id="job-visibility" name="visibility" defaultValue="PRIVATE" className={inputClass}><option value="PRIVATE">Private · only me</option><option value="PROFILE">Profile · visible on my public profile</option><option value="LINK">Share link · visible to anyone with the link</option></select></div>
+      <div className="mt-5"><FieldLabel htmlFor="job-visibility">Profile visibility</FieldLabel><select id="job-visibility" name="visibility" defaultValue="PRIVATE" className={inputClass}><option value="PRIVATE">Private · not shown on my profile</option><option value="PROFILE">Public · shown on my profile</option></select><p className="mt-2 text-xs text-[#8b817b]">You can share this job separately with the share button.</p></div>
       {error && <p className="mt-3 text-sm text-red-700" role="alert">{error}</p>}
       <div className="mt-6 flex justify-end gap-3"><button type="button" onClick={() => setOpen(false)} className="rounded-full px-4 py-2.5 text-sm font-medium text-[#6e6561] hover:bg-black/5">Cancel</button><button type="submit" className="rounded-full bg-[#292323] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#463d3b]">Save job</button></div>
     </form></div></div>}

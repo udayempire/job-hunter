@@ -16,7 +16,6 @@ sharedRouter.get("/jobs/:token", async (request: Request, response: Response) =>
       type: ShareLinkType.JOB,
       revokedAt: null,
       OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
-      job: { is: { visibility: "LINK" } },
     },
     include: { job: { include: { recruiters: true } } },
   });

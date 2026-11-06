@@ -19,7 +19,7 @@ export type ApiJob = {
   description: string | null;
   personalNotes: string | null;
   recruiters?: Array<{ role: string | null; email: string | null; link: string | null }>;
-  visibility: "PRIVATE" | "PROFILE" | "LINK";
+  visibility: "PRIVATE" | "PROFILE";
   createdAt: string;
   updatedAt?: string;
   applications?: Array<{ id: string; status: string; appliedAt: string | null; followUpAt: string | null; notes: string | null }>;
@@ -89,6 +89,13 @@ export async function getSharedJob(token: string): Promise<JobDetails> {
   if (!response.ok) throw new Error(response.status === 404 ? "Shared job not found" : "Unable to load shared job");
   const payload = (await response.json()) as { data: ApiJob };
   return mapJobDetails({ ...payload.data, personalNotes: null });
+}
+
+export async function createJobShareLink(id: string): Promise<string> {
+  const response = await fetch(`${apiUrl}/jobs/${encodeURIComponent(id)}/share`, { method: "POST", credentials: "include" });
+  if (!response.ok) throw new Error("Unable to create share link");
+  const payload = (await response.json()) as { data: { url: string } };
+  return payload.data.url;
 }
 
 export async function createJob(input: JobDraft): Promise<Job> {

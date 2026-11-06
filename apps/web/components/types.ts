@@ -1,5 +1,5 @@
 export type JobStatus = "Saved" | "Review" | "Applied" | "Rejected";
-export type JobVisibility = "PRIVATE" | "PROFILE" | "LINK";
+export type JobVisibility = "PRIVATE" | "PROFILE";
 
 export type RecruiterContact = {
   role?: string;

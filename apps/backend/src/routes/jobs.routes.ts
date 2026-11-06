@@ -1,4 +1,5 @@
 import express, { type Request, type Response, type Router } from "express";
+import { randomBytes } from "node:crypto";
 import { db, JobStatus, JobVisibility, Prisma } from "@repo/db";
 import { requireAuth, type AuthenticatedRequest } from "../auth/require-auth.js";
 
@@ -125,6 +126,26 @@ jobRouter.post("/", async (request: Request, response: Response) => {
 
     response.status(500).json({ error: "Failed to create job" });
   }
+});
+
+jobRouter.post("/:id/share", async (request: Request, response: Response) => {
+  const userId = (request as AuthenticatedRequest).userId;
+  const id = stringValue(request.params.id);
+  if (!id) {
+    response.status(400).json({ error: "Job id is required" });
+    return;
+  }
+
+  const job = await db.job.findFirst({ where: { id, ownerId: userId }, select: { id: true } });
+  if (!job) {
+    response.status(404).json({ error: "Job not found" });
+    return;
+  }
+
+  const token = randomBytes(24).toString("base64url");
+  const shareLink = await db.shareLink.create({ data: { token, type: "JOB", userId, jobId: job.id } });
+  const frontendUrl = process.env.FRONTEND_URL ?? "http://localhost:3001";
+  response.status(201).json({ data: { token: shareLink.token, url: `${frontendUrl}/share/jobs/${shareLink.token}` } });
 });
 
 jobRouter.patch("/:id", async (request: Request, response: Response) => {
