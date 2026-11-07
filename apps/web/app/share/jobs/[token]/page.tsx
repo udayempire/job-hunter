@@ -62,7 +62,7 @@ export default function SharedJobPage() {
             href="/"
             className="mt-4 inline-flex rounded-full bg-[#292323] px-5 py-3 text-sm font-semibold text-white"
           >
-            Visit Job Hunter
+            Visit Job Hunti
           </Link>
         </div>
       </main>

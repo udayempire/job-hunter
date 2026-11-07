@@ -79,7 +79,7 @@ export function JobDetailsView({
               <Icon name="spark" size={18} />
             </span>
             <span className="text-base font-semibold tracking-[-0.03em]">
-              Job Hunter
+              Job Hunti
             </span>
           </Link>
           {headerAction ?? (!shared && <AuthStatus />)}
@@ -88,7 +88,7 @@ export function JobDetailsView({
           href={shared ? "/" : "/"}
           className="mt-10 inline-flex text-sm font-medium text-[#847a74] hover:text-[#302a28]"
         >
-          ← {shared ? "Explore Job Hunter" : "Back to your pipeline"}
+          ← {shared ? "Explore Job Hunti" : "Back to your pipeline"}
         </Link>
         <section className="mt-5 rounded-[2rem] bg-[#292323] p-7 text-white sm:p-10">
           <div className="flex flex-col justify-between gap-7 sm:flex-row sm:items-start">

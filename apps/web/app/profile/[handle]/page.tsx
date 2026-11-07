@@ -150,7 +150,7 @@ export default function PublicProfilePage() {
             href="/"
             className="mt-5 inline-flex rounded-full bg-[#292323] px-5 py-3 text-sm font-semibold text-white"
           >
-            Visit Job Hunter
+            Visit Job Hunti
           </Link>
         </div>
       </main>
@@ -168,7 +168,7 @@ export default function PublicProfilePage() {
               <Icon name="spark" size={18} />
             </span>
             <span className="text-base font-semibold tracking-[-0.03em]">
-              Job Hunter
+              Job Hunti
             </span>
           </Link>
           <AuthStatus />
@@ -231,7 +231,7 @@ export default function PublicProfilePage() {
             <p className="text-2xl font-semibold tracking-[-0.05em] text-[#302a28]">
               {timeSince(joinedAt)}
             </p>
-            <p className="mt-1 text-sm text-[#847a74]">Joined Job Hunter</p>
+            <p className="mt-1 text-sm text-[#847a74]">Joined Job Hunti</p>
           </div>
         </section>
         <section className="mt-10">

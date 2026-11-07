@@ -133,7 +133,7 @@ export default function ProfilePage() {
               <Icon name="spark" size={18} />
             </span>
             <span className="text-base font-semibold tracking-[-0.03em]">
-              Job Hunter
+              Job Hunti
             </span>
           </Link>
           <AuthStatus />

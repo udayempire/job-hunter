@@ -9,7 +9,7 @@ export default function LoginPage() {
     <main className="grid min-h-screen place-items-center bg-[#f7f4ef] px-5 text-[#302a28]">
       <section className="w-full max-w-md rounded-[2rem] bg-white p-8 shadow-[0_24px_80px_rgba(48,42,40,0.12)] sm:p-10">
         <Link href="/" className="text-sm font-medium text-[#847a74]">
-          ← Back to Job Hunter
+          ← Back to Job Hunti
         </Link>
         <p className="mt-12 text-xs font-semibold uppercase tracking-[0.2em] text-[#a87556]">
           Welcome back
@@ -28,7 +28,7 @@ export default function LoginPage() {
           Continue with Google
         </a>
         <p className="mt-5 text-center text-xs leading-5 text-[#9a908a]">
-          We only use Google to create your Job Hunter account. No password is
+          We only use Google to create your Job Hunti account. No password is
           stored here.
         </p>
       </section>

@@ -21,7 +21,9 @@ export function Dashboard() {
       setJobs(loadedJobs);
       setLoadError("");
     } catch (error) {
-      setLoadError(error instanceof Error ? error.message : "Unable to sync your jobs.");
+      setLoadError(
+        error instanceof Error ? error.message : "Unable to sync your jobs.",
+      );
     }
   }, [user]);
 
@@ -93,18 +95,15 @@ export function Dashboard() {
               <Icon name="spark" size={17} />
             </span>
             <span className="text-xl font-semibold tracking-[-0.05em] text-[var(--ink)] [font-family:Georgia,serif]">
-              Job Hunter
+              Job Hunti
             </span>
           </a>
           <AuthStatus />
         </div>
-        </header>
+      </header>
       <div className="mx-auto max-w-[1600px] px-5 pb-12 pt-10 sm:px-8 lg:px-[3.7rem] lg:pt-11">
         <section className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <div className="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
-              Your pipeline <span className="h-px w-10 bg-[var(--gold)]" />
-            </div>
             <h1 className="mt-3.5 text-3xl font-semibold tracking-[-0.055em] text-[var(--ink)] [font-family:Georgia,serif] sm:text-[2.65rem]">
               Jobs worth your attention
             </h1>
@@ -116,16 +115,27 @@ export function Dashboard() {
             {user ? (
               <AddJobDialog
                 onAdd={handleAdd}
-                trigger={<span className="inline-flex items-center gap-2.5 rounded-lg bg-[var(--gold)] px-6 py-3 text-base font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]"><Icon name="plus" size={19} /> Add Job</span>}
+                trigger={
+                  <span className="inline-flex items-center gap-2.5 rounded-lg bg-[var(--gold)] px-6 py-3 text-base font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]">
+                    <Icon name="plus" size={19} /> Add Job
+                  </span>
+                }
               />
             ) : (
-              <a href="/login" className="inline-flex items-center rounded-lg bg-[var(--gold)] px-6 py-3 text-base font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]">
+              <a
+                href="/login"
+                className="inline-flex items-center rounded-lg bg-[var(--gold)] px-6 py-3 text-base font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]"
+              >
                 Sign in to add a job
               </a>
             )}
           </div>
         </section>
-        {loadError && <p className="mt-4 rounded-xl bg-[#faeaea] px-4 py-3 text-sm text-[#a05c5c]">{loadError}</p>}
+        {loadError && (
+          <p className="mt-4 rounded-xl bg-[#faeaea] px-4 py-3 text-sm text-[#a05c5c]">
+            {loadError}
+          </p>
+        )}
         <JobList
           jobs={jobs}
           onStatusChange={handleStatusChange}

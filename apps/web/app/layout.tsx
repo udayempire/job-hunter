@@ -5,7 +5,7 @@ import { GeistSans } from "geist/font/sans";
 import { AuthProvider } from "../components/auth-provider";
 
 export const metadata: Metadata = {
-  title: "Job Hunter | Your application workspace",
+  title: "Job Hunti | Your application workspace",
   description:
     "Capture, score, and move the job opportunities worth your attention.",
 };
