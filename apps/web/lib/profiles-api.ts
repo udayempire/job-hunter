@@ -59,3 +59,12 @@ export async function getPublicProfile(handle: string): Promise<{ profile: Publi
   const payload = (await response.json()) as { data: { profile: PublicProfile; jobs: ApiJob[] } };
   return { profile: payload.data.profile, jobs: payload.data.jobs.map(mapJob) };
 }
+
+export async function createPublicJobShareLink(handle: string, jobId: string): Promise<string> {
+  const response = await fetch(`${apiUrl}/profiles/${encodeURIComponent(handle)}/jobs/${encodeURIComponent(jobId)}/share`, {
+    method: "POST",
+  });
+  if (!response.ok) throw new Error("Unable to open job details");
+  const payload = (await response.json()) as { data: { url: string } };
+  return payload.data.url;
+}

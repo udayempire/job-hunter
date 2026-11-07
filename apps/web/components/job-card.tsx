@@ -4,6 +4,7 @@ import { ShareJobButton } from "./share-job-button";
 import { EditJobDialog } from "./edit-job-dialog";
 import { useRouter } from "next/navigation";
 import type { KeyboardEvent, MouseEvent } from "react";
+import { createPublicJobShareLink } from "../lib/profiles-api";
 
 const statusStyles = {
   Saved: "bg-zinc-800 text-[var(--copy)]",
@@ -18,18 +19,28 @@ export function JobCard({
   onJobUpdated,
   showStatus = true,
   profileMode = false,
+  profileHandle,
+  showShare = true,
+  useSharedDetails = false,
 }: {
   job: Job;
   onStatusChange: (id: string, status: JobStatus) => void;
   onJobUpdated: (job: Job) => void;
   showStatus?: boolean;
   profileMode?: boolean;
+  profileHandle?: string;
+  showShare?: boolean;
+  useSharedDetails?: boolean;
 }) {
   const router = useRouter();
 
-  function openDetails(event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>) {
+  async function openDetails(event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>) {
     const target = event.target as HTMLElement;
     if (target.closest("a, button, select, input, textarea, label")) return;
+    if (useSharedDetails && profileHandle) {
+      window.location.assign(await createPublicJobShareLink(profileHandle, job.id));
+      return;
+    }
     router.push(`/jobs/${job.id}`);
   }
 
@@ -42,7 +53,7 @@ export function JobCard({
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
-          openDetails(event);
+          void openDetails(event);
         }
       }}
       aria-label={`View details for ${job.title} at ${job.company}`}
@@ -118,7 +129,7 @@ export function JobCard({
         )}
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-4">
-        <ShareJobButton jobId={job.id} variant="icon" />
+        {showShare && <ShareJobButton jobId={job.id} variant="icon" />}
         {job.applyLink && (
           <a
             href={job.applyLink}

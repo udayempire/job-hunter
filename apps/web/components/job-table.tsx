@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { KeyboardEvent, MouseEvent } from "react";
+import { PublicJobDetailsButton } from "./public-job-details-button";
+import { createPublicJobShareLink } from "../lib/profiles-api";
 import { EditJobDialog } from "./edit-job-dialog";
 import { Icon } from "./icon";
 import { ShareJobButton } from "./share-job-button";
@@ -27,21 +29,31 @@ export function JobTable({
   onJobUpdated,
   showStatus = true,
   profileMode = false,
+  profileHandle,
+  showShare = true,
+  useSharedDetails = false,
 }: {
   jobs: Job[];
   onStatusChange: (id: string, status: JobStatus) => void;
   onJobUpdated: (job: Job) => void;
   showStatus?: boolean;
   profileMode?: boolean;
+  profileHandle?: string;
+  showShare?: boolean;
+  useSharedDetails?: boolean;
 }) {
   const router = useRouter();
 
-  function openDetails(
+  async function openDetails(
     event: MouseEvent<HTMLTableRowElement> | KeyboardEvent<HTMLTableRowElement>,
     job: Job,
   ) {
     const target = event.target as HTMLElement;
     if (target.closest("a, button, select, input, textarea, label")) return;
+    if (useSharedDetails && profileHandle) {
+      window.location.assign(await createPublicJobShareLink(profileHandle, job.id));
+      return;
+    }
     router.push(`/jobs/${job.id}`);
   }
 
@@ -69,11 +81,11 @@ export function JobTable({
                     role: "link",
                     tabIndex: 0,
                     "aria-label": `View details for ${job.title} at ${job.company}`,
-                    onClick: (event: MouseEvent<HTMLTableRowElement>) => openDetails(event, job),
+                    onClick: (event: MouseEvent<HTMLTableRowElement>) => void openDetails(event, job),
                     onKeyDown: (event: KeyboardEvent<HTMLTableRowElement>) => {
                       if (event.key === "Enter" || event.key === " ") {
                         event.preventDefault();
-                        openDetails(event, job);
+                        void openDetails(event, job);
                       }
                     },
                   }
@@ -117,7 +129,7 @@ export function JobTable({
               <TableCell className="py-4 pr-5">
                 <div className="flex items-center justify-end gap-1.5">
                   {!profileMode && <EditJobDialog job={job} onSaved={onJobUpdated} />}
-                  <ShareJobButton jobId={job.id} variant="icon" />
+                  {showShare && <ShareJobButton jobId={job.id} variant="icon" />}
                   {job.applyLink && (
                     <a
                       href={job.applyLink}
@@ -125,14 +137,20 @@ export function JobTable({
                       rel="noreferrer"
                       aria-label={`Apply to ${job.title} at ${job.company}`}
                       title="Apply"
-                      className="inline-grid size-8 place-items-center rounded-lg border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:bg-zinc-800"
+                      className={profileMode
+                        ? "inline-flex items-center gap-1.5 border border-[var(--border)] bg-[var(--control)] px-3 py-1.5 text-xs font-semibold text-[var(--copy)] transition hover:bg-zinc-800"
+                        : "inline-grid size-8 place-items-center rounded-lg border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:bg-zinc-800"}
                     >
-                      <Icon name="external" size={15} />
+                      {profileMode ? <>Apply <Icon name="external" size={14} /></> : <Icon name="external" size={15} />}
                     </a>
                   )}
-                  <Link href={`/jobs/${job.id}`} className="inline-flex items-center gap-1.5 border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-1.5 text-xs font-semibold text-[var(--gold-ink)] hover:bg-[#483d1d]">
-                    Details <Icon name="arrow" size={13} />
-                  </Link>
+                  {useSharedDetails && profileHandle ? (
+                    <PublicJobDetailsButton handle={profileHandle} jobId={job.id} />
+                  ) : (
+                    <Link href={`/jobs/${job.id}`} className="inline-flex items-center gap-1.5 border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-1.5 text-xs font-semibold text-[var(--gold-ink)] hover:bg-[#483d1d]">
+                      Details <Icon name="arrow" size={13} />
+                    </Link>
+                  )}
                 </div>
               </TableCell>
             </TableRow>

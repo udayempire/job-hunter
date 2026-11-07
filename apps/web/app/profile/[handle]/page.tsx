@@ -189,6 +189,9 @@ export default function PublicProfilePage() {
             showFilters={false}
             showStatus={false}
             profileMode
+            profileHandle={profile.handle}
+            showShare={false}
+            useSharedDetails={!isOwner}
           />
         </section>
       </div>

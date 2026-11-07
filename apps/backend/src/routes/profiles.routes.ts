@@ -69,6 +69,45 @@ profileRouter.patch("/me", requireAuth, async (request: Request, response: Respo
   }
 });
 
+profileRouter.post("/:handle/jobs/:jobId/share", async (request: Request, response: Response) => {
+  const handle = stringValue(request.params.handle)?.toLowerCase();
+  const jobId = stringValue(request.params.jobId);
+  if (!handle || !jobId) {
+    response.status(404).json({ error: "Job not found" });
+    return;
+  }
+
+  const profile = await db.profile.findUnique({ where: { handle }, select: { userId: true, isPublic: true } });
+  if (!profile?.isPublic) {
+    response.status(404).json({ error: "Job not found" });
+    return;
+  }
+
+  const job = await db.job.findFirst({
+    where: { id: jobId, ownerId: profile.userId, visibility: JobVisibility.PROFILE },
+    select: { id: true },
+  });
+  if (!job) {
+    response.status(404).json({ error: "Job not found" });
+    return;
+  }
+
+  const existingLink = await db.shareLink.findFirst({
+    where: {
+      type: "JOB",
+      jobId: job.id,
+      revokedAt: null,
+      OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  const shareLink = existingLink ?? await db.shareLink.create({
+    data: { type: "JOB", userId: profile.userId, jobId: job.id },
+  });
+  const frontendUrl = process.env.FRONTEND_URL ?? "http://localhost:3001";
+  response.json({ data: { url: `${frontendUrl}/share/jobs/${shareLink.token}` } });
+});
+
 profileRouter.get("/:handle", async (request: Request, response: Response) => {
   const handle = stringValue(request.params.handle)?.toLowerCase();
   if (!handle) {

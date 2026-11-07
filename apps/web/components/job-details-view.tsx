@@ -202,7 +202,9 @@ export function JobDetailsView({
               <dl className="space-y-3 text-sm">
                 <div className="flex justify-between gap-4">
                   <dt className="text-[var(--muted)]">Location</dt>
-                  <dd className="text-right text-[var(--ink)]">{job.location}</dd>
+                  <dd className="text-right text-[var(--ink)]">
+                    {job.location}
+                  </dd>
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt className="text-[var(--muted)]">Salary</dt>
@@ -210,10 +212,10 @@ export function JobDetailsView({
                     {job.salary ?? "Not added"}
                   </dd>
                 </div>
-                <div className="flex justify-between gap-4">
+                {/* <div className="flex justify-between gap-4">
                   <dt className="text-[var(--muted)]">Status</dt>
                   <dd className="text-right text-[var(--ink)]">{status}</dd>
-                </div>
+                </div> */}
                 {!shared && (
                   <div className="flex justify-between gap-4">
                     <dt className="text-[var(--muted)]">Visibility</dt>
@@ -233,7 +235,10 @@ export function JobDetailsView({
               </dl>
             </DetailBlock>
             {!shared && (
-              <DetailBlock label="Personal notes" className="bg-[var(--gold-surface)]">
+              <DetailBlock
+                label="Personal notes"
+                className="bg-[var(--gold-surface)]"
+              >
                 <p className="whitespace-pre-wrap text-sm leading-7 text-[var(--copy)]">
                   {job.personalNotes || "No personal notes added."}
                 </p>
