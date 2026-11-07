@@ -71,8 +71,16 @@ function mapJobDetails(job: ApiJob): JobDetails {
 }
 
 export async function getJobs(): Promise<Job[]> {
-  const response = await fetch(`${apiUrl}/jobs`, { cache: "no-store", credentials: "include" });
-  if (!response.ok) throw new Error("Unable to load jobs");
+  let response = await fetch(`${apiUrl}/jobs`, { cache: "no-store", credentials: "include" });
+  if (response.status === 401) {
+    const refresh = await fetch(`${apiUrl}/auth/refresh`, { method: "POST", credentials: "include" });
+    if (refresh.ok) response = await fetch(`${apiUrl}/jobs`, { cache: "no-store", credentials: "include" });
+  }
+  if (!response.ok) {
+    let detail = "";
+    try { detail = ((await response.json()) as { error?: string }).error ?? ""; } catch { /* response was not JSON */ }
+    throw new Error(`Unable to load jobs (${response.status})${detail ? `: ${detail}` : ""}`);
+  }
   const payload = (await response.json()) as { data: ApiJob[] };
   return payload.data.map(mapJob);
 }

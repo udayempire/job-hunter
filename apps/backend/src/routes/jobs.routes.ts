@@ -30,33 +30,32 @@ function paginationValue(value: unknown, fallback: number, max: number): number 
 }
 
 jobRouter.get("/", async (request: Request, response: Response) => {
-  const userId = (request as AuthenticatedRequest).userId;
-  const status = statusValue(request.query.status);
-  const search = stringValue(request.query.search);
-  const skip = paginationValue(request.query.skip, 0, 10_000);
-  const take = paginationValue(request.query.take, 20, 100);
+  try {
+    const userId = (request as AuthenticatedRequest).userId;
+    const status = statusValue(request.query.status);
+    const search = stringValue(request.query.search);
+    const skip = paginationValue(request.query.skip, 0, 10_000);
+    const take = paginationValue(request.query.take, 20, 100);
 
-  const jobs = await db.job.findMany({
-    where: {
-      ownerId: userId,
-      ...(status ? { status } : {}),
-      ...(search
-        ? {
-          OR: [
-            { title: { contains: search, mode: "insensitive" } },
-            { company: { contains: search, mode: "insensitive" } },
-            { description: { contains: search, mode: "insensitive" } },
-          ],
-        }
-        : {}),
-    },
-    orderBy: { createdAt: "desc" },
-    skip,
-    take,
-    include: { recruiters: true },
-  });
+    const jobs = await db.job.findMany({
+      where: {
+        ownerId: userId,
+        ...(status ? { status } : {}),
+        ...(search
+          ? { OR: [{ title: { contains: search, mode: "insensitive" } }, { company: { contains: search, mode: "insensitive" } }, { description: { contains: search, mode: "insensitive" } }] }
+          : {}),
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+      include: { recruiters: true },
+    });
 
-  response.json({ data: jobs, pagination: { skip, take, count: jobs.length } });
+    response.json({ data: jobs, pagination: { skip, take, count: jobs.length } });
+  } catch (error) {
+    console.error("Failed to load jobs", error);
+    response.status(500).json({ error: "Failed to load jobs" });
+  }
 });
 
 jobRouter.get("/:id", async (request: Request, response: Response) => {

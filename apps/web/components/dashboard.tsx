@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AddJobDialog } from "./add-job-dialog";
 import { Icon } from "./icon";
 import { JobList } from "./job-list";
@@ -13,17 +13,33 @@ import { useAuth } from "./auth-provider";
 export function Dashboard() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [apiReady, setApiReady] = useState(false);
+  const [loadError, setLoadError] = useState("");
   const { user, loading: authLoading } = useAuth();
+
+  const loadJobs = useCallback(async () => {
+    if (!user) return;
+    try {
+      const loadedJobs = await getJobs();
+      setJobs(loadedJobs);
+      setApiReady(true);
+      setLoadError("");
+    } catch (error) {
+      setApiReady(false);
+      setLoadError(error instanceof Error ? error.message : "Unable to sync your jobs.");
+    }
+  }, [user]);
 
   useEffect(() => {
     if (authLoading || !user) return;
-    getJobs()
-      .then((loadedJobs) => {
-        setJobs(loadedJobs);
-        setApiReady(true);
-      })
-      .catch(() => undefined);
-  }, [authLoading, user]);
+    void loadJobs();
+    const refresh = () => void loadJobs();
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, [authLoading, loadJobs, user]);
 
   async function handleAdd(draft: JobDraft) {
     try {
@@ -160,6 +176,7 @@ export function Dashboard() {
             </a>
           )}
         </div>
+        {loadError && <p className="mt-4 rounded-xl bg-[#faeaea] px-4 py-3 text-sm text-[#a05c5c]">{loadError}</p>}
         <JobList
           jobs={jobs}
           onStatusChange={handleStatusChange}

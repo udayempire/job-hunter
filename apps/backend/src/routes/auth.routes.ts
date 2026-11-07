@@ -38,6 +38,7 @@ authRouter.get("/google/callback", async (request, response) => {
     } else if (!(await db.profile.findUnique({ where: { userId: user.id }, select: { id: true } }))) {
       await db.profile.create({ data: { userId: user.id, handle: await uniqueHandle(googleUser.name ?? googleUser.email.split("@")[0] ?? "user") } });
     }
+    await claimLegacyJobs(user.id);
     const accessToken = await createAccessToken(user.id);
     const refreshToken = createRefreshToken();
     await db.authSession.create({ data: { userId: user.id, refreshTokenHash: hashRefreshToken(refreshToken), expiresAt: refreshTokenExpiry() } });
@@ -79,6 +80,7 @@ authRouter.get("/me", async (request, response) => {
   if (!userId) return response.status(401).json({ error: "Not authenticated" });
   const user = await db.user.findUnique({ where: { id: userId }, include: { profile: true } });
   if (!user) return response.status(401).json({ error: "Not authenticated" });
+  await claimLegacyJobs(user.id);
   return response.json({ data: { id: user.id, email: user.email, name: user.name, image: user.image, profile: user.profile } });
 });
 
@@ -115,6 +117,12 @@ async function uniqueHandle(seed: string) {
   let suffix = 1;
   while (await db.profile.findUnique({ where: { handle } })) handle = `${base}-${suffix++}`;
   return handle;
+}
+
+async function claimLegacyJobs(userId: string) {
+  // Jobs created before authentication existed have no owner. They can only
+  // belong to the first account that claims this legacy local data.
+  await db.job.updateMany({ where: { ownerId: null }, data: { ownerId: userId } });
 }
 
 export default authRouter;
