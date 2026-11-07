@@ -17,7 +17,7 @@ type ProfileDraft = {
 };
 
 const inputClass =
-  "w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm text-[#302a28] outline-none transition focus:border-[#9b6b4b] focus:ring-4 focus:ring-[#9b6b4b]/10";
+  "w-full border border-[var(--border)] bg-[var(--control)] px-4 py-3 text-sm text-[var(--ink)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--gold)]";
 
 function Field({
   label,
@@ -36,7 +36,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-medium text-[#6e6561]">
+      <span className="mb-1.5 block text-xs font-medium text-[var(--copy)]">
         {label}
       </span>
       <input
@@ -100,20 +100,20 @@ export default function ProfilePage() {
 
   if (loading)
     return (
-      <main className="min-h-screen bg-[#f7f4ef] p-8">
-        <div className="mx-auto max-w-5xl h-48 animate-pulse rounded-[2rem] bg-[#e9dfd7]" />
+      <main className="min-h-screen bg-[var(--canvas)] p-8">
+        <div className="mx-auto h-48 max-w-5xl animate-pulse bg-zinc-800" />
       </main>
     );
   if (!user)
     return (
-      <main className="grid min-h-screen place-items-center bg-[#f7f4ef] px-5 text-[#302a28]">
-        <div className="rounded-[2rem] bg-white p-8 text-center shadow-[0_24px_80px_rgba(48,42,40,0.12)]">
+      <main className="grid min-h-screen place-items-center bg-[var(--canvas)] px-5 text-[var(--ink)]">
+        <div className="border border-[var(--border)] bg-[var(--paper)] p-8 text-center">
           <h1 className="text-2xl font-semibold tracking-[-0.05em]">
             Sign in to create your profile
           </h1>
           <Link
             href="/login"
-            className="mt-6 inline-flex rounded-full bg-[#292323] px-5 py-3 text-sm font-semibold text-white"
+            className="mt-6 inline-flex bg-[var(--gold)] px-5 py-3 text-sm font-semibold text-[var(--canvas)]"
           >
             Continue with Google
           </Link>
@@ -125,14 +125,14 @@ export default function ProfilePage() {
     draft.displayName.trim().charAt(0) || user.email.charAt(0)
   ).toUpperCase();
   return (
-    <main className="min-h-screen bg-[#f7f4ef] text-[#302a28]">
+    <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
       <div className="mx-auto max-w-5xl px-5 py-6 sm:px-8 lg:py-8">
         <header className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-xl bg-[#292323] text-white">
+            <span className="grid size-9 place-items-center bg-[var(--ink)] text-[var(--canvas)]">
               <Icon name="spark" size={18} />
             </span>
-            <span className="text-base font-semibold tracking-[-0.03em]">
+            <span className="text-base font-semibold tracking-[-0.03em] text-[var(--ink)]">
               Job Hunti
             </span>
           </Link>
@@ -140,20 +140,20 @@ export default function ProfilePage() {
         </header>
         <Link
           href="/"
-          className="mt-10 inline-flex text-sm font-medium text-[#847a74] hover:text-[#302a28]"
+          className="mt-10 inline-flex text-sm font-medium text-[var(--muted)] hover:text-[var(--gold-ink)]"
         >
           ← Back to your pipeline
         </Link>
         <div className="mt-5 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-          <section className="rounded-[2rem] bg-white p-6 shadow-[0_16px_50px_rgba(48,42,40,0.06)] sm:p-8">
+          <section className="border border-[var(--border)] bg-[var(--paper)] p-6 sm:p-8">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9b6b4b]">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
                 Your identity
               </p>
               <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em]">
                 Profile settings
               </h1>
-              <p className="mt-3 text-sm leading-6 text-[#847a74]">
+              <p className="mt-3 text-sm leading-6 text-[var(--copy)]">
                 Shape the profile you can share with people who want to follow
                 your job search.
               </p>
@@ -188,7 +188,7 @@ export default function ProfilePage() {
                 placeholder="Full-stack developer looking for internships"
               />
               <label className="block">
-                <span className="mb-1.5 block text-xs font-medium text-[#6e6561]">
+                <span className="mb-1.5 block text-xs font-medium text-[var(--copy)]">
                   Bio
                 </span>
                 <textarea
@@ -215,12 +215,12 @@ export default function ProfilePage() {
                   placeholder="https://yourwebsite.com"
                 />
               </div>
-              <div className="flex items-center justify-between rounded-2xl bg-[#f7f2ed] p-4">
+              <div className="flex items-center justify-between border border-[var(--border)] bg-[var(--control)] p-4">
                 <div>
-                  <p className="text-sm font-medium text-[#403733]">
+                  <p className="text-sm font-medium text-[var(--ink)]">
                     Public profile
                   </p>
-                  <p className="mt-1 max-w-sm text-xs leading-5 text-[#8b817b]">
+                  <p className="mt-1 max-w-sm text-xs leading-5 text-[var(--copy)]">
                     Allow people with your profile link to see your public
                     profile and jobs marked public.
                   </p>
@@ -230,36 +230,36 @@ export default function ProfilePage() {
                   role="switch"
                   aria-checked={draft.isPublic}
                   onClick={() => update("isPublic", !draft.isPublic)}
-                  className={`relative h-7 w-12 rounded-full transition ${draft.isPublic ? "bg-[#7b9b7d]" : "bg-[#c9bfba]"}`}
+                  className={`relative h-7 w-12 transition ${draft.isPublic ? "bg-[var(--gold)]" : "bg-zinc-700"}`}
                 >
                   <span
-                    className={`absolute top-1 size-5 rounded-full bg-white shadow-sm transition ${draft.isPublic ? "left-6" : "left-1"}`}
+                    className={`absolute top-1 size-5 bg-[var(--paper)] transition ${draft.isPublic ? "left-6" : "left-1"}`}
                   />
                 </button>
               </div>
               <div className="flex items-center justify-end gap-4">
-                <span className="text-sm text-[#6d8b6f]">
+                <span className="text-sm text-[var(--gold-ink)]">
                   {saved ? "Saved on this device" : ""}
                 </span>
                 <button
                   type="submit"
-                  className="rounded-full bg-[#292323] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#3b3330]"
+                  className="bg-[var(--gold)] px-5 py-3 text-sm font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]"
                 >
                   Save changes
                 </button>
               </div>
             </form>
           </section>
-          <aside className="h-fit rounded-[2rem] bg-[#292323] p-6 text-white sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#d8ad8e]">
+          <aside className="h-fit border border-[var(--border)] bg-[var(--paper)] p-6 text-[var(--ink)] sm:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
               Profile preview
             </p>
-            <div className="mt-8 grid size-16 place-items-center rounded-2xl bg-[#a87556] text-xl font-semibold">
+            <div className="mt-8 grid size-16 place-items-center bg-[var(--gold-surface)] text-xl font-semibold text-[var(--gold-ink)]">
               {user.image ? (
                 <img
                   src={user.image}
                   alt=""
-                  className="size-full rounded-2xl object-cover"
+                  className="size-full object-cover"
                 />
               ) : (
                 avatarLetter
@@ -268,17 +268,17 @@ export default function ProfilePage() {
             <h2 className="mt-5 text-2xl font-semibold tracking-[-0.05em]">
               {draft.displayName || "Your name"}
             </h2>
-            <p className="mt-2 text-sm text-[#d8ad8e]">
+            <p className="mt-2 text-sm text-[var(--gold-ink)]">
               @{draft.handle || "your-handle"}
             </p>
-            <p className="mt-5 text-sm leading-6 text-[#c9bfba]">
+            <p className="mt-5 text-sm leading-6 text-[var(--copy)]">
               {draft.headline || "Your headline will appear here."}
             </p>
             {draft.location && (
-              <p className="mt-5 text-xs text-[#a99d97]">{draft.location}</p>
+              <p className="mt-5 text-xs text-[var(--muted)]">{draft.location}</p>
             )}
-            <div className="mt-8 border-t border-white/10 pt-5">
-              <p className="text-xs text-[#a99d97]">Profile visibility</p>
+            <div className="mt-8 border-t border-[var(--divider)] pt-5">
+              <p className="text-xs text-[var(--muted)]">Profile visibility</p>
               <p className="mt-1 text-sm font-medium">
                 {draft.isPublic ? "Public" : "Private"}
               </p>

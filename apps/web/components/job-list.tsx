@@ -19,10 +19,16 @@ export function JobList({
   jobs,
   onStatusChange,
   onJobUpdated,
+  showFilters = true,
+  showStatus = true,
+  profileMode = false,
 }: {
   jobs: Job[];
   onStatusChange: (id: string, status: JobStatus) => void;
   onJobUpdated: (job: Job) => void;
+  showFilters?: boolean;
+  showStatus?: boolean;
+  profileMode?: boolean;
 }) {
   const [active, setActive] = useState<(typeof filters)[number]>("All");
   const [query, setQuery] = useState("");
@@ -59,17 +65,19 @@ export function JobList({
   return (
     <section className="mt-9">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-        <div className="order-2 flex w-full gap-0.5 overflow-x-auto rounded-xl border border-[var(--border)] bg-[var(--control)] p-1 lg:order-1 lg:w-auto">
-          {filters.map((filter) => (
-            <button
-              key={filter}
-              onClick={() => setActive(filter)}
-              className={`whitespace-nowrap rounded-lg px-5 py-2 text-sm transition ${active === filter ? "bg-[var(--gold-surface)] font-semibold text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}
-            >
-              {filter}{filterCounts[filter] > 0 ? ` (${filterCounts[filter]})` : ""}
-            </button>
-          ))}
-        </div>
+        {showFilters && (
+          <div className="order-2 flex w-full gap-0.5 overflow-x-auto rounded-xl border border-[var(--border)] bg-[var(--control)] p-1 lg:order-1 lg:w-auto">
+            {filters.map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setActive(filter)}
+                className={`whitespace-nowrap rounded-lg px-5 py-2 text-sm transition ${active === filter ? "bg-[var(--gold-surface)] font-semibold text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}
+              >
+                {filter}{filterCounts[filter] > 0 ? ` (${filterCounts[filter]})` : ""}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="order-1 flex w-full items-center gap-4 lg:order-2 lg:w-auto">
           <ExportJobsButton jobs={visibleJobs} filter={active} />
           <div className="relative w-full sm:w-80">
@@ -99,11 +107,11 @@ export function JobList({
       </div>
       {visibleJobs.length ? (
         view === "list" ? (
-          <JobTable jobs={visibleJobs} onStatusChange={onStatusChange} onJobUpdated={onJobUpdated} />
+          <JobTable jobs={visibleJobs} onStatusChange={onStatusChange} onJobUpdated={onJobUpdated} showStatus={showStatus} profileMode={profileMode} />
         ) : (
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             {visibleJobs.map((job) => (
-              <JobCard key={job.id} job={job} onStatusChange={onStatusChange} onJobUpdated={onJobUpdated} />
+              <JobCard key={job.id} job={job} onStatusChange={onStatusChange} onJobUpdated={onJobUpdated} showStatus={showStatus} profileMode={profileMode} />
             ))}
           </div>
         )

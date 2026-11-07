@@ -9,10 +9,10 @@ import type { JobDetails } from "../lib/jobs-api";
 import type { JobStatus } from "./types";
 
 const statusStyles = {
-  Saved: "bg-[#f3f0ed] text-[#6f6762]",
-  Review: "bg-[#f1ebfb] text-[#7752a5]",
-  Applied: "bg-[#eaf0f8] text-[#4f719b]",
-  Rejected: "bg-[#faeaea] text-[#a05c5c]",
+  Saved: "bg-zinc-800 text-[var(--copy)]",
+  Review: "bg-zinc-800 text-[var(--copy)]",
+  Applied: "bg-[var(--gold-surface)] text-[var(--gold-ink)]",
+  Rejected: "bg-[#3a2421] text-[var(--error)]",
 };
 
 function DetailBlock({
@@ -26,9 +26,9 @@ function DetailBlock({
 }) {
   return (
     <section
-      className={`rounded-2xl border border-black/8 bg-white p-5 ${className}`}
+      className={`border border-[var(--border)] bg-[var(--paper)] p-5 ${className}`}
     >
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#9b6b4b]">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--gold-ink)]">
         {label}
       </p>
       <div className="mt-3">{children}</div>
@@ -43,7 +43,7 @@ function ExternalLink({ href, label }: { href?: string; label: string }) {
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="inline-flex items-center gap-1.5 rounded-full bg-[#faf6f1] px-3 py-2 text-sm font-medium text-[#6d4d3a] transition hover:bg-[#f1e5db]"
+      className="inline-flex items-center gap-1.5 border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-2 text-sm font-medium text-[var(--gold-link)] transition hover:bg-[#483d1d]"
     >
       {label} <span aria-hidden>↗</span>
     </a>
@@ -71,14 +71,14 @@ export function JobDetailsView({
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f4ef] text-[#302a28]">
+    <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
       <div className="mx-auto max-w-5xl px-5 py-6 sm:px-8 lg:py-8">
         <header className="flex items-center justify-between">
           <Link href={shared ? "/" : "/"} className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-xl bg-[#292323] text-white">
+            <span className="grid size-9 place-items-center bg-[var(--ink)] text-[var(--canvas)]">
               <Icon name="spark" size={18} />
             </span>
-            <span className="text-base font-semibold tracking-[-0.03em]">
+            <span className="text-base font-semibold tracking-[-0.03em] text-[var(--ink)]">
               Job Hunti
             </span>
           </Link>
@@ -86,22 +86,22 @@ export function JobDetailsView({
         </header>
         <Link
           href={shared ? "/" : "/"}
-          className="mt-10 inline-flex text-sm font-medium text-[#847a74] hover:text-[#302a28]"
+          className="mt-10 inline-flex text-sm font-medium text-[var(--muted)] hover:text-[var(--gold-ink)]"
         >
           ← {shared ? "Explore Job Hunti" : "Back to your pipeline"}
         </Link>
-        <section className="mt-5 rounded-[2rem] bg-[#292323] p-7 text-white sm:p-10">
+        <section className="mt-5 border border-[var(--border)] bg-[var(--paper)] p-7 text-[var(--ink)] sm:p-10">
           <div className="flex flex-col justify-between gap-7 sm:flex-row sm:items-start">
             <div className="flex items-start gap-4">
-              <div className="grid size-14 shrink-0 place-items-center rounded-2xl bg-[#a87556] text-lg font-semibold">
+              <div className="grid size-14 shrink-0 place-items-center bg-[var(--gold-surface)] text-lg font-semibold text-[var(--gold-ink)]">
                 {job.company.slice(0, 2).toUpperCase()}
               </div>
               <div>
-                <p className="text-sm text-[#d8ad8e]">{job.company}</p>
+                <p className="text-sm text-[var(--gold-ink)]">{job.company}</p>
                 <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em] sm:text-5xl">
                   {job.title}
                 </h1>
-                <div className="mt-4 flex flex-wrap gap-2 text-sm text-[#c9bfba]">
+                <div className="mt-4 flex flex-wrap gap-2 text-sm text-[var(--copy)]">
                   <span>{job.location}</span>
                   {job.salary && (
                     <>
@@ -119,7 +119,7 @@ export function JobDetailsView({
                 onChange={(event) =>
                   changeStatus(event.target.value as JobStatus)
                 }
-                className={`rounded-full border-0 px-3 py-2 text-xs font-semibold outline-none ${statusStyles[status]}`}
+                className={`border-0 px-3 py-2 text-xs font-semibold outline-none ${statusStyles[status]}`}
               >
                 <option>Saved</option>
                 <option>Review</option>
@@ -138,7 +138,7 @@ export function JobDetailsView({
         <div className="mt-6 grid gap-5 lg:grid-cols-[1.4fr_0.8fr]">
           <div className="space-y-5">
             <DetailBlock label="Job description">
-              <p className="whitespace-pre-wrap text-sm leading-7 text-[#625954]">
+              <p className="whitespace-pre-wrap text-sm leading-7 text-[var(--copy)]">
                 {job.summary}
               </p>
             </DetailBlock>
@@ -150,7 +150,7 @@ export function JobDetailsView({
                 {!job.companyWebsite &&
                   !job.companyLinkedin &&
                   !job.companyX && (
-                    <p className="text-sm text-[#8b817b]">
+                    <p className="text-sm text-[var(--muted)]">
                       No company links added.
                     </p>
                   )}
@@ -162,12 +162,12 @@ export function JobDetailsView({
                   job.recruiters.map((recruiter, index) => (
                     <div
                       key={`${recruiter.email ?? recruiter.link ?? "recruiter"}-${index}`}
-                      className="rounded-xl bg-[#faf7f3] p-3"
+                      className="border border-[var(--border)] bg-[var(--control)] p-3"
                     >
-                      <p className="text-sm font-medium text-[#403733]">
+                      <p className="text-sm font-medium text-[var(--ink)]">
                         {recruiter.role || "Recruiter contact"}
                       </p>
-                      <div className="mt-2 flex flex-wrap gap-3 text-sm text-[#6d4d3a]">
+                      <div className="mt-2 flex flex-wrap gap-3 text-sm text-[var(--gold-link)]">
                         {recruiter.email && (
                           <a
                             href={`mailto:${recruiter.email}`}
@@ -190,7 +190,7 @@ export function JobDetailsView({
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-[#8b817b]">
+                  <p className="text-sm text-[var(--muted)]">
                     No recruiter contacts added.
                   </p>
                 )}
@@ -201,23 +201,23 @@ export function JobDetailsView({
             <DetailBlock label="Opportunity details">
               <dl className="space-y-3 text-sm">
                 <div className="flex justify-between gap-4">
-                  <dt className="text-[#8b817b]">Location</dt>
-                  <dd className="text-right text-[#403733]">{job.location}</dd>
+                  <dt className="text-[var(--muted)]">Location</dt>
+                  <dd className="text-right text-[var(--ink)]">{job.location}</dd>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <dt className="text-[#8b817b]">Salary</dt>
-                  <dd className="text-right text-[#403733]">
+                  <dt className="text-[var(--muted)]">Salary</dt>
+                  <dd className="text-right text-[var(--ink)]">
                     {job.salary ?? "Not added"}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <dt className="text-[#8b817b]">Status</dt>
-                  <dd className="text-right text-[#403733]">{status}</dd>
+                  <dt className="text-[var(--muted)]">Status</dt>
+                  <dd className="text-right text-[var(--ink)]">{status}</dd>
                 </div>
                 {!shared && (
                   <div className="flex justify-between gap-4">
-                    <dt className="text-[#8b817b]">Visibility</dt>
-                    <dd className="text-right text-[#403733]">
+                    <dt className="text-[var(--muted)]">Visibility</dt>
+                    <dd className="text-right text-[var(--ink)]">
                       {job.visibility === "PRIVATE"
                         ? "Private"
                         : "Public profile"}
@@ -225,16 +225,16 @@ export function JobDetailsView({
                   </div>
                 )}
                 <div className="flex justify-between gap-4">
-                  <dt className="text-[#8b817b]">Added</dt>
-                  <dd className="text-right text-[#403733]">
+                  <dt className="text-[var(--muted)]">Added</dt>
+                  <dd className="text-right text-[var(--ink)]">
                     {new Date(job.createdAt).toLocaleDateString()}
                   </dd>
                 </div>
               </dl>
             </DetailBlock>
             {!shared && (
-              <DetailBlock label="Personal notes" className="bg-[#fff8ed]">
-                <p className="whitespace-pre-wrap text-sm leading-7 text-[#625954]">
+              <DetailBlock label="Personal notes" className="bg-[var(--gold-surface)]">
+                <p className="whitespace-pre-wrap text-sm leading-7 text-[var(--copy)]">
                   {job.personalNotes || "No personal notes added."}
                 </p>
               </DetailBlock>

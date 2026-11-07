@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import type { KeyboardEvent, MouseEvent } from "react";
 import { EditJobDialog } from "./edit-job-dialog";
 import { Icon } from "./icon";
 import { ShareJobButton } from "./share-job-button";
@@ -23,28 +25,60 @@ export function JobTable({
   jobs,
   onStatusChange,
   onJobUpdated,
+  showStatus = true,
+  profileMode = false,
 }: {
   jobs: Job[];
   onStatusChange: (id: string, status: JobStatus) => void;
   onJobUpdated: (job: Job) => void;
+  showStatus?: boolean;
+  profileMode?: boolean;
 }) {
+  const router = useRouter();
+
+  function openDetails(
+    event: MouseEvent<HTMLTableRowElement> | KeyboardEvent<HTMLTableRowElement>,
+    job: Job,
+  ) {
+    const target = event.target as HTMLElement;
+    if (target.closest("a, button, select, input, textarea, label")) return;
+    router.push(`/jobs/${job.id}`);
+  }
+
   return (
     <div className="mt-7 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--paper)] shadow-[0_8px_20px_rgba(0,0,0,.18)]">
       <Table className="min-w-[980px] table-fixed">
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[15%] px-6 text-center">Company</TableHead>
-            <TableHead className="w-[19%] text-center">Role</TableHead>
-            <TableHead className="w-[13%] text-center">Location</TableHead>
-            <TableHead className="w-[11%] text-center">Salary</TableHead>
-            <TableHead className="w-[14%] text-center">Added on</TableHead>
-            <TableHead className="w-[12%] text-center">Status</TableHead>
-            <TableHead className="w-[16%] pr-5 text-center">Actions</TableHead>
+            <TableHead className={`${showStatus ? "w-[15%]" : "w-[18%]"} px-6 text-center`}>Company</TableHead>
+            <TableHead className={`${showStatus ? "w-[19%]" : "w-[22%]"} text-center`}>Role</TableHead>
+            <TableHead className={`${showStatus ? "w-[13%]" : "w-[15%]"} text-center`}>Location</TableHead>
+            <TableHead className={`${showStatus ? "w-[11%]" : "w-[14%]"} text-center`}>Salary</TableHead>
+            <TableHead className={`${showStatus ? "w-[14%]" : "w-[15%]"} text-center`}>Added on</TableHead>
+            {showStatus && <TableHead className="w-[12%] text-center">Status</TableHead>}
+            <TableHead className={`${showStatus ? "w-[16%]" : "w-[16%]"} pr-5 text-center`}>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {jobs.map((job) => (
-            <TableRow key={job.id}>
+            <TableRow
+              key={job.id}
+              className={profileMode ? "cursor-pointer" : ""}
+              {...(profileMode
+                ? {
+                    role: "link",
+                    tabIndex: 0,
+                    "aria-label": `View details for ${job.title} at ${job.company}`,
+                    onClick: (event: MouseEvent<HTMLTableRowElement>) => openDetails(event, job),
+                    onKeyDown: (event: KeyboardEvent<HTMLTableRowElement>) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        openDetails(event, job);
+                      }
+                    },
+                  }
+                : {})}
+            >
               <TableCell className="px-6 py-4">
                 <p className="truncate text-sm font-semibold text-[var(--ink)]" title={job.company}>{job.company}</p>
               </TableCell>
@@ -61,26 +95,28 @@ export function JobTable({
                 <p className="truncate text-sm text-[var(--copy)]" title={job.salary || "-"}>{job.salary || "-"}</p>
               </TableCell>
               <TableCell className="whitespace-nowrap py-4 text-sm text-[var(--copy)]"><span className="inline-flex items-center gap-2"><Icon name="calendar" size={15} />{job.age || "-"}</span></TableCell>
-              <TableCell className="py-4">
-                <label className="sr-only" htmlFor={`table-status-${job.id}`}>Job status for {job.title}</label>
-                <div className="relative inline-flex items-center">
-                  <span aria-hidden="true" className={`pointer-events-none absolute left-2.5 size-2 rounded-full ${statusDotStyles[job.status]}`} />
-                  <select
-                    id={`table-status-${job.id}`}
-                    value={job.status}
-                    onChange={(event) => onStatusChange(job.id, event.target.value as JobStatus)}
-                    className={`rounded-full border-0 py-1.5 pl-6 pr-2.5 text-sm font-medium outline-none ${statusStyles[job.status]}`}
-                  >
-                    <option>Saved</option>
-                    <option>Review</option>
-                    <option>Applied</option>
-                    <option>Rejected</option>
-                  </select>
-                </div>
-              </TableCell>
+              {showStatus && (
+                <TableCell className="py-4">
+                  <label className="sr-only" htmlFor={`table-status-${job.id}`}>Job status for {job.title}</label>
+                  <div className="relative inline-flex items-center">
+                    <span aria-hidden="true" className={`pointer-events-none absolute left-2.5 size-2 rounded-full ${statusDotStyles[job.status]}`} />
+                    <select
+                      id={`table-status-${job.id}`}
+                      value={job.status}
+                      onChange={(event) => onStatusChange(job.id, event.target.value as JobStatus)}
+                      className={`rounded-full border-0 py-1.5 pl-6 pr-2.5 text-sm font-medium outline-none ${statusStyles[job.status]}`}
+                    >
+                      <option>Saved</option>
+                      <option>Review</option>
+                      <option>Applied</option>
+                      <option>Rejected</option>
+                    </select>
+                  </div>
+                </TableCell>
+              )}
               <TableCell className="py-4 pr-5">
                 <div className="flex items-center justify-end gap-1.5">
-                  <EditJobDialog job={job} onSaved={onJobUpdated} />
+                  {!profileMode && <EditJobDialog job={job} onSaved={onJobUpdated} />}
                   <ShareJobButton jobId={job.id} variant="icon" />
                   {job.applyLink && (
                     <a

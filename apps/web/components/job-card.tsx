@@ -16,10 +16,14 @@ export function JobCard({
   job,
   onStatusChange,
   onJobUpdated,
+  showStatus = true,
+  profileMode = false,
 }: {
   job: Job;
   onStatusChange: (id: string, status: JobStatus) => void;
   onJobUpdated: (job: Job) => void;
+  showStatus?: boolean;
+  profileMode?: boolean;
 }) {
   const router = useRouter();
 
@@ -63,23 +67,25 @@ export function JobCard({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <EditJobDialog job={job} onSaved={onJobUpdated} />
-          <label className="sr-only" htmlFor={`status-${job.id}`}>
-          Job status for {job.title}
-        </label>
-        <select
-          id={`status-${job.id}`}
-          value={job.status}
-          onChange={(event) =>
-            onStatusChange(job.id, event.target.value as JobStatus)
-          }
-          className={`shrink-0 rounded-full border-0 px-2.5 py-1 text-xs font-medium outline-none ${statusStyles[job.status]}`}
-        >
-          <option>Saved</option>
-          <option>Review</option>
-          <option>Applied</option>
-          <option>Rejected</option>
-        </select>
+          {!profileMode && <EditJobDialog job={job} onSaved={onJobUpdated} />}
+          {showStatus && (
+            <>
+              <label className="sr-only" htmlFor={`status-${job.id}`}>
+                Job status for {job.title}
+              </label>
+              <select
+                id={`status-${job.id}`}
+                value={job.status}
+                onChange={(event) => onStatusChange(job.id, event.target.value as JobStatus)}
+                className={`shrink-0 rounded-full border-0 px-2.5 py-1 text-xs font-medium outline-none ${statusStyles[job.status]}`}
+              >
+                <option>Saved</option>
+                <option>Review</option>
+                <option>Applied</option>
+                <option>Rejected</option>
+              </select>
+            </>
+          )}
         </div>
       </div>
       <p className="mt-5 text-sm leading-6 text-[var(--copy)]">{job.summary}</p>
