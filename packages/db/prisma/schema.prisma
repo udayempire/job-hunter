@@ -29,6 +29,8 @@ enum ApplicationStatus {
 enum JobVisibility {
   PRIVATE
   PROFILE
+  // Legacy value retained so existing rows remain readable. New sharing uses ShareLink.
+  LINK
 }
 
 enum ShareLinkType {
