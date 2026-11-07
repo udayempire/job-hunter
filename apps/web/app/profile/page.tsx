@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { AuthStatus } from "../../components/auth-status";
 import { Icon } from "../../components/icon";
 import { useAuth } from "../../components/auth-provider";
+import { getMyProfile, updateProfile } from "../../lib/profiles-api";
 
 type ProfileDraft = {
   displayName: string;
@@ -55,6 +56,7 @@ function Field({
 export default function ProfilePage() {
   const { user, loading } = useAuth();
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [draft, setDraft] = useState<ProfileDraft>({
     displayName: "",
     handle: "",
@@ -67,35 +69,41 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!user) return;
-    const stored = window.localStorage.getItem("job-hunter-profile-draft");
-    const profile = user.profile;
-    setDraft(
-      stored
-        ? (JSON.parse(stored) as ProfileDraft)
-        : {
-            displayName: profile?.displayName ?? user.name ?? "",
-            handle: profile?.handle ?? "",
-            headline: "",
-            bio: "",
-            location: "",
-            website: "",
-            isPublic: profile?.isPublic ?? false,
-          },
-    );
+    void getMyProfile()
+      .then((profile) => setDraft({
+        displayName: profile.displayName ?? user.name ?? "",
+        handle: profile.handle,
+        headline: profile.headline ?? "",
+        bio: profile.bio ?? "",
+        location: profile.location ?? "",
+        website: profile.website ?? "",
+        isPublic: profile.isPublic,
+      }))
+      .catch(() => setDraft({
+        displayName: user.profile?.displayName ?? user.name ?? "",
+        handle: user.profile?.handle ?? "",
+        headline: "",
+        bio: "",
+        location: "",
+        website: "",
+        isPublic: user.profile?.isPublic ?? false,
+      }));
   }, [user]);
 
   function update(field: keyof ProfileDraft, value: string | boolean) {
     setSaved(false);
+    setSaveError("");
     setDraft((current) => ({ ...current, [field]: value }));
   }
 
-  function saveProfile(event: React.FormEvent) {
+  async function saveProfile(event: React.FormEvent) {
     event.preventDefault();
-    window.localStorage.setItem(
-      "job-hunter-profile-draft",
-      JSON.stringify(draft),
-    );
-    setSaved(true);
+    try {
+      await updateProfile(draft);
+      setSaved(true);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "Unable to save profile");
+    }
   }
 
   if (loading)
@@ -239,7 +247,7 @@ export default function ProfilePage() {
               </div>
               <div className="flex items-center justify-end gap-4">
                 <span className="text-sm text-[var(--gold-ink)]">
-                  {saved ? "Saved on this device" : ""}
+                  {saved ? "Saved" : ""}
                 </span>
                 <button
                   type="submit"
@@ -248,6 +256,7 @@ export default function ProfilePage() {
                   Save changes
                 </button>
               </div>
+              {saveError && <p className="text-sm text-[var(--error)]">{saveError}</p>}
             </form>
           </section>
           <aside className="h-fit border border-[var(--border)] bg-[var(--paper)] p-6 text-[var(--ink)] sm:p-8">

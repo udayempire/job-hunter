@@ -41,7 +41,7 @@ function mapStatus(status: string): JobStatus {
   return statuses[status] ?? "Saved";
 }
 
-function mapJob(job: ApiJob): Job {
+export function mapJob(job: ApiJob): Job {
   return {
     id: job.id,
     url: job.applyLink ?? undefined,

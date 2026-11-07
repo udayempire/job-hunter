@@ -7,17 +7,9 @@ import { AuthStatus } from "../../../components/auth-status";
 import { Icon } from "../../../components/icon";
 import { useAuth } from "../../../components/auth-provider";
 import { JobList } from "../../../components/job-list";
-import { getJobs, updateJobStatus } from "../../../lib/jobs-api";
+import { updateJobStatus } from "../../../lib/jobs-api";
+import { getPublicProfile, type PublicProfile } from "../../../lib/profiles-api";
 import type { Job, JobStatus } from "../../../components/types";
-
-type PublicProfileDraft = {
-  displayName: string;
-  handle: string;
-  headline: string;
-  bio: string;
-  website: string;
-  isPublic: boolean;
-};
 
 function timeSince(date: string | null) {
   if (!date) return "Recently";
@@ -34,48 +26,28 @@ function timeSince(date: string | null) {
 export default function PublicProfilePage() {
   const params = useParams<{ handle: string }>();
   const { user, loading } = useAuth();
-  const [profile, setProfile] = useState<PublicProfileDraft | null>(null);
+  const [profile, setProfile] = useState<PublicProfile | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [joinedAt, setJoinedAt] = useState<string | null>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const stored = window.localStorage.getItem("job-hunter-profile-draft");
-    const draft = stored ? (JSON.parse(stored) as PublicProfileDraft) : null;
-    const matchesCurrentUser =
-      user?.profile?.handle === params.handle ||
-      draft?.handle === params.handle;
-    if (!matchesCurrentUser) return;
-    setProfile(
-      draft ?? {
-        displayName: user?.name ?? "",
-        handle: params.handle,
-        headline: "",
-        bio: "",
-        website: "",
-        isPublic: user?.profile?.isPublic ?? false,
-      },
-    );
-    const firstSeen =
-      window.localStorage.getItem("job-hunter-joined-at") ??
-      new Date().toISOString();
-    window.localStorage.setItem("job-hunter-joined-at", firstSeen);
-    setJoinedAt(firstSeen);
-    if (user)
-      getJobs()
-        .then((allJobs) =>
-          setJobs(allJobs.filter((job) => job.visibility === "PROFILE")),
-        )
-        .catch(() => undefined);
-  }, [params.handle, user]);
+    setProfileLoading(true);
+    void getPublicProfile(params.handle)
+      .then(({ profile: loadedProfile, jobs: loadedJobs }) => {
+        setProfile(loadedProfile);
+        setJobs(loadedJobs);
+      })
+      .catch(() => {
+        setProfile(null);
+        setJobs([]);
+      })
+      .finally(() => setProfileLoading(false));
+  }, [params.handle]);
 
   const isOwner =
     user?.profile?.handle === params.handle ||
     profile?.handle === params.handle;
-  const publicJobs = useMemo(
-    () => (profile?.isPublic ? jobs : []),
-    [jobs, profile?.isPublic],
-  );
+  const publicJobs = useMemo(() => jobs, [jobs]);
 
   async function handleStatusChange(id: string, status: JobStatus) {
     setJobs((current) =>
@@ -94,7 +66,7 @@ export default function PublicProfilePage() {
     );
   }
 
-  if (loading)
+  if (loading || profileLoading)
     return (
       <main className="min-h-screen bg-[var(--canvas)] p-8">
         <div className="mx-auto h-48 max-w-5xl animate-pulse bg-zinc-800" />
@@ -198,7 +170,7 @@ export default function PublicProfilePage() {
           </div>
           <div className="border border-[var(--border)] bg-[var(--paper)] p-5">
             <p className="text-2xl font-semibold tracking-[-0.05em] text-[var(--ink)]">
-              {timeSince(joinedAt)}
+              {timeSince(profile.joinedAt)}
             </p>
             <p className="mt-1 text-sm text-[var(--copy)]">Joined Job Hunti</p>
           </div>
