@@ -1,8 +1,9 @@
 import { Icon } from "./icon";
 import type { Job, JobStatus } from "./types";
-import Link from "next/link";
 import { ShareJobButton } from "./share-job-button";
 import { EditJobDialog } from "./edit-job-dialog";
+import { useRouter } from "next/navigation";
+import type { KeyboardEvent, MouseEvent } from "react";
 
 const statusStyles = {
   Saved: "bg-zinc-800 text-[var(--copy)]",
@@ -20,8 +21,28 @@ export function JobCard({
   onStatusChange: (id: string, status: JobStatus) => void;
   onJobUpdated: (job: Job) => void;
 }) {
+  const router = useRouter();
+
+  function openDetails(event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>) {
+    const target = event.target as HTMLElement;
+    if (target.closest("a, button, select, input, textarea, label")) return;
+    router.push(`/jobs/${job.id}`);
+  }
+
   return (
-    <article className="group rounded-2xl border border-[var(--border)] bg-[var(--paper)] p-5 transition hover:-translate-y-0.5 hover:border-[var(--gold-border)]">
+    <article
+      className="group cursor-pointer rounded-2xl border border-[var(--border)] bg-[var(--paper)] p-5 transition hover:-translate-y-0.5 hover:border-[var(--gold-border)]"
+      role="link"
+      tabIndex={0}
+      onClick={openDetails}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openDetails(event);
+        }
+      }}
+      aria-label={`View details for ${job.title} at ${job.company}`}
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
           <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-[var(--gold-surface)] text-sm font-semibold text-[var(--gold-ink)]">
@@ -96,12 +117,6 @@ export function JobCard({
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-4">
         <ShareJobButton jobId={job.id} variant="icon" />
-        <Link
-          href={`/jobs/${job.id}`}
-          className="inline-flex items-center gap-1 text-sm font-medium text-[var(--gold-link)] transition hover:underline"
-        >
-          View full details <Icon name="arrow" size={15} />
-        </Link>
         {job.applyLink && (
           <a
             href={job.applyLink}

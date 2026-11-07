@@ -25,3 +25,9 @@ body {
   background: var(--canvas);
   color: var(--ink);
 }
+
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+}

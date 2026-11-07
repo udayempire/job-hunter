@@ -45,6 +45,16 @@ export function JobList({
       ),
     [active, jobs, query],
   );
+  const filterCounts = useMemo(
+    () => ({
+      All: jobs.length,
+      Saved: jobs.filter((job) => job.status === "Saved").length,
+      Review: jobs.filter((job) => job.status === "Review").length,
+      Applied: jobs.filter((job) => job.status === "Applied").length,
+      Rejected: jobs.filter((job) => job.status === "Rejected").length,
+    }),
+    [jobs],
+  );
   return (
     <section className="mt-9">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
@@ -55,7 +65,7 @@ export function JobList({
               onClick={() => setActive(filter)}
               className={`whitespace-nowrap rounded-lg px-5 py-2 text-sm transition ${active === filter ? "bg-[var(--gold-surface)] font-semibold text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}
             >
-              {filter}
+              {filter}{filterCounts[filter] > 0 ? ` (${filterCounts[filter]})` : ""}
             </button>
           ))}
         </div>

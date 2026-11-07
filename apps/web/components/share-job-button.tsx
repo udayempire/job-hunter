@@ -30,12 +30,6 @@ export function ShareJobButton({
     try {
       const shareUrl = await createJobShareLink(jobId);
       setUrl(shareUrl);
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        setCopied(true);
-      } catch {
-        // The link remains visible so it can still be copied manually.
-      }
     } catch {
       setError("Could not create the share link. Try again.");
     } finally {

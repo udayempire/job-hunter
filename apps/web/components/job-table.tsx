@@ -33,13 +33,13 @@ export function JobTable({
       <Table className="min-w-[980px] table-fixed">
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[15%] px-6">Company</TableHead>
-            <TableHead className="w-[19%]">Role</TableHead>
-            <TableHead className="w-[13%]">Location</TableHead>
-            <TableHead className="w-[11%]">Salary</TableHead>
-            <TableHead className="w-[14%]">Added on</TableHead>
-            <TableHead className="w-[12%]">Status</TableHead>
-            <TableHead className="w-[16%] pr-5 text-right">Actions</TableHead>
+            <TableHead className="w-[15%] px-6 text-center">Company</TableHead>
+            <TableHead className="w-[19%] text-center">Role</TableHead>
+            <TableHead className="w-[13%] text-center">Location</TableHead>
+            <TableHead className="w-[11%] text-center">Salary</TableHead>
+            <TableHead className="w-[14%] text-center">Added on</TableHead>
+            <TableHead className="w-[12%] text-center">Status</TableHead>
+            <TableHead className="w-[16%] pr-5 text-center">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -94,7 +94,7 @@ export function JobTable({
                       <Icon name="external" size={15} />
                     </a>
                   )}
-                  <Link href={`/jobs/${job.id}`} className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-1.5 text-xs font-semibold text-[var(--gold-ink)] hover:bg-[#483d1d]">
+                  <Link href={`/jobs/${job.id}`} className="inline-flex items-center gap-1.5 border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-1.5 text-xs font-semibold text-[var(--gold-ink)] hover:bg-[#483d1d]">
                     Details <Icon name="arrow" size={13} />
                   </Link>
                 </div>
