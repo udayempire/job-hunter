@@ -12,7 +12,13 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   let response = await fetch(`${apiUrl}/auth/me`, { credentials: "include", cache: "no-store" });
   if (response.status === 401) {
     const refresh = await fetch(`${apiUrl}/auth/refresh`, { method: "POST", credentials: "include" });
-    if (refresh.ok) response = await fetch(`${apiUrl}/auth/me`, { credentials: "include", cache: "no-store" });
+    if (refresh.ok) {
+      response = await fetch(`${apiUrl}/auth/me`, { credentials: "include", cache: "no-store" });
+    } else if (refresh.status === 401) {
+      return null;
+    } else {
+      throw new Error("Unable to refresh account session");
+    }
   }
   if (response.status === 401) return null;
   if (!response.ok) throw new Error(`Unable to load account (${response.status})`);

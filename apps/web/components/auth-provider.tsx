@@ -20,10 +20,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getCurrentUser()
-      .then(setUser)
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
+    let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    let attempt = 0;
+
+    async function hydrateSession() {
+      try {
+        const account = await getCurrentUser();
+        if (cancelled) return;
+        setUser(account);
+        setLoading(false);
+      } catch {
+        if (cancelled) return;
+        const delay = Math.min(1_000 * 2 ** attempt, 15_000);
+        attempt += 1;
+        retryTimer = setTimeout(() => void hydrateSession(), delay);
+      }
+    }
+
+    void hydrateSession();
+    return () => {
+      cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
+    };
   }, []);
 
   const value = useMemo(
