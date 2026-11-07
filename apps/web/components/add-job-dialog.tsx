@@ -167,12 +167,12 @@ export function AddJobDialog({
         className={
           trigger
             ? undefined
-            : "inline-flex items-center gap-2 rounded-full bg-[#292323] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#463d3b]"
+            : "inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#292323] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#463d3b]"
         }
       >
         {trigger ?? (
           <>
-            <Icon name="plus" size={16} /> Add job
+            <Icon name="plus" size={16} /> Add Job
           </>
         )}
       </button>
@@ -366,7 +366,9 @@ export function AddJobDialog({
                           <input
                             name={`recruiters.${index}.email`}
                             type="email"
-                            defaultValue={initialJob?.recruiters?.[index]?.email}
+                            defaultValue={
+                              initialJob?.recruiters?.[index]?.email
+                            }
                             placeholder="Email"
                             className={inputClass}
                           />
