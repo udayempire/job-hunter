@@ -85,14 +85,14 @@ export function Dashboard() {
     );
   }
   return (
-    <main className="min-h-screen bg-[#faf8f5] text-[#242120]">
-      <header className="border-b border-black/8 bg-white/80 px-5 py-3.5 backdrop-blur sm:px-8 lg:px-[3.7rem]">
+    <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
+      <header className="border-b border-[var(--border)] bg-[var(--paper)] px-5 py-3.5 sm:px-8 lg:px-[3.7rem]">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between">
           <a href="#" className="flex items-center gap-3.5">
-            <span className="grid size-10 place-items-center rounded-lg bg-[#292321] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.22)]">
+            <span className="grid size-10 place-items-center rounded-lg bg-[var(--ink)] text-[var(--paper)]">
               <Icon name="spark" size={17} />
             </span>
-            <span className="text-xl font-semibold tracking-[-0.05em] [font-family:Georgia,serif]">
+            <span className="text-xl font-semibold tracking-[-0.05em] text-[var(--ink)] [font-family:Georgia,serif]">
               Job Hunter
             </span>
           </a>
@@ -102,13 +102,13 @@ export function Dashboard() {
       <div className="mx-auto max-w-[1600px] px-5 pb-12 pt-10 sm:px-8 lg:px-[3.7rem] lg:pt-11">
         <section className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <div className="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#8d4b26]">
-              Your pipeline <span className="h-px w-10 bg-[#8d4b26]" />
+            <div className="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
+              Your pipeline <span className="h-px w-10 bg-[var(--gold)]" />
             </div>
-            <h1 className="mt-3.5 text-3xl font-semibold tracking-[-0.055em] text-[#252120] [font-family:Georgia,serif] sm:text-[2.65rem]">
+            <h1 className="mt-3.5 text-3xl font-semibold tracking-[-0.055em] text-[var(--ink)] [font-family:Georgia,serif] sm:text-[2.65rem]">
               Jobs worth your attention
             </h1>
-            <p className="mt-2 text-base text-[#625c59]">
+            <p className="mt-2 text-base text-[var(--copy)]">
               Track, manage, and move forward on your job applications.
             </p>
           </div>
@@ -116,10 +116,10 @@ export function Dashboard() {
             {user ? (
               <AddJobDialog
                 onAdd={handleAdd}
-                trigger={<span className="inline-flex items-center gap-2.5 rounded-lg bg-[#754329] px-6 py-3 text-base font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,.18)] transition hover:bg-[#633923]"><Icon name="plus" size={19} /> Add Job</span>}
+                trigger={<span className="inline-flex items-center gap-2.5 rounded-lg bg-[var(--gold)] px-6 py-3 text-base font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]"><Icon name="plus" size={19} /> Add Job</span>}
               />
             ) : (
-              <a href="/login" className="inline-flex items-center rounded-lg bg-[#754329] px-6 py-3 text-base font-semibold text-white transition hover:bg-[#633923]">
+              <a href="/login" className="inline-flex items-center rounded-lg bg-[var(--gold)] px-6 py-3 text-base font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]">
                 Sign in to add a job
               </a>
             )}

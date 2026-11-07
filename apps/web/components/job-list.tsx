@@ -48,12 +48,12 @@ export function JobList({
   return (
     <section className="mt-9">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-        <div className="order-2 flex w-full gap-0.5 overflow-x-auto rounded-xl border border-black/7 bg-[#f2f0ee] p-1 lg:order-1 lg:w-auto">
+        <div className="order-2 flex w-full gap-0.5 overflow-x-auto rounded-xl border border-[var(--border)] bg-[var(--control)] p-1 lg:order-1 lg:w-auto">
           {filters.map((filter) => (
             <button
               key={filter}
               onClick={() => setActive(filter)}
-              className={`whitespace-nowrap rounded-lg px-5 py-2 text-sm transition ${active === filter ? "bg-[#754329] font-semibold text-white shadow-sm" : "text-[#3d3937] hover:bg-white/75"}`}
+              className={`whitespace-nowrap rounded-lg px-5 py-2 text-sm transition ${active === filter ? "bg-[var(--gold-surface)] font-semibold text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}
             >
               {filter}
             </button>
@@ -61,7 +61,7 @@ export function JobList({
         </div>
         <div className="order-1 flex w-full items-center gap-4 lg:order-2 lg:w-auto">
           <div className="relative w-full sm:w-80">
-            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#4d4946]">
+            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted)]">
               <Icon name="search" size={19} />
             </span>
             <label className="sr-only" htmlFor="job-search">
@@ -72,14 +72,14 @@ export function JobList({
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search jobs..."
-              className="w-full rounded-xl border border-black/15 bg-white py-2.5 pl-11 pr-4 text-sm outline-none placeholder:text-[#817a76] focus:border-[#a66f52]"
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--control)] py-2.5 pl-11 pr-4 text-sm text-[var(--ink)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--gold)]"
             />
           </div>
-          <div className="flex shrink-0 rounded-xl border border-black/10 bg-white p-1 shadow-[0_4px_12px_rgba(35,31,32,.02)]" aria-label="Job view">
-            <button type="button" onClick={() => changeView("list")} aria-label="Details view" aria-pressed={view === "list"} className={`grid size-9 place-items-center rounded-lg transition ${view === "list" ? "bg-[#754329] text-white shadow-sm" : "text-[#544d49] hover:bg-[#f7f3ef]"}`}>
+          <div className="flex shrink-0 rounded-xl border border-[var(--border)] bg-[var(--control)] p-1" aria-label="Job view">
+            <button type="button" onClick={() => changeView("list")} aria-label="Details view" aria-pressed={view === "list"} className={`grid size-9 place-items-center rounded-lg transition ${view === "list" ? "bg-[var(--gold-surface)] text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}>
               <Icon name="list" size={17} />
             </button>
-            <button type="button" onClick={() => changeView("grid")} aria-label="Grid view" aria-pressed={view === "grid"} className={`grid size-9 place-items-center rounded-lg transition ${view === "grid" ? "bg-[#754329] text-white shadow-sm" : "text-[#544d49] hover:bg-[#f7f3ef]"}`}>
+            <button type="button" onClick={() => changeView("grid")} aria-label="Grid view" aria-pressed={view === "grid"} className={`grid size-9 place-items-center rounded-lg transition ${view === "grid" ? "bg-[var(--gold-surface)] text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}>
               <Icon name="grid" size={17} />
             </button>
           </div>

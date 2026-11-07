@@ -5,10 +5,10 @@ import { ShareJobButton } from "./share-job-button";
 import { EditJobDialog } from "./edit-job-dialog";
 
 const statusStyles = {
-  Saved: "bg-[#f3f0ed] text-[#6f6762]",
-  Review: "bg-[#f1ebfb] text-[#7752a5]",
-  Applied: "bg-[#eaf0f8] text-[#4f719b]",
-  Rejected: "bg-[#faeaea] text-[#a05c5c]",
+  Saved: "bg-zinc-800 text-[var(--copy)]",
+  Review: "bg-zinc-800 text-[var(--copy)]",
+  Applied: "bg-[var(--gold-surface)] text-[var(--gold-ink)]",
+  Rejected: "bg-[#3a2421] text-[var(--error)]",
 };
 
 export function JobCard({
@@ -21,21 +21,21 @@ export function JobCard({
   onJobUpdated: (job: Job) => void;
 }) {
   return (
-    <article className="group rounded-2xl border border-black/8 bg-white p-5 shadow-[0_8px_30px_rgba(35,31,32,0.03)] transition hover:-translate-y-0.5 hover:border-[#c8b6a8] hover:shadow-[0_14px_34px_rgba(35,31,32,0.08)]">
+    <article className="group rounded-2xl border border-[var(--border)] bg-[var(--paper)] p-5 transition hover:-translate-y-0.5 hover:border-[var(--gold-border)]">
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#f5eee8] text-sm font-semibold text-[#95603f]">
+          <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-[var(--gold-surface)] text-sm font-semibold text-[var(--gold-ink)]">
             {job.company.slice(0, 2).toUpperCase()}
           </div>
           <div className="min-w-0">
-            <h3 className="truncate font-semibold text-[#302a28]">
+            <h3 className="truncate font-semibold text-[var(--ink)]">
               {job.title}
             </h3>
-            <p className="mt-1 text-sm text-[#77706c]">
+            <p className="mt-1 text-sm text-[var(--copy)]">
               {job.company} · {job.location}
             </p>
             {job.salary && (
-              <p className="mt-1 text-xs font-medium text-[#6d8b6f]">
+              <p className="mt-1 text-xs font-medium text-[var(--gold-ink)]">
                 {job.salary}
               </p>
             )}
@@ -61,44 +61,44 @@ export function JobCard({
         </select>
         </div>
       </div>
-      <p className="mt-5 text-sm leading-6 text-[#6f6762]">{job.summary}</p>
+      <p className="mt-5 text-sm leading-6 text-[var(--copy)]">{job.summary}</p>
       <div className="mt-4 flex flex-wrap gap-2">
         {job.tags.map((tag) => (
           <span
             key={tag}
-            className="rounded-md bg-[#faf8f5] px-2 py-1 text-xs text-[#706761]"
+            className="rounded-md bg-zinc-800 px-2 py-1 text-xs text-[var(--muted)]"
           >
             {tag}
           </span>
         ))}
       </div>
-      <div className="mt-5 flex items-center justify-between border-t border-black/6 pt-4">
-        <div className="flex items-center gap-3 text-xs text-[#928983]">
+      <div className="mt-5 flex items-center justify-between border-t border-[var(--divider)] pt-4">
+        <div className="flex items-center gap-3 text-xs text-[var(--muted)]">
           <span>{job.source}</span>
           <span>·</span>
           <span>{job.age}</span>
         </div>
         {job.score > 0 ? (
           <div className="flex items-center gap-2">
-            <div className="h-1.5 w-16 overflow-hidden rounded-full bg-[#eee9e5]">
+            <div className="h-1.5 w-16 overflow-hidden rounded-full bg-zinc-800">
               <div
-                className="h-full rounded-full bg-[#7ba17d]"
+                className="h-full rounded-full bg-[var(--gold-strong)]"
                 style={{ width: `${job.score}%` }}
               />
             </div>
-            <span className="text-xs font-semibold text-[#56755a]">
+            <span className="text-xs font-semibold text-[var(--gold-ink)]">
               {job.score}% fit
             </span>
           </div>
         ) : (
-          <span className="text-xs text-[#9b918b]">Not scored yet</span>
+          <span className="text-xs text-[var(--muted)]">Not scored yet</span>
         )}
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-4">
         <ShareJobButton jobId={job.id} variant="icon" />
         <Link
           href={`/jobs/${job.id}`}
-          className="inline-flex items-center gap-1 text-sm font-medium text-[#6d4d3a] transition hover:underline"
+          className="inline-flex items-center gap-1 text-sm font-medium text-[var(--gold-link)] transition hover:underline"
         >
           View full details <Icon name="arrow" size={15} />
         </Link>
@@ -107,7 +107,7 @@ export function JobCard({
             href={job.applyLink}
             target="_blank"
             rel="noreferrer"
-            className="text-sm font-medium text-[#847a74] transition hover:text-[#302a28]"
+            className="text-sm font-medium text-[var(--muted)] transition hover:text-[var(--gold-ink)]"
           >
             Apply ↗
           </a>

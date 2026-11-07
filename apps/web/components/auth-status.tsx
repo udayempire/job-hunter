@@ -13,7 +13,7 @@ export function AuthStatus() {
   if (loading)
     return (
       <div
-        className="h-9 w-28 animate-pulse rounded-full bg-[#eee6df]"
+        className="h-9 w-28 animate-pulse rounded-full bg-zinc-800"
         aria-label="Loading account"
       />
     );
@@ -21,7 +21,7 @@ export function AuthStatus() {
     return (
       <Link
         href="/login"
-        className="rounded-full bg-[#292323] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#3b3330]"
+        className="rounded-full bg-[var(--gold)] px-4 py-2 text-sm font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]"
       >
         Sign in
       </Link>
@@ -32,18 +32,18 @@ export function AuthStatus() {
   ).toUpperCase();
   return (
     <div className="relative flex items-center gap-4">
-      <div className="hidden border-l border-black/10 pl-6 text-left sm:block">
-        <p className="max-w-40 truncate text-base font-semibold tracking-[-0.04em] text-[#1e1b1a]">
+      <div className="hidden border-l border-[var(--border)] pl-6 text-left sm:block">
+        <p className="max-w-40 truncate text-base font-semibold tracking-[-0.04em] text-[var(--ink)]">
           {user.name ?? user.email}
         </p>
-        <p className="mt-0.5 flex items-center gap-1 text-sm text-[#625c59]">Your workspace <Icon name="chevron" size={13} /></p>
+        <p className="mt-0.5 flex items-center gap-1 text-sm text-[var(--copy)]">Your workspace <Icon name="chevron" size={13} /></p>
       </div>
       <button
         type="button"
         onClick={() => setMenuOpen((open) => !open)}
         aria-label="Open profile menu"
         aria-expanded={menuOpen}
-        className="grid size-10 place-items-center overflow-hidden rounded-full bg-[#e7d6c7] text-sm font-semibold text-[#76513a]"
+        className="grid size-10 place-items-center overflow-hidden rounded-full bg-[var(--gold-surface)] text-sm font-semibold text-[var(--gold-ink)]"
       >
         {user.image ? (
           <img src={user.image} alt="" className="size-full object-cover" />
@@ -80,7 +80,7 @@ export function AuthStatus() {
           setSigningOut(true);
           logout().catch(() => setSigningOut(false));
         }}
-        className="inline-flex border-l border-black/10 pl-5 text-sm font-medium text-[#403a37] transition hover:text-[#754329] disabled:opacity-50"
+        className="inline-flex border-l border-[var(--border)] pl-5 text-sm font-medium text-[var(--copy)] transition hover:text-[var(--gold-ink)] disabled:opacity-50"
       >
         {signingOut ? "Signing out…" : <><Icon name="logout" size={17} /> <span className="ml-2">Sign out</span></>}
       </button>

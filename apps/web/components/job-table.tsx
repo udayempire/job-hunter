@@ -6,17 +6,17 @@ import type { Job, JobStatus } from "./types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 
 const statusStyles: Record<JobStatus, string> = {
-  Saved: "bg-[#efedeb] text-[#373230]",
-  Review: "bg-[#f3e5dd] text-[#63301f]",
-  Applied: "bg-[#e4edf6] text-[#28517a]",
-  Rejected: "bg-[#faeaea] text-[#a05c5c]",
+  Saved: "bg-zinc-800 text-[var(--copy)]",
+  Review: "bg-zinc-800 text-[var(--copy)]",
+  Applied: "bg-[var(--gold-surface)] text-[var(--gold-ink)]",
+  Rejected: "bg-[#3a2421] text-[var(--error)]",
 };
 
 const statusDotStyles: Record<JobStatus, string> = {
-  Saved: "bg-[#817c78]",
-  Review: "bg-[#a65020]",
-  Applied: "bg-[#24659a]",
-  Rejected: "bg-[#a05c5c]",
+  Saved: "bg-[var(--muted)]",
+  Review: "bg-[var(--muted)]",
+  Applied: "bg-[var(--gold)]",
+  Rejected: "bg-[var(--error)]",
 };
 
 export function JobTable({
@@ -29,7 +29,7 @@ export function JobTable({
   onJobUpdated: (job: Job) => void;
 }) {
   return (
-    <div className="mt-7 overflow-hidden rounded-2xl border border-black/8 bg-white shadow-[0_8px_20px_rgba(35,31,32,.05)]">
+    <div className="mt-7 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--paper)] shadow-[0_8px_20px_rgba(0,0,0,.18)]">
       <Table className="min-w-[980px] table-fixed">
         <TableHeader>
           <TableRow className="hover:bg-transparent">
@@ -46,21 +46,21 @@ export function JobTable({
           {jobs.map((job) => (
             <TableRow key={job.id}>
               <TableCell className="px-6 py-4">
-                <p className="truncate text-sm font-semibold text-[#282321]" title={job.company}>{job.company}</p>
+                <p className="truncate text-sm font-semibold text-[var(--ink)]" title={job.company}>{job.company}</p>
               </TableCell>
               <TableCell className="py-4">
-                <p className="truncate text-sm font-semibold text-[#282321]" title={job.title}>{job.title}</p>
+                <p className="truncate text-sm font-semibold text-[var(--ink)]" title={job.title}>{job.title}</p>
               </TableCell>
               <TableCell className="py-4">
-                <p className="flex items-center gap-1.5 truncate text-sm text-[#4f4946]" title={job.location === "Location not specified" ? "-" : job.location}>
+                <p className="flex items-center gap-1.5 truncate text-sm text-[var(--copy)]" title={job.location === "Location not specified" ? "-" : job.location}>
                   {job.location && job.location !== "Location not specified" && <Icon name="pin" size={15} />}
                   {job.location && job.location !== "Location not specified" ? job.location : "-"}
                 </p>
               </TableCell>
               <TableCell className="py-4">
-                <p className="truncate text-sm text-[#4f4946]" title={job.salary || "-"}>{job.salary || "-"}</p>
+                <p className="truncate text-sm text-[var(--copy)]" title={job.salary || "-"}>{job.salary || "-"}</p>
               </TableCell>
-              <TableCell className="whitespace-nowrap py-4 text-sm text-[#4f4946]"><span className="inline-flex items-center gap-2"><Icon name="calendar" size={15} />{job.age || "-"}</span></TableCell>
+              <TableCell className="whitespace-nowrap py-4 text-sm text-[var(--copy)]"><span className="inline-flex items-center gap-2"><Icon name="calendar" size={15} />{job.age || "-"}</span></TableCell>
               <TableCell className="py-4">
                 <label className="sr-only" htmlFor={`table-status-${job.id}`}>Job status for {job.title}</label>
                 <div className="relative inline-flex items-center">
@@ -89,12 +89,12 @@ export function JobTable({
                       rel="noreferrer"
                       aria-label={`Apply to ${job.title} at ${job.company}`}
                       title="Apply"
-                      className="inline-grid size-8 place-items-center rounded-lg border border-black/10 bg-white text-[#302a28] transition hover:bg-[#f7f3ef]"
+                      className="inline-grid size-8 place-items-center rounded-lg border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:bg-zinc-800"
                     >
                       <Icon name="external" size={15} />
                     </a>
                   )}
-                  <Link href={`/jobs/${job.id}`} className="inline-flex items-center gap-1.5 rounded-lg border border-[#e7d8cd] bg-[#fcf7f2] px-3 py-1.5 text-xs font-semibold text-[#69381f] hover:bg-[#f7ede5]">
+                  <Link href={`/jobs/${job.id}`} className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-1.5 text-xs font-semibold text-[var(--gold-ink)] hover:bg-[#483d1d]">
                     Details <Icon name="arrow" size={13} />
                   </Link>
                 </div>

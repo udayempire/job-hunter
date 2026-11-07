@@ -18,7 +18,7 @@ export function TableBody({ children, ...props }: HTMLAttributes<HTMLTableSectio
 
 export function TableRow({ children, className = "", ...props }: HTMLAttributes<HTMLTableRowElement>) {
   return (
-    <tr className={`border-b border-black/6 transition-colors hover:bg-[#faf8f5] ${className}`} {...props}>
+    <tr className={`border-b border-[var(--divider)] transition-colors hover:bg-zinc-900 ${className}`} {...props}>
       {children}
     </tr>
   );
@@ -26,7 +26,7 @@ export function TableRow({ children, className = "", ...props }: HTMLAttributes<
 
 export function TableHead({ children, className = "", ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
   return (
-    <th className={`h-11 px-4 text-left align-middle text-xs font-semibold uppercase tracking-[0.12em] text-[#928983] [&:has([role=checkbox])]:pr-0 ${className}`} {...props}>
+    <th className={`h-11 px-4 text-left align-middle text-xs font-semibold uppercase tracking-[0.12em] text-[var(--muted)] [&:has([role=checkbox])]:pr-0 ${className}`} {...props}>
       {children}
     </th>
   );

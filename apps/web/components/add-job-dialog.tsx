@@ -5,9 +5,9 @@ import { Icon } from "./icon";
 import type { Job, JobDraft } from "./types";
 
 const inputClass =
-  "w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm text-[#302a28] outline-none transition focus:border-[#9b6b4b] focus:ring-4 focus:ring-[#9b6b4b]/10";
+  "w-full rounded-xl border border-[var(--border)] bg-[var(--control)] px-4 py-3 text-sm text-[var(--ink)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--gold)] focus:ring-4 focus:ring-[var(--gold)]/10";
 const textAreaClass =
-  "min-h-28 w-full resize-y rounded-2xl border border-black/10 bg-white p-4 text-sm leading-6 text-[#302a28] outline-none transition placeholder:text-[#aaa09a] focus:border-[#9b6b4b] focus:ring-4 focus:ring-[#9b6b4b]/10";
+  "min-h-28 w-full resize-y rounded-2xl border border-[var(--border)] bg-[var(--control)] p-4 text-sm leading-6 text-[var(--ink)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--gold)] focus:ring-4 focus:ring-[var(--gold)]/10";
 
 function FieldLabel({
   htmlFor,
@@ -21,11 +21,11 @@ function FieldLabel({
   return (
     <label
       htmlFor={htmlFor}
-      className="mb-1.5 block text-xs font-medium text-[#6e6561]"
+      className="mb-1.5 block text-xs font-medium text-[var(--copy)]"
     >
       {children}{" "}
       {optional && (
-        <span className="font-normal text-[#aaa09a]">(optional)</span>
+        <span className="font-normal text-[var(--muted)]">(optional)</span>
       )}
     </label>
   );
@@ -167,7 +167,7 @@ export function AddJobDialog({
         className={
           trigger
             ? "cursor-pointer border-0 bg-transparent p-0"
-            : "inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#292323] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#463d3b]"
+            : "inline-flex cursor-pointer items-center gap-2 rounded-full bg-[var(--gold)] px-4 py-2.5 text-sm font-medium text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]"
         }
       >
         {trigger ?? (
@@ -183,19 +183,19 @@ export function AddJobDialog({
           aria-modal="true"
           aria-labelledby="add-job-title"
         >
-          <div className="relative z-10 max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-black/10 bg-[#fffdf9] p-6 shadow-2xl sm:p-7">
+          <div className="relative z-10 max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-[var(--border)] bg-[var(--paper)] p-6 shadow-2xl sm:p-7">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9b6b4b]">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
                   Capture opportunity
                 </p>
                 <h2
                   id="add-job-title"
-                  className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[#292323]"
+                  className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--ink)]"
                 >
                   Add a job to review
                 </h2>
-                <p className="mt-2 text-sm text-[#8b817b]">
+                <p className="mt-2 text-sm text-[var(--copy)]">
                   Start with the essentials. Add context when it helps you
                   decide later.
                 </p>
@@ -203,7 +203,7 @@ export function AddJobDialog({
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-full px-2 py-1 text-xl text-[#827873] hover:bg-black/5"
+                className="rounded-full px-2 py-1 text-xl text-[var(--muted)] hover:bg-zinc-800"
                 aria-label="Close"
               >
                 ×

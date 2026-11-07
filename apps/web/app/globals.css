@@ -1,7 +1,27 @@
 @import "tailwindcss";
 @import "@repo/tailwind-config";
 
+:root {
+  --canvas: #171715;
+  --paper: #20201e;
+  --control: #292925;
+  --border: #3a3934;
+  --divider: #3a3934;
+  --ink: #f4f1e8;
+  --copy: #c0bdb3;
+  --muted: #aaa69b;
+  --gold: #e0b63d;
+  --gold-strong: #cfa62d;
+  --gold-ink: #e7c75f;
+  --gold-surface: #342f1b;
+  --gold-feature: #483d1d;
+  --gold-border: #7a641f;
+  --gold-link: #e7c75f;
+  --error: #d9786e;
+}
+
 body {
   margin: 0;
-  background: #f7f4ef;
+  background: var(--canvas);
+  color: var(--ink);
 }
