@@ -122,7 +122,7 @@ export function JobList({
           </div>
         )
       ) : (
-        <div className="mt-4 rounded-2xl border border-dashed border-black/15 bg-white/60 p-12 text-center text-sm text-[#827873]">
+        <div className="mt-7 border border-dashed border-[var(--border)] bg-[var(--paper)] p-12 text-center text-sm text-[var(--muted)]">
           No jobs match this view yet.
         </div>
       )}

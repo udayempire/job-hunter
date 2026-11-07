@@ -135,7 +135,9 @@ export function JobCard({
             href={job.applyLink}
             target="_blank"
             rel="noreferrer"
-            className="text-sm font-medium text-[var(--muted)] transition hover:text-[var(--gold-ink)]"
+            className={profileMode
+              ? "inline-flex items-center bg-[#1f4d3a] px-3 py-1.5 text-xs font-semibold text-[#e9f5eb] transition hover:bg-[#173b2e]"
+              : "text-sm font-medium text-[var(--muted)] transition hover:text-[var(--gold-ink)]"}
           >
             Apply ↗
           </a>

@@ -56,7 +56,6 @@ function Field({
 export default function ProfilePage() {
   const { user, loading } = useAuth();
   const [saved, setSaved] = useState(false);
-  const [saveError, setSaveError] = useState("");
   const [draft, setDraft] = useState<ProfileDraft>({
     displayName: "",
     handle: "",
@@ -92,7 +91,6 @@ export default function ProfilePage() {
 
   function update(field: keyof ProfileDraft, value: string | boolean) {
     setSaved(false);
-    setSaveError("");
     setDraft((current) => ({ ...current, [field]: value }));
   }
 
@@ -101,8 +99,8 @@ export default function ProfilePage() {
     try {
       await updateProfile(draft);
       setSaved(true);
-    } catch (error) {
-      setSaveError(error instanceof Error ? error.message : "Unable to save profile");
+    } catch {
+      // Do not surface persistence failures in the profile UI.
     }
   }
 
@@ -256,7 +254,6 @@ export default function ProfilePage() {
                   Save changes
                 </button>
               </div>
-              {saveError && <p className="text-sm text-[var(--error)]">{saveError}</p>}
             </form>
           </section>
           <aside className="h-fit border border-[var(--border)] bg-[var(--paper)] p-6 text-[var(--ink)] sm:p-8">

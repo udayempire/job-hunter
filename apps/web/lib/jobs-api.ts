@@ -77,9 +77,7 @@ export async function getJobs(): Promise<Job[]> {
     if (refresh.ok) response = await fetch(`${apiUrl}/jobs`, { cache: "no-store", credentials: "include" });
   }
   if (!response.ok) {
-    let detail = "";
-    try { detail = ((await response.json()) as { error?: string }).error ?? ""; } catch { /* response was not JSON */ }
-    throw new Error(`Unable to load jobs (${response.status})${detail ? `: ${detail}` : ""}`);
+    throw new Error("Unable to load jobs");
   }
   const payload = (await response.json()) as { data: ApiJob[] };
   return payload.data.map(mapJob);

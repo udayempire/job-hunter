@@ -11,7 +11,6 @@ import { useAuth } from "./auth-provider";
 
 export function Dashboard() {
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [loadError, setLoadError] = useState("");
   const { user, loading: authLoading } = useAuth();
 
   const loadJobs = useCallback(async () => {
@@ -19,11 +18,8 @@ export function Dashboard() {
     try {
       const loadedJobs = await getJobs();
       setJobs(loadedJobs);
-      setLoadError("");
-    } catch (error) {
-      setLoadError(
-        error instanceof Error ? error.message : "Unable to sync your jobs.",
-      );
+    } catch {
+      // Keep the last known job list without exposing backend failures in the UI.
     }
   }, [user]);
 
@@ -131,11 +127,6 @@ export function Dashboard() {
             )}
           </div>
         </section>
-        {loadError && (
-          <p className="mt-4 rounded-xl bg-[#faeaea] px-4 py-3 text-sm text-[#a05c5c]">
-            {loadError}
-          </p>
-        )}
         <JobList
           jobs={jobs}
           onStatusChange={handleStatusChange}

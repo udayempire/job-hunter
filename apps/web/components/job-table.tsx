@@ -138,7 +138,7 @@ export function JobTable({
                       aria-label={`Apply to ${job.title} at ${job.company}`}
                       title="Apply"
                       className={profileMode
-                        ? "inline-flex items-center gap-1.5 border border-[var(--border)] bg-[var(--control)] px-3 py-1.5 text-xs font-semibold text-[var(--copy)] transition hover:bg-zinc-800"
+                        ? "inline-flex items-center gap-1.5 border border-[#32634b] bg-[#1f4d3a] px-3 py-1.5 text-xs font-semibold text-[#e9f5eb] transition hover:bg-[#173b2e]"
                         : "inline-grid size-8 place-items-center rounded-lg border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:bg-zinc-800"}
                     >
                       {profileMode ? <>Apply <Icon name="external" size={14} /></> : <Icon name="external" size={15} />}

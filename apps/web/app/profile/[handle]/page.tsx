@@ -8,7 +8,10 @@ import { Icon } from "../../../components/icon";
 import { useAuth } from "../../../components/auth-provider";
 import { JobList } from "../../../components/job-list";
 import { updateJobStatus } from "../../../lib/jobs-api";
-import { getPublicProfile, type PublicProfile } from "../../../lib/profiles-api";
+import {
+  getPublicProfile,
+  type PublicProfile,
+} from "../../../lib/profiles-api";
 import type { Job, JobStatus } from "../../../components/types";
 
 function timeSince(date: string | null) {
@@ -112,35 +115,37 @@ export default function PublicProfilePage() {
           </Link>
           <AuthStatus />
         </header>
-        <section className="mt-10 border border-[var(--border)] bg-[var(--paper)] p-7 text-[var(--ink)] sm:p-10">
-          <div className="flex flex-col justify-between gap-8 sm:flex-row sm:items-start">
-            <div className="flex items-start gap-4">
-              <div className="grid size-20 shrink-0 place-items-center bg-[var(--gold-surface)] text-2xl font-semibold text-[var(--gold-ink)]">
-                {avatarLetter}
+        <section className="mt-8 border border-[var(--border)] bg-[var(--paper)] p-5 text-[var(--ink)] sm:p-6">
+          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
+            <div className="flex w-full items-start gap-3">
+              <div className="grid size-12 shrink-0 place-items-center overflow-hidden bg-[var(--gold-surface)] text-lg font-semibold text-[var(--gold-ink)]">
+                {profile.image ? (
+                  <img
+                    src={profile.image}
+                    alt={`${profile.displayName || profile.handle}'s profile`}
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  avatarLetter
+                )}
               </div>
-              <div>
-                <p className="text-sm text-[var(--gold-ink)]">
-                  @{profile.handle}
-                </p>
-                <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em] sm:text-5xl">
-                  {profile.displayName || profile.handle}
-                </h1>
-                <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--copy)]">
+              <div className="w-full">
+                <div className="flex w-full items-center justify-between gap-4">
+                  <h1 className="mt-1 text-2xl font-semibold tracking-[-0.05em] sm:text-3xl">
+                    {profile.displayName || profile.handle}
+                  </h1>
+                  <p className="whitespace-nowrap text-sm font-semibold ]">
+                    Joined {timeSince(profile.joinedAt)}
+                  </p>
+                </div>
+                <p className="mt-2 max-w-xl text-sm leading-5 text-[var(--copy)]">
                   {profile.headline || "Building the next chapter."}
                 </p>
               </div>
             </div>
-            {isOwner && (
-              <Link
-                href="/profile"
-                className="inline-flex shrink-0 border border-[var(--gold-border)] bg-[var(--gold-surface)] px-4 py-2.5 text-sm font-semibold text-[var(--gold-link)] transition hover:bg-[#483d1d]"
-              >
-                Edit profile
-              </Link>
-            )}
           </div>
           {profile.bio && (
-            <p className="mt-8 max-w-2xl whitespace-pre-wrap text-sm leading-7 text-[var(--copy)]">
+            <p className="mt-5 max-w-2xl whitespace-pre-wrap text-sm leading-6 text-[var(--copy)]">
               {profile.bio}
             </p>
           )}
@@ -149,37 +154,17 @@ export default function PublicProfilePage() {
               href={profile.website}
               target="_blank"
               rel="noreferrer"
-              className="mt-6 inline-flex text-sm font-medium text-[var(--gold-link)] hover:underline"
+              className="mt-4 inline-flex text-sm font-medium text-[var(--gold-link)] hover:underline"
             >
               {profile.website.replace(/^https?:\/\//, "")} ↗
             </a>
           )}
         </section>
-        <section className="mt-5 grid gap-3 sm:grid-cols-3">
-          <div className="border border-[var(--border)] bg-[var(--paper)] p-5">
-            <p className="text-2xl font-semibold tracking-[-0.05em] text-[var(--ink)]">
-              {publicJobs.length}
-            </p>
-            <p className="mt-1 text-sm text-[var(--copy)]">Public jobs</p>
-          </div>
-          <div className="border border-[var(--border)] bg-[var(--paper)] p-5">
-            <p className="text-2xl font-semibold tracking-[-0.05em] text-[var(--ink)]">
-              {publicJobs.filter((job) => job.status === "Applied").length}
-            </p>
-            <p className="mt-1 text-sm text-[var(--copy)]">Jobs applied</p>
-          </div>
-          <div className="border border-[var(--border)] bg-[var(--paper)] p-5">
-            <p className="text-2xl font-semibold tracking-[-0.05em] text-[var(--ink)]">
-              {timeSince(profile.joinedAt)}
-            </p>
-            <p className="mt-1 text-sm text-[var(--copy)]">Joined Job Hunti</p>
-          </div>
-        </section>
-        <section className="mt-10">
+        <section className="mt-8">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
             Public board
           </p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.05em]">
+          <h2 className="mt-1 text-xl font-semibold tracking-[-0.04em]">
             Jobs worth sharing
           </h2>
           <JobList

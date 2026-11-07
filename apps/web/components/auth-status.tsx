@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "./auth-provider";
 import { Icon } from "./icon";
 
@@ -9,6 +9,16 @@ export function AuthStatus() {
   const { user, loading, logout } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    function closeOnOutsideClick(event: PointerEvent) {
+      if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
+    }
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    return () => document.removeEventListener("pointerdown", closeOnOutsideClick);
+  }, [menuOpen]);
 
   if (loading)
     return (
@@ -36,45 +46,44 @@ export function AuthStatus() {
         <p className="max-w-40 truncate text-base font-semibold tracking-[-0.04em] text-[var(--ink)]">
           {user.name ?? user.email}
         </p>
-        <p className="mt-0.5 flex items-center gap-1 text-sm text-[var(--copy)]">
-          Your workspace <Icon name="chevron" size={13} />
-        </p>
       </div>
-      <button
-        type="button"
-        onClick={() => setMenuOpen((open) => !open)}
-        aria-label="Open profile menu"
-        aria-expanded={menuOpen}
-        className="grid size-10 place-items-center overflow-hidden rounded-full bg-[var(--gold-surface)] text-sm font-semibold text-[var(--gold-ink)]"
-      >
-        {user.image ? (
-          <img src={user.image} alt="" className="size-full object-cover" />
-        ) : (
-          avatarLetter
+      <div ref={menuRef} className="relative">
+        <button
+          type="button"
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label="Open profile menu"
+          aria-expanded={menuOpen}
+          className="grid size-10 cursor-pointer place-items-center overflow-hidden border border-[var(--border)] bg-[var(--gold-surface)] text-sm font-semibold text-[var(--gold-ink)]"
+        >
+          {user.image ? (
+            <img src={user.image} alt="" className="size-full object-cover" />
+          ) : (
+            avatarLetter
+          )}
+        </button>
+        {menuOpen && (
+          <div className="absolute right-0 top-12 z-30 w-48 border border-[var(--border)] bg-[var(--paper)] p-1.5 shadow-[0_16px_40px_rgba(0,0,0,.25)]">
+            <Link
+              href="/profile"
+              onClick={() => setMenuOpen(false)}
+              className="block px-3 py-2.5 text-sm text-[var(--copy)] transition hover:bg-zinc-800 hover:text-[var(--ink)]"
+            >
+              Profile settings
+            </Link>
+            <Link
+              href={
+                user.profile?.handle
+                  ? `/profile/${user.profile.handle}`
+                  : "/profile"
+              }
+              onClick={() => setMenuOpen(false)}
+              className="block px-3 py-2.5 text-sm text-[var(--copy)] transition hover:bg-zinc-800 hover:text-[var(--ink)]"
+            >
+              View profile
+            </Link>
+          </div>
         )}
-      </button>
-      {menuOpen && (
-        <div className="absolute right-0 top-12 z-30 w-48 rounded-2xl border border-black/8 bg-white p-2 shadow-[0_16px_40px_rgba(48,42,40,0.14)]">
-          <Link
-            href="/profile"
-            onClick={() => setMenuOpen(false)}
-            className="block rounded-xl px-3 py-2.5 text-sm text-[#4f4642] transition hover:bg-[#f7f2ed]"
-          >
-            Profile settings
-          </Link>
-          <Link
-            href={
-              user.profile?.handle
-                ? `/profile/${user.profile.handle}`
-                : "/profile"
-            }
-            onClick={() => setMenuOpen(false)}
-            className="block rounded-xl px-3 py-2.5 text-sm text-[#4f4642] transition hover:bg-[#f7f2ed]"
-          >
-            View profile
-          </Link>
         </div>
-      )}
       <button
         type="button"
         disabled={signingOut}
