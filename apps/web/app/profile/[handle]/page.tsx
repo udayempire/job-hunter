@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { AuthStatus } from "../../../components/auth-status";
-import { Icon } from "../../../components/icon";
 import { useAuth } from "../../../components/auth-provider";
 import { JobList } from "../../../components/job-list";
 import { updateJobStatus } from "../../../lib/jobs-api";
@@ -12,6 +10,7 @@ import {
   getPublicProfile,
   type PublicProfile,
 } from "../../../lib/profiles-api";
+import { AppBar } from "../../../components/app-bar";
 import type { Job, JobStatus } from "../../../components/types";
 
 function timeSince(date: string | null) {
@@ -103,18 +102,8 @@ export default function PublicProfilePage() {
     .toUpperCase();
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
+      <AppBar />
       <div className="mx-auto max-w-[75rem] px-5 py-6 sm:px-8 lg:py-8">
-        <header className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center bg-[var(--ink)] text-[var(--canvas)]">
-              <Icon name="spark" size={18} />
-            </span>
-            <span className="text-base font-semibold tracking-[-0.03em] text-[var(--ink)]">
-              Job Hunti
-            </span>
-          </Link>
-          <AuthStatus />
-        </header>
         <section className="mt-8 border border-[var(--border)] bg-[var(--paper)] p-5 text-[var(--ink)] sm:p-6">
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
             <div className="flex w-full items-start gap-3">

@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AuthStatus } from "../../components/auth-status";
-import { Icon } from "../../components/icon";
 import { useAuth } from "../../components/auth-provider";
 import { getMyProfile, updateProfile } from "../../lib/profiles-api";
+import { AppBar } from "../../components/app-bar";
 
 type ProfileDraft = {
   displayName: string;
@@ -69,24 +68,28 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!user) return;
     void getMyProfile()
-      .then((profile) => setDraft({
-        displayName: profile.displayName ?? user.name ?? "",
-        handle: profile.handle,
-        headline: profile.headline ?? "",
-        bio: profile.bio ?? "",
-        location: profile.location ?? "",
-        website: profile.website ?? "",
-        isPublic: profile.isPublic,
-      }))
-      .catch(() => setDraft({
-        displayName: user.profile?.displayName ?? user.name ?? "",
-        handle: user.profile?.handle ?? "",
-        headline: "",
-        bio: "",
-        location: "",
-        website: "",
-        isPublic: user.profile?.isPublic ?? false,
-      }));
+      .then((profile) =>
+        setDraft({
+          displayName: profile.displayName ?? user.name ?? "",
+          handle: profile.handle,
+          headline: profile.headline ?? "",
+          bio: profile.bio ?? "",
+          location: profile.location ?? "",
+          website: profile.website ?? "",
+          isPublic: profile.isPublic,
+        }),
+      )
+      .catch(() =>
+        setDraft({
+          displayName: user.profile?.displayName ?? user.name ?? "",
+          handle: user.profile?.handle ?? "",
+          headline: "",
+          bio: "",
+          location: "",
+          website: "",
+          isPublic: user.profile?.isPublic ?? false,
+        }),
+      );
   }, [user]);
 
   function update(field: keyof ProfileDraft, value: string | boolean) {
@@ -132,24 +135,14 @@ export default function ProfilePage() {
   ).toUpperCase();
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
+      <AppBar />
       <div className="mx-auto max-w-5xl px-5 py-6 sm:px-8 lg:py-8">
-        <header className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center bg-[var(--ink)] text-[var(--canvas)]">
-              <Icon name="spark" size={18} />
-            </span>
-            <span className="text-base font-semibold tracking-[-0.03em] text-[var(--ink)]">
-              Job Hunti
-            </span>
-          </Link>
-          <AuthStatus />
-        </header>
-        <Link
+        {/* <Link
           href="/"
           className="mt-10 inline-flex text-sm font-medium text-[var(--muted)] hover:text-[var(--gold-ink)]"
         >
           ← Back to your pipeline
-        </Link>
+        </Link> */}
         <div className="mt-5 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
           <section className="border border-[var(--border)] bg-[var(--paper)] p-6 sm:p-8">
             <div>
@@ -281,7 +274,9 @@ export default function ProfilePage() {
               {draft.headline || "Your headline will appear here."}
             </p>
             {draft.location && (
-              <p className="mt-5 text-xs text-[var(--muted)]">{draft.location}</p>
+              <p className="mt-5 text-xs text-[var(--muted)]">
+                {draft.location}
+              </p>
             )}
             <div className="mt-8 border-t border-[var(--divider)] pt-5">
               <p className="text-xs text-[var(--muted)]">Profile visibility</p>

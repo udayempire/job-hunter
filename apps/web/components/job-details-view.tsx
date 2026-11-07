@@ -1,10 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
-import { AuthStatus } from "./auth-status";
-import { Icon } from "./icon";
 import { ShareJobButton } from "./share-job-button";
+import { AppBar } from "./app-bar";
 import type { JobDetails } from "../lib/jobs-api";
 import type { JobStatus } from "./types";
 
@@ -72,24 +70,8 @@ export function JobDetailsView({
 
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
+      <AppBar right={headerAction} showAccount={!shared && !headerAction} />
       <div className="mx-auto max-w-5xl px-5 py-6 sm:px-8 lg:py-8">
-        <header className="flex items-center justify-between">
-          <Link href={shared ? "/" : "/"} className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center bg-[var(--ink)] text-[var(--canvas)]">
-              <Icon name="spark" size={18} />
-            </span>
-            <span className="text-base font-semibold tracking-[-0.03em] text-[var(--ink)]">
-              Job Hunti
-            </span>
-          </Link>
-          {headerAction ?? (!shared && <AuthStatus />)}
-        </header>
-        <Link
-          href={shared ? "/" : "/"}
-          className="mt-10 inline-flex text-sm font-medium text-[var(--muted)] hover:text-[var(--gold-ink)]"
-        >
-          ← {shared ? "Explore Job Hunti" : "Back to your pipeline"}
-        </Link>
         <section className="mt-5 border border-[var(--border)] bg-[var(--paper)] p-7 text-[var(--ink)] sm:p-10">
           <div className="flex flex-col justify-between gap-7 sm:flex-row sm:items-start">
             <div className="flex items-start gap-4">
@@ -98,10 +80,10 @@ export function JobDetailsView({
               </div>
               <div>
                 <p className="text-sm text-[var(--gold-ink)]">{job.company}</p>
-                <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em] sm:text-5xl">
+                <h1 className="mt-2 text-xl font-semibold tracking-[-0.06em] sm:text-xl">
                   {job.title}
                 </h1>
-                <div className="mt-4 flex flex-wrap gap-2 text-sm text-[var(--copy)]">
+                {/* <div className="mt-4 flex flex-wrap gap-2 text-sm text-[var(--copy)]">
                   <span>{job.location}</span>
                   {job.salary && (
                     <>
@@ -109,7 +91,7 @@ export function JobDetailsView({
                       <span>{job.salary}</span>
                     </>
                   )}
-                </div>
+                </div> */}
               </div>
             </div>
             {!shared && (
@@ -216,7 +198,7 @@ export function JobDetailsView({
                   <dt className="text-[var(--muted)]">Status</dt>
                   <dd className="text-right text-[var(--ink)]">{status}</dd>
                 </div> */}
-                {!shared && (
+                {/* {!shared && (
                   <div className="flex justify-between gap-4">
                     <dt className="text-[var(--muted)]">Visibility</dt>
                     <dd className="text-right text-[var(--ink)]">
@@ -225,7 +207,7 @@ export function JobDetailsView({
                         : "Public profile"}
                     </dd>
                   </div>
-                )}
+                )} */}
                 <div className="flex justify-between gap-4">
                   <dt className="text-[var(--muted)]">Added</dt>
                   <dd className="text-right text-[var(--ink)]">

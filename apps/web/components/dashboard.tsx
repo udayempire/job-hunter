@@ -6,8 +6,8 @@ import { Icon } from "./icon";
 import { JobList } from "./job-list";
 import type { Job, JobDraft, JobStatus } from "./types";
 import { createJob, getJobs, updateJobStatus } from "../lib/jobs-api";
-import { AuthStatus } from "./auth-status";
 import { useAuth } from "./auth-provider";
+import { AppBar } from "./app-bar";
 
 export function Dashboard() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -84,19 +84,7 @@ export function Dashboard() {
   }
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
-      <header className="border-b border-[var(--border)] bg-[var(--paper)] px-5 py-3.5 sm:px-8 lg:px-[3.7rem]">
-        <div className="mx-auto flex max-w-[1600px] items-center justify-between">
-          <a href="#" className="flex items-center gap-3.5">
-            <span className="grid size-10 place-items-center rounded-lg bg-[var(--ink)] text-[var(--paper)]">
-              <Icon name="spark" size={17} />
-            </span>
-            <span className="text-xl font-semibold tracking-[-0.05em] text-[var(--ink)] [font-family:Georgia,serif]">
-              Job Hunti
-            </span>
-          </a>
-          <AuthStatus />
-        </div>
-      </header>
+      <AppBar />
       <div className="mx-auto max-w-[1600px] px-5 pb-12 pt-10 sm:px-8 lg:px-[3.7rem] lg:pt-11">
         <section className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
