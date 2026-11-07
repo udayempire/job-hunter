@@ -14,7 +14,8 @@ type IconName =
   | "calendar"
   | "pin"
   | "external"
-  | "logout";
+  | "logout"
+  | "download";
 
 export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   const common = {
@@ -110,6 +111,13 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
       <>
         <path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4" />
         <path d="M14 8l4 4-4 4M18 12H9" />
+      </>
+    ),
+    download: (
+      <>
+        <path d="M12 3v12" />
+        <path d="m7 10 5 5 5-5" />
+        <path d="M5 20h14" />
       </>
     ),
     spark: (

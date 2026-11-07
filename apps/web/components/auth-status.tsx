@@ -36,7 +36,9 @@ export function AuthStatus() {
         <p className="max-w-40 truncate text-base font-semibold tracking-[-0.04em] text-[var(--ink)]">
           {user.name ?? user.email}
         </p>
-        <p className="mt-0.5 flex items-center gap-1 text-sm text-[var(--copy)]">Your workspace <Icon name="chevron" size={13} /></p>
+        <p className="mt-0.5 flex items-center gap-1 text-sm text-[var(--copy)]">
+          Your workspace <Icon name="chevron" size={13} />
+        </p>
       </div>
       <button
         type="button"
@@ -80,9 +82,16 @@ export function AuthStatus() {
           setSigningOut(true);
           logout().catch(() => setSigningOut(false));
         }}
-        className="inline-flex border-l border-[var(--border)] pl-5 text-sm font-medium text-[var(--copy)] transition hover:text-[var(--gold-ink)] disabled:opacity-50"
+        className="inline-flex border-l bg-red-800 p-2 text-center text-white border-[var(--border)]  text-sm font-medium  transition hover:text-[var(--gold-ink)] disabled:opacity-50"
       >
-        {signingOut ? "Signing out…" : <><Icon name="logout" size={17} /> <span className="ml-2">Sign out</span></>}
+        {signingOut ? (
+          "Signing out…"
+        ) : (
+          <div className="flex items-center justify-center gap-2">
+            <span className="ml-2">Sign out</span>
+            <Icon name="logout" size={17} />{" "}
+          </div>
+        )}
       </button>
     </div>
   );

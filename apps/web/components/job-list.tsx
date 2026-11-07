@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { JobCard } from "./job-card";
 import type { Job, JobStatus } from "./types";
 import { Icon } from "./icon";
+import { ExportJobsButton } from "./export-jobs-button";
 import { JobTable } from "./job-table";
 
 const filters: Array<"All" | JobStatus> = [
@@ -70,6 +71,7 @@ export function JobList({
           ))}
         </div>
         <div className="order-1 flex w-full items-center gap-4 lg:order-2 lg:w-auto">
+          <ExportJobsButton jobs={visibleJobs} filter={active} />
           <div className="relative w-full sm:w-80">
             <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted)]">
               <Icon name="search" size={19} />

@@ -201,10 +201,6 @@ export function JobDetailsView({
             <DetailBlock label="Opportunity details">
               <dl className="space-y-3 text-sm">
                 <div className="flex justify-between gap-4">
-                  <dt className="text-[#8b817b]">Source</dt>
-                  <dd className="text-right text-[#403733]">{job.source}</dd>
-                </div>
-                <div className="flex justify-between gap-4">
                   <dt className="text-[#8b817b]">Location</dt>
                   <dd className="text-right text-[#403733]">{job.location}</dd>
                 </div>
