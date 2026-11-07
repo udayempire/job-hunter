@@ -127,7 +127,7 @@ export function ShareJobButton({
         title="Share job"
         className={
           variant === "icon"
-            ? "inline-grid size-9 place-items-center rounded-full bg-[#faf6f1] text-[#6d4d3a] transition hover:bg-[#f1e5db]"
+            ? "inline-grid size-8 place-items-center rounded-lg border border-black/10 bg-white text-[#302a28] transition hover:bg-[#f7f3ef]"
             : `inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition ${buttonClass}`
         }
       >

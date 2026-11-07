@@ -166,7 +166,7 @@ export function AddJobDialog({
         }}
         className={
           trigger
-            ? undefined
+            ? "cursor-pointer border-0 bg-transparent p-0"
             : "inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#292323] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#463d3b]"
         }
       >

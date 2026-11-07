@@ -8,7 +8,13 @@ type IconName =
   | "plus"
   | "search"
   | "share"
-  | "spark";
+  | "spark"
+  | "grid"
+  | "list"
+  | "calendar"
+  | "pin"
+  | "external"
+  | "logout";
 
 export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   const common = {
@@ -66,6 +72,44 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
         <circle cx="6" cy="12" r="3" />
         <circle cx="18" cy="19" r="3" />
         <path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" />
+      </>
+    ),
+    grid: (
+      <>
+        <rect x="4" y="4" width="6" height="6" rx="1" />
+        <rect x="14" y="4" width="6" height="6" rx="1" />
+        <rect x="4" y="14" width="6" height="6" rx="1" />
+        <rect x="14" y="14" width="6" height="6" rx="1" />
+      </>
+    ),
+    list: (
+      <>
+        <path d="M8 6h12M8 12h12M8 18h12" />
+        <path d="M4 6h.01M4 12h.01M4 18h.01" strokeWidth="3" />
+      </>
+    ),
+    calendar: (
+      <>
+        <rect x="3.5" y="5" width="17" height="15" rx="2" />
+        <path d="M7.5 3v4M16.5 3v4M3.5 10h17" />
+      </>
+    ),
+    pin: (
+      <>
+        <path d="M20 10c0 4.5-8 11-8 11S4 14.5 4 10a8 8 0 1 1 16 0Z" />
+        <circle cx="12" cy="10" r="2.5" />
+      </>
+    ),
+    external: (
+      <>
+        <path d="M14 5h5v5M19 5l-8 8" />
+        <path d="M19 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4" />
+      </>
+    ),
+    logout: (
+      <>
+        <path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4" />
+        <path d="M14 8l4 4-4 4M18 12H9" />
       </>
     ),
     spark: (

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import { AddJobDialog } from "./add-job-dialog";
 import { Icon } from "./icon";
 import { JobList } from "./job-list";
-import { StatCard } from "./stat-card";
 import type { Job, JobDraft, JobStatus } from "./types";
 import { createJob, getJobs, updateJobStatus } from "../lib/jobs-api";
 import { AuthStatus } from "./auth-status";
@@ -12,7 +11,6 @@ import { useAuth } from "./auth-provider";
 
 export function Dashboard() {
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [apiReady, setApiReady] = useState(false);
   const [loadError, setLoadError] = useState("");
   const { user, loading: authLoading } = useAuth();
 
@@ -21,10 +19,8 @@ export function Dashboard() {
     try {
       const loadedJobs = await getJobs();
       setJobs(loadedJobs);
-      setApiReady(true);
       setLoadError("");
     } catch (error) {
-      setApiReady(false);
       setLoadError(error instanceof Error ? error.message : "Unable to sync your jobs.");
     }
   }, [user]);
@@ -89,93 +85,46 @@ export function Dashboard() {
     );
   }
   return (
-    <main className="min-h-screen bg-[#f7f4ef] text-[#302a28]">
-      <div className="mx-auto max-w-7xl px-5 py-6 sm:px-8 lg:px-10">
-        <header className="flex items-center justify-between">
-          <a href="#" className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-xl bg-[#292323] text-white">
-              <Icon name="spark" size={18} />
+    <main className="min-h-screen bg-[#faf8f5] text-[#242120]">
+      <header className="border-b border-black/8 bg-white/80 px-5 py-3.5 backdrop-blur sm:px-8 lg:px-[3.7rem]">
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between">
+          <a href="#" className="flex items-center gap-3.5">
+            <span className="grid size-10 place-items-center rounded-lg bg-[#292321] text-white shadow-[inset_0_1px_0_rgba(255,255,255,.22)]">
+              <Icon name="spark" size={17} />
             </span>
-            <span className="text-base font-semibold tracking-[-0.03em]">
+            <span className="text-xl font-semibold tracking-[-0.05em] [font-family:Georgia,serif]">
               Job Hunter
             </span>
           </a>
           <AuthStatus />
-        </header>
-        {/* <section className="relative mt-12 overflow-hidden rounded-[2rem] bg-[#292323] px-6 py-8 text-white sm:px-10 sm:py-10">
-          <div className="relative z-10 max-w-2xl">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#d8ad8e]">
-              <Icon name="spark" size={14} /> Monday, keep moving
-            </div>
-            <h1 className="mt-4 max-w-xl text-3xl font-semibold leading-tight tracking-[-0.06em] sm:text-5xl">
-              Find the roles that fit the work you want to do.
-            </h1>
-            <p className="mt-4 max-w-lg text-sm leading-6 text-[#c9bfba] sm:text-base">
-              Capture opportunities, understand your fit, and keep every
-              application moving from one calm workspace.
-            </p>
-            <div className="mt-7">
-              {user ? (
-                <AddJobDialog onAdd={handleAdd} />
-              ) : (
-                <a
-                  href="/login"
-                  className="inline-flex items-center rounded-full bg-[#fffdf9] px-5 py-3 text-sm font-semibold text-[#292323] transition hover:bg-[#f4ece5]"
-                >
-                  Sign in to add a job
-                </a>
-              )}
-            </div>
-          </div>
-          <div className="absolute -right-20 -top-28 size-80 rounded-full border border-white/10" />
-          <div className="absolute -right-5 -bottom-48 size-96 rounded-full border border-[#b47b59]/30" />
-          <div className="absolute right-20 top-12 hidden h-28 w-28 rounded-full bg-[#a87556]/20 blur-2xl sm:block" />
-        </section> */}
-        {/* <section className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard
-            label="Active opportunities"
-            value={user ? String(jobs.length).padStart(2, "0") : "—"}
-            detail={
-              user ? (apiReady ? "Synced" : "Loading") : "Sign in to sync"
-            }
-          />
-          <StatCard
-            label="Strong matches"
-            value={
-              user
-                ? String(jobs.filter((job) => job.score >= 80).length).padStart(
-                    2,
-                    "0",
-                  )
-                : "—"
-            }
-            detail="80%+ fit"
-            accent="green"
-          />
-          <StatCard
-            label="Applications sent"
-            value={user ? "04" : "—"}
-            detail="This month"
-            accent="violet"
-          />
-          <StatCard
-            label="Follow-ups due"
-            value={user ? "02" : "—"}
-            detail="Next 7 days"
-          />
-        </section> */}
-        <div className="mt-7 flex justify-end cursor-pointer">
-          {user ? (
-            <AddJobDialog onAdd={handleAdd} />
-          ) : (
-            <a
-              href="/login"
-              className="inline-flex items-center rounded-full bg-[#fffdf9] px-5 py-3 text-sm font-semibold text-[#292323] transition hover:bg-[#f4ece5]"
-            >
-              Sign in to add a job
-            </a>
-          )}
         </div>
+        </header>
+      <div className="mx-auto max-w-[1600px] px-5 pb-12 pt-10 sm:px-8 lg:px-[3.7rem] lg:pt-11">
+        <section className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <div className="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#8d4b26]">
+              Your pipeline <span className="h-px w-10 bg-[#8d4b26]" />
+            </div>
+            <h1 className="mt-3.5 text-3xl font-semibold tracking-[-0.055em] text-[#252120] [font-family:Georgia,serif] sm:text-[2.65rem]">
+              Jobs worth your attention
+            </h1>
+            <p className="mt-2 text-base text-[#625c59]">
+              Track, manage, and move forward on your job applications.
+            </p>
+          </div>
+          <div className="shrink-0">
+            {user ? (
+              <AddJobDialog
+                onAdd={handleAdd}
+                trigger={<span className="inline-flex items-center gap-2.5 rounded-lg bg-[#754329] px-6 py-3 text-base font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,.18)] transition hover:bg-[#633923]"><Icon name="plus" size={19} /> Add Job</span>}
+              />
+            ) : (
+              <a href="/login" className="inline-flex items-center rounded-lg bg-[#754329] px-6 py-3 text-base font-semibold text-white transition hover:bg-[#633923]">
+                Sign in to add a job
+              </a>
+            )}
+          </div>
+        </section>
         {loadError && <p className="mt-4 rounded-xl bg-[#faeaea] px-4 py-3 text-sm text-[#a05c5c]">{loadError}</p>}
         <JobList
           jobs={jobs}

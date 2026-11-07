@@ -20,8 +20,8 @@ export function EditJobDialog({
         onSaved(updated);
       }}
       trigger={
-        <span className="inline-grid size-9 place-items-center rounded-full bg-[#faf6f1] text-[#6d4d3a] transition hover:bg-[#f1e5db]">
-          <Icon name="edit" size={16} />
+        <span className="inline-grid size-8 place-items-center rounded-lg border border-black/10 bg-white text-[#302a28] transition hover:bg-[#f7f3ef]">
+          <Icon name="edit" size={14} />
         </span>
       }
     />

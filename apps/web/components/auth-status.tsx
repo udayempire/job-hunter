@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "./auth-provider";
+import { Icon } from "./icon";
 
 export function AuthStatus() {
   const { user, loading, logout } = useAuth();
@@ -30,19 +31,19 @@ export function AuthStatus() {
     user.name?.trim().charAt(0) || user.email.charAt(0)
   ).toUpperCase();
   return (
-    <div className="relative flex items-center gap-2.5">
-      <div className="hidden text-right sm:block">
-        <p className="max-w-32 truncate text-sm font-medium text-[#4f4642]">
+    <div className="relative flex items-center gap-4">
+      <div className="hidden border-l border-black/10 pl-6 text-left sm:block">
+        <p className="max-w-40 truncate text-base font-semibold tracking-[-0.04em] text-[#1e1b1a]">
           {user.name ?? user.email}
         </p>
-        <p className="text-xs text-[#958b85]">Your workspace</p>
+        <p className="mt-0.5 flex items-center gap-1 text-sm text-[#625c59]">Your workspace <Icon name="chevron" size={13} /></p>
       </div>
       <button
         type="button"
         onClick={() => setMenuOpen((open) => !open)}
         aria-label="Open profile menu"
         aria-expanded={menuOpen}
-        className="grid size-9 place-items-center overflow-hidden rounded-full bg-[#e7d6c7] text-sm font-semibold text-[#76513a]"
+        className="grid size-10 place-items-center overflow-hidden rounded-full bg-[#e7d6c7] text-sm font-semibold text-[#76513a]"
       >
         {user.image ? (
           <img src={user.image} alt="" className="size-full object-cover" />
@@ -79,9 +80,9 @@ export function AuthStatus() {
           setSigningOut(true);
           logout().catch(() => setSigningOut(false));
         }}
-        className="text-xs font-medium text-[#847a74] transition hover:text-[#302a28] disabled:opacity-50"
+        className="inline-flex border-l border-black/10 pl-5 text-sm font-medium text-[#403a37] transition hover:text-[#754329] disabled:opacity-50"
       >
-        {signingOut ? "Signing out…" : "Sign out"}
+        {signingOut ? "Signing out…" : <><Icon name="logout" size={17} /> <span className="ml-2">Sign out</span></>}
       </button>
     </div>
   );
