@@ -5,6 +5,7 @@ import { getGoogleUser, googleAuthorizationUrl } from "../auth/google.js";
 
 const authRouter: Router = express.Router();
 const frontendUrl = () => process.env.FRONTEND_URL ?? "http://localhost:3001";
+const persistentCookieLifetimeSeconds = 10 * 365 * 24 * 60 * 60;
 
 authRouter.get("/google", (_request, response) => {
   response.redirect(googleAuthorizationUrl());
@@ -40,7 +41,7 @@ authRouter.get("/google/callback", async (request, response) => {
     const accessToken = await createAccessToken(user.id);
     const refreshToken = createRefreshToken();
     await db.authSession.create({ data: { userId: user.id, refreshTokenHash: hashRefreshToken(refreshToken), expiresAt: refreshTokenExpiry() } });
-    setCookie(response, "access_token", accessToken, 15 * 60);
+    setCookie(response, "access_token", accessToken, persistentCookieLifetimeSeconds);
     setCookie(response, "refresh_token", refreshToken, 30 * 24 * 60 * 60);
     return response.redirect(frontendUrl());
   } catch (error) {
@@ -68,7 +69,7 @@ authRouter.post("/refresh", async (request, response) => {
     db.authSession.create({ data: { userId: session.userId, refreshTokenHash: hashRefreshToken(nextRefreshToken), expiresAt: refreshTokenExpiry() } }),
   ]);
 
-  setCookie(response, "access_token", await createAccessToken(session.userId), 15 * 60);
+  setCookie(response, "access_token", await createAccessToken(session.userId), persistentCookieLifetimeSeconds);
   setCookie(response, "refresh_token", nextRefreshToken, 30 * 24 * 60 * 60);
   return response.status(204).send();
 });

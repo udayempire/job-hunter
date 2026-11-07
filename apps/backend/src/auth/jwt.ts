@@ -10,9 +10,8 @@ function secret() {
 
 export async function createAccessToken(userId: string) {
   const issuedAt = Math.floor(Date.now() / 1000);
-  const expiresAt = issuedAt + 15 * 60;
   const header = encode({ alg: "HS256", typ: "JWT" });
-  const payload = encode({ type: "access", sub: userId, iat: issuedAt, exp: expiresAt });
+  const payload = encode({ type: "access", sub: userId, iat: issuedAt });
   const input = `${header}.${payload}`;
   const signature = createHmac("sha256", secret()).update(input).digest("base64url");
   return `${input}.${signature}`;
@@ -25,7 +24,7 @@ export async function readAccessToken(token: string) {
   const expected = createHmac("sha256", secret()).update(input).digest("base64url");
   if (signature.length !== expected.length || !timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return null;
   const decoded = decode(payload);
-  if (!decoded || decoded.type !== "access" || typeof decoded.sub !== "string" || typeof decoded.exp !== "number" || decoded.exp <= Math.floor(Date.now() / 1000)) return null;
+  if (!decoded || decoded.type !== "access" || typeof decoded.sub !== "string") return null;
   return decoded.sub;
 }
 

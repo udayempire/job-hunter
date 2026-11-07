@@ -7,6 +7,7 @@ import { useAuth } from "./auth-provider";
 export function AuthStatus() {
   const { user, loading, logout } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   if (loading)
     return (
@@ -25,22 +26,52 @@ export function AuthStatus() {
       </Link>
     );
 
-  const initials = (user.name ?? user.email).slice(0, 2).toUpperCase();
+  const avatarLetter = (
+    user.name?.trim().charAt(0) || user.email.charAt(0)
+  ).toUpperCase();
   return (
-    <div className="flex items-center gap-2.5">
+    <div className="relative flex items-center gap-2.5">
       <div className="hidden text-right sm:block">
         <p className="max-w-32 truncate text-sm font-medium text-[#4f4642]">
           {user.name ?? user.email}
         </p>
         <p className="text-xs text-[#958b85]">Your workspace</p>
       </div>
-      <Link href="/profile" aria-label="Open profile" className="grid size-9 place-items-center overflow-hidden rounded-full bg-[#e7d6c7] text-xs font-semibold text-[#76513a]">
+      <button
+        type="button"
+        onClick={() => setMenuOpen((open) => !open)}
+        aria-label="Open profile menu"
+        aria-expanded={menuOpen}
+        className="grid size-9 place-items-center overflow-hidden rounded-full bg-[#e7d6c7] text-sm font-semibold text-[#76513a]"
+      >
         {user.image ? (
           <img src={user.image} alt="" className="size-full object-cover" />
         ) : (
-          initials
+          avatarLetter
         )}
-      </Link>
+      </button>
+      {menuOpen && (
+        <div className="absolute right-0 top-12 z-30 w-48 rounded-2xl border border-black/8 bg-white p-2 shadow-[0_16px_40px_rgba(48,42,40,0.14)]">
+          <Link
+            href="/profile"
+            onClick={() => setMenuOpen(false)}
+            className="block rounded-xl px-3 py-2.5 text-sm text-[#4f4642] transition hover:bg-[#f7f2ed]"
+          >
+            Profile settings
+          </Link>
+          <Link
+            href={
+              user.profile?.handle
+                ? `/profile/${user.profile.handle}`
+                : "/profile"
+            }
+            onClick={() => setMenuOpen(false)}
+            className="block rounded-xl px-3 py-2.5 text-sm text-[#4f4642] transition hover:bg-[#f7f2ed]"
+          >
+            View profile
+          </Link>
+        </div>
+      )}
       <button
         type="button"
         disabled={signingOut}
