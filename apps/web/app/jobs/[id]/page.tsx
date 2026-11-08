@@ -47,9 +47,9 @@ export default function JobDetailsPage() {
     );
   if (authLoading || (!job && !error))
     return (
-      <main className="min-h-screen bg-[#f7f4ef] p-8">
+      <main className="min-h-screen bg-[var(--canvas)] p-8">
         <div className="mx-auto max-w-5xl">
-          <div className="h-48 animate-pulse rounded-[2rem] bg-[#e9dfd7]" />
+          <div className="h-48 animate-pulse bg-zinc-800" />
         </div>
       </main>
     );

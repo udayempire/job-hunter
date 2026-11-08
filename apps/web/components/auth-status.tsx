@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "./auth-provider";
+import { Avatar } from "./avatar";
 import { Icon } from "./icon";
 
 export function AuthStatus() {
@@ -37,9 +38,6 @@ export function AuthStatus() {
       </Link>
     );
 
-  const avatarLetter = (
-    user.name?.trim().charAt(0) || user.email.charAt(0)
-  ).toUpperCase();
   return (
     <div className="relative flex items-center gap-4">
       <div className="hidden border-l border-[var(--border)] pl-6 text-left sm:block">
@@ -53,13 +51,15 @@ export function AuthStatus() {
           onClick={() => setMenuOpen((open) => !open)}
           aria-label="Open profile menu"
           aria-expanded={menuOpen}
-          className="grid size-10 cursor-pointer place-items-center overflow-hidden border border-[var(--border)] bg-[var(--gold-surface)] text-sm font-semibold text-[var(--gold-ink)]"
+          className="cursor-pointer"
         >
-          {user.image ? (
-            <img src={user.image} alt="" className="size-full object-cover" />
-          ) : (
-            avatarLetter
-          )}
+          <Avatar
+            src={user.image}
+            name={user.name}
+            fallback={user.email}
+            alt=""
+            className="grid size-10 place-items-center overflow-hidden border border-[var(--border)] bg-[var(--gold-surface)] text-sm font-semibold text-[var(--gold-ink)]"
+          />
         </button>
         {menuOpen && (
           <div className="absolute right-0 top-12 z-30 w-48 border border-[var(--border)] bg-[var(--paper)] p-1.5 shadow-[0_16px_40px_rgba(0,0,0,.25)]">

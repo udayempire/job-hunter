@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../components/auth-provider";
+import { Avatar } from "../../components/avatar";
 import { getMyProfile, updateProfile } from "../../lib/profiles-api";
 import { AppBar } from "../../components/app-bar";
 
@@ -130,9 +131,6 @@ export default function ProfilePage() {
       </main>
     );
 
-  const avatarLetter = (
-    draft.displayName.trim().charAt(0) || user.email.charAt(0)
-  ).toUpperCase();
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
       <AppBar />
@@ -253,17 +251,13 @@ export default function ProfilePage() {
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
               Profile preview
             </p>
-            <div className="mt-8 grid size-16 place-items-center bg-[var(--gold-surface)] text-xl font-semibold text-[var(--gold-ink)]">
-              {user.image ? (
-                <img
-                  src={user.image}
-                  alt=""
-                  className="size-full object-cover"
-                />
-              ) : (
-                avatarLetter
-              )}
-            </div>
+            <Avatar
+              src={user.image}
+              name={draft.displayName}
+              fallback={user.email}
+              alt=""
+              className="mt-8 grid size-16 place-items-center overflow-hidden bg-[var(--gold-surface)] text-xl font-semibold text-[var(--gold-ink)]"
+            />
             <h2 className="mt-5 text-2xl font-semibold tracking-[-0.05em]">
               {draft.displayName || "Your name"}
             </h2>

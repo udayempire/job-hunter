@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../../components/auth-provider";
+import { Avatar } from "../../../components/avatar";
 import { JobList } from "../../../components/job-list";
 import { updateJobStatus } from "../../../lib/jobs-api";
 import {
@@ -97,9 +98,6 @@ export default function PublicProfilePage() {
       </main>
     );
 
-  const avatarLetter = (profile.displayName || profile.handle)
-    .charAt(0)
-    .toUpperCase();
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
       <AppBar />
@@ -107,17 +105,13 @@ export default function PublicProfilePage() {
         <section className="mt-8 border border-[var(--border)] bg-[var(--paper)] p-5 text-[var(--ink)] sm:p-6">
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
             <div className="flex w-full items-start gap-3">
-              <div className="grid size-12 shrink-0 place-items-center overflow-hidden bg-[var(--gold-surface)] text-lg font-semibold text-[var(--gold-ink)]">
-                {profile.image ? (
-                  <img
-                    src={profile.image}
-                    alt={`${profile.displayName || profile.handle}'s profile`}
-                    className="size-full object-cover"
-                  />
-                ) : (
-                  avatarLetter
-                )}
-              </div>
+              <Avatar
+                src={profile.image}
+                name={profile.displayName}
+                fallback={profile.handle}
+                alt={`${profile.displayName || profile.handle}'s profile`}
+                className="grid size-12 shrink-0 place-items-center overflow-hidden bg-[var(--gold-surface)] text-lg font-semibold text-[var(--gold-ink)]"
+              />
               <div className="w-full">
                 <div className="flex w-full items-center justify-between gap-4">
                   <h1 className="mt-1 text-2xl font-semibold tracking-[-0.05em] sm:text-3xl">
