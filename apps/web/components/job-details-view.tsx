@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ShareJobButton } from "./share-job-button";
 import { AppBar } from "./app-bar";
+import { Icon } from "./icon";
 import type { JobDetails } from "../lib/jobs-api";
 import type { JobStatus } from "./types";
 
@@ -34,7 +35,17 @@ function DetailBlock({
   );
 }
 
-function ExternalLink({ href, label }: { href?: string; label: string }) {
+type LinkIcon = "browser" | "external" | "linkedin" | "x";
+
+function ExternalLink({
+  href,
+  label,
+  icon = "external",
+}: {
+  href?: string;
+  label: string;
+  icon?: LinkIcon;
+}) {
   if (!href) return null;
   return (
     <a
@@ -43,9 +54,30 @@ function ExternalLink({ href, label }: { href?: string; label: string }) {
       rel="noreferrer"
       className="inline-flex items-center gap-1.5 border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-2 text-sm font-medium text-[var(--gold-link)] transition hover:bg-[#483d1d]"
     >
-      {label} <span aria-hidden>↗</span>
+      <Icon name={icon} size={15} />
+      {label}
     </a>
   );
+}
+
+function recruiterLinkIcon(link: string): LinkIcon {
+  try {
+    const host = new URL(link).hostname.toLowerCase();
+    if (host === "x.com" || host.endsWith(".x.com")) return "x";
+    if (host === "linkedin.com" || host.endsWith(".linkedin.com")) {
+      return "linkedin";
+    }
+  } catch {
+    // Invalid legacy links keep the generic external-link treatment.
+  }
+  return "external";
+}
+
+function recruiterLinkLabel(link: string) {
+  const icon = recruiterLinkIcon(link);
+  if (icon === "x") return "X profile";
+  if (icon === "linkedin") return "LinkedIn profile";
+  return "Profile";
 }
 
 export function JobDetailsView({
@@ -126,9 +158,17 @@ export function JobDetailsView({
             </DetailBlock>
             <DetailBlock label="Company links">
               <div className="flex flex-wrap gap-2">
-                <ExternalLink href={job.companyWebsite} label="Website" />
-                <ExternalLink href={job.companyLinkedin} label="LinkedIn" />
-                <ExternalLink href={job.companyX} label="X" />
+                <ExternalLink
+                  href={job.companyWebsite}
+                  label="Website"
+                  icon="browser"
+                />
+                <ExternalLink
+                  href={job.companyLinkedin}
+                  label="LinkedIn"
+                  icon="linkedin"
+                />
+                <ExternalLink href={job.companyX} label="X" icon="x" />
                 {!job.companyWebsite &&
                   !job.companyLinkedin &&
                   !job.companyX && (
@@ -159,14 +199,11 @@ export function JobDetailsView({
                           </a>
                         )}
                         {recruiter.link && (
-                          <a
+                          <ExternalLink
                             href={recruiter.link}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="hover:underline"
-                          >
-                            Profile ↗
-                          </a>
+                            label={recruiterLinkLabel(recruiter.link)}
+                            icon={recruiterLinkIcon(recruiter.link)}
+                          />
                         )}
                       </div>
                     </div>

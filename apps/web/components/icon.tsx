@@ -14,6 +14,9 @@ type IconName =
   | "calendar"
   | "pin"
   | "external"
+  | "browser"
+  | "linkedin"
+  | "x"
   | "logout"
   | "download";
 
@@ -107,6 +110,19 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
         <path d="M19 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4" />
       </>
     ),
+    browser: (
+      <>
+        <rect x="3" y="4" width="18" height="16" rx="2" />
+        <path d="M3 8h18M6 6h.01M9 6h.01" strokeWidth="2.5" />
+      </>
+    ),
+    linkedin: (
+      <>
+        <rect x="4" y="4" width="16" height="16" rx="2" />
+        <path d="M8 10v6M8 7.5v.01M12 16v-3.5a2.5 2.5 0 0 1 5 0V16M12 10v6" />
+      </>
+    ),
+    x: <path d="m6 5 12 14M18 5 6 19" />,
     logout: (
       <>
         <path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4" />

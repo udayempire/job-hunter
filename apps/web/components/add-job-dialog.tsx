@@ -317,20 +317,20 @@ export function AddJobDialog({
                 />
               </div>
 
-              <div className="mt-5 rounded-2xl bg-[#f7f2ed] p-4">
+              <div className="mt-5 rounded-2xl border border-[var(--border)] bg-[var(--control)] p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-medium text-[#403733]">
+                    <p className="text-sm font-medium text-[var(--ink)]">
                       Recruiter contacts
                     </p>
-                    <p className="mt-1 text-xs leading-5 text-[#8b817b]">
+                    <p className="mt-1 text-xs leading-5 text-[var(--copy)]">
                       Add a role, email, or link for each recruiter.
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setRecruiterCount((count) => count + 1)}
-                    className="shrink-0 rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#6d4d3a] shadow-sm transition hover:bg-[#fffaf5]"
+                    className="shrink-0 rounded-full bg-[var(--gold-surface)] px-3 py-2 text-xs font-semibold text-[var(--gold-ink)] transition hover:bg-[#483d1d]"
                   >
                     + Add contact
                   </button>
@@ -340,10 +340,10 @@ export function AddJobDialog({
                     {Array.from({ length: recruiterCount }, (_, index) => (
                       <div
                         key={index}
-                        className="rounded-xl border border-black/8 bg-white p-3"
+                        className="rounded-xl border border-[var(--border)] bg-[var(--paper)] p-3"
                       >
                         <div className="mb-2 flex items-center justify-between">
-                          <span className="text-xs font-medium text-[#817773]">
+                          <span className="text-xs font-medium text-[var(--muted)]">
                             Recruiter {index + 1}
                           </span>
                           <button
@@ -351,7 +351,7 @@ export function AddJobDialog({
                             onClick={() =>
                               setRecruiterCount((count) => count - 1)
                             }
-                            className="text-xs text-[#a05c5c] hover:underline"
+                            className="text-xs text-[var(--error)] hover:underline"
                           >
                             Remove
                           </button>
