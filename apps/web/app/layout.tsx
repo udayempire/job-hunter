@@ -3,6 +3,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { AuthProvider } from "../components/auth-provider";
+import { QueryProvider } from "../components/query-provider";
 
 export const metadata: Metadata = {
   title: "Job Hunti | Your application workspace",
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={GeistSans.className}>
-        <AuthProvider>{children}</AuthProvider>
+        <QueryProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

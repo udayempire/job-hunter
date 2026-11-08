@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@repo/ui": "*",
+    "@tanstack/react-query": "^5.107.1",
     "geist": "1.8.2",
     "next": "16.4.3",
     "react": "19.3.1",

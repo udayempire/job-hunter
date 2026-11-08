@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../components/auth-provider";
 import { Avatar } from "../../components/avatar";
 import { getMyProfile, updateProfile } from "../../lib/profiles-api";
@@ -55,6 +56,12 @@ function Field({
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
+  const queryClient = useQueryClient();
+  const { data: profile, isError: profileError } = useQuery({
+    queryKey: ["profile", "me"],
+    queryFn: getMyProfile,
+    enabled: Boolean(user),
+  });
   const [saved, setSaved] = useState(false);
   const [draft, setDraft] = useState<ProfileDraft>({
     displayName: "",
@@ -68,30 +75,30 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!user) return;
-    void getMyProfile()
-      .then((profile) =>
-        setDraft({
-          displayName: profile.displayName ?? user.name ?? "",
-          handle: profile.handle,
-          headline: profile.headline ?? "",
-          bio: profile.bio ?? "",
-          location: profile.location ?? "",
-          website: profile.website ?? "",
-          isPublic: profile.isPublic,
-        }),
-      )
-      .catch(() =>
-        setDraft({
-          displayName: user.profile?.displayName ?? user.name ?? "",
-          handle: user.profile?.handle ?? "",
-          headline: "",
-          bio: "",
-          location: "",
-          website: "",
-          isPublic: user.profile?.isPublic ?? false,
-        }),
-      );
-  }, [user]);
+    if (profile) {
+      setDraft({
+        displayName: profile.displayName ?? user.name ?? "",
+        handle: profile.handle,
+        headline: profile.headline ?? "",
+        bio: profile.bio ?? "",
+        location: profile.location ?? "",
+        website: profile.website ?? "",
+        isPublic: profile.isPublic,
+      });
+      return;
+    }
+    if (profileError) {
+      setDraft({
+        displayName: user.profile?.displayName ?? user.name ?? "",
+        handle: user.profile?.handle ?? "",
+        headline: "",
+        bio: "",
+        location: "",
+        website: "",
+        isPublic: user.profile?.isPublic ?? false,
+      });
+    }
+  }, [profile, profileError, user]);
 
   function update(field: keyof ProfileDraft, value: string | boolean) {
     setSaved(false);
@@ -101,7 +108,9 @@ export default function ProfilePage() {
   async function saveProfile(event: React.FormEvent) {
     event.preventDefault();
     try {
-      await updateProfile(draft);
+      const savedProfile = await updateProfile(draft);
+      queryClient.setQueryData(["profile", "me"], savedProfile);
+      queryClient.invalidateQueries({ queryKey: ["public-profile", draft.handle] });
       setSaved(true);
     } catch {
       // Do not surface persistence failures in the profile UI.

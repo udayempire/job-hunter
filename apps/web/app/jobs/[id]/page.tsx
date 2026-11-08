@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../../components/auth-provider";
 import { JobDetailsView } from "../../../components/job-details-view";
 import {
@@ -10,21 +10,22 @@ import {
   updateJobStatus,
   type JobDetails,
 } from "../../../lib/jobs-api";
-import type { JobStatus } from "../../../components/types";
+import type { Job, JobStatus } from "../../../components/types";
 import { EditJobDialog } from "../../../components/edit-job-dialog";
 
 export default function JobDetailsPage() {
   const params = useParams<{ id: string }>();
   const { user, loading: authLoading } = useAuth();
-  const [job, setJob] = useState<JobDetails | null>(null);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (authLoading || !user || !params.id) return;
-    getJob(params.id)
-      .then(setJob)
-      .catch((reason: Error) => setError(reason.message));
-  }, [authLoading, params.id, user]);
+  const queryClient = useQueryClient();
+  const {
+    data: job,
+    error,
+    isPending: jobLoading,
+  } = useQuery({
+    queryKey: ["job", params.id],
+    queryFn: () => getJob(params.id),
+    enabled: !authLoading && Boolean(user && params.id),
+  });
 
   if (!user && !authLoading)
     return (
@@ -45,7 +46,7 @@ export default function JobDetailsPage() {
         </div>
       </main>
     );
-  if (authLoading || (!job && !error))
+  if (authLoading || jobLoading)
     return (
       <main className="min-h-screen bg-[var(--canvas)] p-8">
         <div className="mx-auto max-w-5xl">
@@ -57,7 +58,9 @@ export default function JobDetailsPage() {
     return (
       <main className="grid min-h-screen place-items-center bg-[#f7f4ef] text-center">
         <div>
-          <p className="text-sm text-[#847a74]">{error || "Job not found"}</p>
+          <p className="text-sm text-[#847a74]">
+            {error?.message || "Job not found"}
+          </p>
           <Link
             href="/"
             className="mt-4 inline-flex rounded-full bg-[#292323] px-5 py-3 text-sm font-semibold text-white"
@@ -71,10 +74,30 @@ export default function JobDetailsPage() {
   return (
     <JobDetailsView
       job={job}
-      editAction={<EditJobDialog job={job} onSaved={(updatedJob) => setJob({ ...job, ...updatedJob })} />}
+      editAction={
+        <EditJobDialog
+          job={job}
+          onSaved={(updatedJob) => {
+            queryClient.setQueryData<JobDetails>(["job", job.id], (current) =>
+              current ? { ...current, ...updatedJob } : current,
+            );
+            queryClient.setQueryData<Job[]>(["jobs"], (current = []) =>
+              current.map((listedJob) =>
+                listedJob.id === updatedJob.id ? updatedJob : listedJob,
+              ),
+            );
+          }}
+        />
+      }
       onStatusChange={async (status: JobStatus) => {
         await updateJobStatus(job.id, status);
-        setJob({ ...job, status });
+        const updatedJob = { ...job, status };
+        queryClient.setQueryData(["job", job.id], updatedJob);
+        queryClient.setQueryData<Job[]>(["jobs"], (current = []) =>
+          current.map((listedJob) =>
+            listedJob.id === job.id ? { ...listedJob, status } : listedJob,
+          ),
+        );
       }}
     />
   );

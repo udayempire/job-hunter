@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../../components/auth-provider";
 import { Avatar } from "../../../components/avatar";
 import { JobList } from "../../../components/job-list";
@@ -29,32 +29,33 @@ function timeSince(date: string | null) {
 export default function PublicProfilePage() {
   const params = useParams<{ handle: string }>();
   const { user, loading } = useAuth();
-  const [profile, setProfile] = useState<PublicProfile | null>(null);
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [profileLoading, setProfileLoading] = useState(true);
-
-  useEffect(() => {
-    setProfileLoading(true);
-    void getPublicProfile(params.handle)
-      .then(({ profile: loadedProfile, jobs: loadedJobs }) => {
-        setProfile(loadedProfile);
-        setJobs(loadedJobs);
-      })
-      .catch(() => {
-        setProfile(null);
-        setJobs([]);
-      })
-      .finally(() => setProfileLoading(false));
-  }, [params.handle]);
+  const queryClient = useQueryClient();
+  const {
+    data,
+    isPending: profileLoading,
+  } = useQuery({
+    queryKey: ["public-profile", params.handle],
+    queryFn: () => getPublicProfile(params.handle),
+    enabled: Boolean(params.handle),
+  });
+  const profile = data?.profile ?? null;
+  const jobs = data?.jobs ?? [];
 
   const isOwner =
     user?.profile?.handle === params.handle ||
     profile?.handle === params.handle;
-  const publicJobs = useMemo(() => jobs, [jobs]);
-
   async function handleStatusChange(id: string, status: JobStatus) {
-    setJobs((current) =>
-      current.map((job) => (job.id === id ? { ...job, status } : job)),
+    queryClient.setQueryData<{ profile: PublicProfile; jobs: Job[] }>(
+      ["public-profile", params.handle],
+      (current) =>
+        current
+          ? {
+              ...current,
+              jobs: current.jobs.map((job) =>
+                job.id === id ? { ...job, status } : job,
+              ),
+            }
+          : current,
     );
     try {
       await updateJobStatus(id, status);
@@ -64,8 +65,17 @@ export default function PublicProfilePage() {
   }
 
   function handleJobUpdated(updatedJob: Job) {
-    setJobs((current) =>
-      current.map((job) => (job.id === updatedJob.id ? updatedJob : job)),
+    queryClient.setQueryData<{ profile: PublicProfile; jobs: Job[] }>(
+      ["public-profile", params.handle],
+      (current) =>
+        current
+          ? {
+              ...current,
+              jobs: current.jobs.map((job) =>
+                job.id === updatedJob.id ? updatedJob : job,
+              ),
+            }
+          : current,
     );
   }
 
@@ -151,7 +161,7 @@ export default function PublicProfilePage() {
             Jobs worth sharing
           </h2>
           <JobList
-            jobs={publicJobs}
+            jobs={jobs}
             onStatusChange={handleStatusChange}
             onJobUpdated={handleJobUpdated}
             showFilters={false}

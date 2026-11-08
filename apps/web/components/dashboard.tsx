@@ -1,44 +1,36 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { AddJobDialog } from "./add-job-dialog";
 import { Icon } from "./icon";
 import { JobList } from "./job-list";
 import type { Job, JobDraft, JobStatus } from "./types";
-import { createJob, getJobs, updateJobStatus } from "../lib/jobs-api";
+import {
+  createJob,
+  getJobs,
+  type JobDetails,
+  updateJobStatus,
+} from "../lib/jobs-api";
 import { useAuth } from "./auth-provider";
 import { AppBar } from "./app-bar";
 
 export function Dashboard() {
-  const [jobs, setJobs] = useState<Job[]>([]);
   const { user, loading: authLoading } = useAuth();
-
-  const loadJobs = useCallback(async () => {
-    if (!user) return;
-    try {
-      const loadedJobs = await getJobs();
-      setJobs(loadedJobs);
-    } catch {
-      // Keep the last known job list without exposing backend failures in the UI.
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (authLoading || !user) return;
-    void loadJobs();
-    const refresh = () => void loadJobs();
-    window.addEventListener("focus", refresh);
-    document.addEventListener("visibilitychange", refresh);
-    return () => {
-      window.removeEventListener("focus", refresh);
-      document.removeEventListener("visibilitychange", refresh);
-    };
-  }, [authLoading, loadJobs, user]);
+  const queryClient = useQueryClient();
+  const { data: jobs = [] } = useQuery({
+    queryKey: ["jobs"],
+    queryFn: getJobs,
+    enabled: !authLoading && Boolean(user),
+  });
 
   async function handleAdd(draft: JobDraft) {
     try {
       const createdJob = await createJob(draft);
-      setJobs((current) => [createdJob, ...current]);
+      queryClient.setQueryData<Job[]>(["jobs"], (current = []) => [
+        createdJob,
+        ...current,
+      ]);
     } catch {
       const fallbackJob: Job = {
         id: `job-${Date.now()}`,
@@ -62,13 +54,19 @@ export function Dashboard() {
         recruiters: draft.recruiters,
         visibility: draft.visibility,
       };
-      setJobs((current) => [fallbackJob, ...current]);
+      queryClient.setQueryData<Job[]>(["jobs"], (current = []) => [
+        fallbackJob,
+        ...current,
+      ]);
     }
   }
 
   async function handleStatusChange(id: string, status: JobStatus) {
-    setJobs((current) =>
+    queryClient.setQueryData<Job[]>(["jobs"], (current = []) =>
       current.map((job) => (job.id === id ? { ...job, status } : job)),
+    );
+    queryClient.setQueryData<JobDetails>(["job", id], (current) =>
+      current ? { ...current, status } : current,
     );
     try {
       await updateJobStatus(id, status);
@@ -78,8 +76,11 @@ export function Dashboard() {
   }
 
   function handleJobUpdated(updatedJob: Job) {
-    setJobs((current) =>
+    queryClient.setQueryData<Job[]>(["jobs"], (current = []) =>
       current.map((job) => (job.id === updatedJob.id ? updatedJob : job)),
+    );
+    queryClient.setQueryData<JobDetails>(["job", updatedJob.id], (current) =>
+      current ? { ...current, ...updatedJob } : current,
     );
   }
   return (
