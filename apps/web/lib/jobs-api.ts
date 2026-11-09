@@ -111,7 +111,7 @@ export async function createJobShareLink(id: string): Promise<string> {
   return payload.data.url;
 }
 
-export async function updateJob(id: string, input: JobDraft): Promise<Job> {
+export async function updateJob(id: string, input: JobDraft): Promise<JobDetails> {
   const response = await fetch(`${apiUrl}/jobs/${encodeURIComponent(id)}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -120,7 +120,7 @@ export async function updateJob(id: string, input: JobDraft): Promise<Job> {
   });
   if (!response.ok) throw new Error("Unable to update job");
   const payload = (await response.json()) as { data: ApiJob };
-  return mapJob(payload.data);
+  return mapJobDetails(payload.data);
 }
 
 export async function createJob(input: JobDraft): Promise<Job> {
@@ -135,7 +135,7 @@ export async function createJob(input: JobDraft): Promise<Job> {
   return mapJob(payload.data);
 }
 
-export async function updateJobStatus(id: string, status: JobStatus): Promise<void> {
+export async function updateJobStatus(id: string, status: JobStatus): Promise<JobDetails> {
   const statusMap: Record<JobStatus, string> = { Saved: "SAVED", Review: "REVIEW", Applied: "APPLIED", Rejected: "REJECTED" };
   const response = await fetch(`${apiUrl}/jobs/${id}`, {
     method: "PATCH",
@@ -144,4 +144,6 @@ export async function updateJobStatus(id: string, status: JobStatus): Promise<vo
     body: JSON.stringify({ status: statusMap[status] }),
   });
   if (!response.ok) throw new Error("Unable to update job status");
+  const payload = (await response.json()) as { data: ApiJob };
+  return mapJobDetails(payload.data);
 }

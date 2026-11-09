@@ -1,6 +1,7 @@
 "use client";
 
 import { updateJob } from "../lib/jobs-api";
+import type { JobDetails } from "../lib/jobs-api";
 import type { Job } from "./types";
 import { AddJobDialog } from "./add-job-dialog";
 import { Icon } from "./icon";
@@ -10,7 +11,7 @@ export function EditJobDialog({
   onSaved,
 }: {
   job: Job;
-  onSaved: (job: Job) => void;
+  onSaved: (job: JobDetails) => void;
 }) {
   return (
     <AddJobDialog

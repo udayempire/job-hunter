@@ -112,6 +112,7 @@ export function AddJobDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
   const [recruiterCount, setRecruiterCount] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -135,25 +136,32 @@ export function AddJobDialog({
       (recruiter) => recruiter.role || recruiter.email || recruiter.link,
     );
 
-    await onAdd({
-      company,
-      title,
-      applyLink,
-      detailsUrl: value(form, "detailsUrl") || undefined,
-      description: value(form, "description") || undefined,
-      salary: value(form, "salary") || undefined,
-      location: value(form, "location") || undefined,
-      companyWebsite: value(form, "companyWebsite") || undefined,
-      companyLinkedin: value(form, "companyLinkedin") || undefined,
-      companyX: value(form, "companyX") || undefined,
-      personalNotes: value(form, "personalNotes") || undefined,
-      recruiters,
-      visibility: value(form, "visibility") as JobDraft["visibility"],
-    });
-    formRef.current?.reset();
-    setRecruiterCount(0);
-    setError("");
-    setOpen(false);
+    setSaving(true);
+    try {
+      await onAdd({
+        company,
+        title,
+        applyLink,
+        detailsUrl: value(form, "detailsUrl") || undefined,
+        description: value(form, "description") || undefined,
+        salary: value(form, "salary") || undefined,
+        location: value(form, "location") || undefined,
+        companyWebsite: value(form, "companyWebsite") || undefined,
+        companyLinkedin: value(form, "companyLinkedin") || undefined,
+        companyX: value(form, "companyX") || undefined,
+        personalNotes: value(form, "personalNotes") || undefined,
+        recruiters,
+        visibility: value(form, "visibility") as JobDraft["visibility"],
+      });
+      formRef.current?.reset();
+      setRecruiterCount(0);
+      setError("");
+      setOpen(false);
+    } catch {
+      setError("Unable to save this job. Try again.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -420,9 +428,10 @@ export function AddJobDialog({
                 </button>
                 <button
                   type="submit"
-                  className="rounded-full bg-[#292323] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#463d3b]"
+                  disabled={saving}
+                  className="rounded-full bg-[#1f4d3a] px-5 py-2.5 text-sm font-medium text-[#e9f5eb] transition hover:bg-[#173b2e] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Save job
+                  {saving ? "Saving…" : "Save job"}
                 </button>
               </div>
             </form>

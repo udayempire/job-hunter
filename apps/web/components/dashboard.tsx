@@ -69,7 +69,11 @@ export function Dashboard() {
       current ? { ...current, status } : current,
     );
     try {
-      await updateJobStatus(id, status);
+      const updatedJob = await updateJobStatus(id, status);
+      queryClient.setQueryData<Job[]>(["jobs"], (current = []) =>
+        current.map((job) => (job.id === id ? updatedJob : job)),
+      );
+      queryClient.setQueryData<JobDetails>(["job", id], updatedJob);
     } catch {
       /* Mock jobs remain usable while the API is offline. */
     }

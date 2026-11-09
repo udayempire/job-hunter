@@ -33,10 +33,14 @@ function CompanyLinkIcon({
       rel="noreferrer"
       aria-label={label}
       title={label}
-      className="inline-grid size-5 place-items-center text-[var(--gold-link)] transition hover:opacity-70"
+      className="inline-grid size-[29px] place-items-center text-[var(--gold-link)] transition hover:opacity-70"
     >
       {kind === "website" ? (
-        <Icon name="browser" size={18} />
+        <img
+          src="/social-icons/website.png"
+          alt=""
+          className="size-[26px] object-contain"
+        />
       ) : (
         <img
           src={
@@ -45,7 +49,7 @@ function CompanyLinkIcon({
               : "/social-icons/x.png"
           }
           alt=""
-          className="size-[18px] object-contain"
+          className="size-[26px] object-contain"
         />
       )}
     </a>

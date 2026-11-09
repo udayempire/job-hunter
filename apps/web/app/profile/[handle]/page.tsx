@@ -58,7 +58,19 @@ export default function PublicProfilePage() {
           : current,
     );
     try {
-      await updateJobStatus(id, status);
+      const updatedJob = await updateJobStatus(id, status);
+      queryClient.setQueryData<{ profile: PublicProfile; jobs: Job[] }>(
+        ["public-profile", params.handle],
+        (current) =>
+          current
+            ? {
+                ...current,
+                jobs: current.jobs.map((job) =>
+                  job.id === id ? updatedJob : job,
+                ),
+              }
+            : current,
+      );
     } catch {
       // Preserve the existing profile view if the API is unavailable.
     }

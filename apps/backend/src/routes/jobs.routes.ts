@@ -114,6 +114,7 @@ jobRouter.post("/", async (request: Request, response: Response) => {
         recruiters: { create: recruiterContacts(request.body.recruiters) },
         visibility: visibilityValue(request.body.visibility) ?? JobVisibility.PRIVATE,
       },
+      include: { recruiters: true },
     });
 
     response.status(201).json({ data: job });
@@ -221,7 +222,11 @@ jobRouter.patch("/:id", async (request: Request, response: Response) => {
       response.status(404).json({ error: "Job not found" });
       return;
     }
-    const job = await db.job.update({ where: { id }, data });
+    const job = await db.job.update({
+      where: { id },
+      data,
+      include: { applications: true, recruiters: true },
+    });
     response.json({ data: job });
   } catch (error) {
     if (isRecordNotFoundError(error)) {

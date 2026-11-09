@@ -78,9 +78,7 @@ export default function JobDetailsPage() {
         <EditJobDialog
           job={job}
           onSaved={(updatedJob) => {
-            queryClient.setQueryData<JobDetails>(["job", job.id], (current) =>
-              current ? { ...current, ...updatedJob } : current,
-            );
+            queryClient.setQueryData<JobDetails>(["job", job.id], updatedJob);
             queryClient.setQueryData<Job[]>(["jobs"], (current = []) =>
               current.map((listedJob) =>
                 listedJob.id === updatedJob.id ? updatedJob : listedJob,
@@ -90,12 +88,11 @@ export default function JobDetailsPage() {
         />
       }
       onStatusChange={async (status: JobStatus) => {
-        await updateJobStatus(job.id, status);
-        const updatedJob = { ...job, status };
+        const updatedJob = await updateJobStatus(job.id, status);
         queryClient.setQueryData(["job", job.id], updatedJob);
         queryClient.setQueryData<Job[]>(["jobs"], (current = []) =>
           current.map((listedJob) =>
-            listedJob.id === job.id ? { ...listedJob, status } : listedJob,
+            listedJob.id === job.id ? updatedJob : listedJob,
           ),
         );
       }}

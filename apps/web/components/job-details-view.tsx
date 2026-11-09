@@ -43,7 +43,7 @@ function LinkMark({ icon }: { icon: LinkIcon }) {
       <img
         src="/social-icons/LI-In-Bug2.png"
         alt=""
-        className="size-[18px] object-contain"
+        className="size-[26px] object-contain"
       />
     );
   }
@@ -52,7 +52,16 @@ function LinkMark({ icon }: { icon: LinkIcon }) {
       <img
         src="/social-icons/x.png"
         alt=""
-        className="size-[18px] object-contain"
+        className="size-[26px] object-contain"
+      />
+    );
+  }
+  if (icon === "browser") {
+    return (
+      <img
+        src="/social-icons/website.png"
+        alt=""
+        className="size-[26px] object-contain"
       />
     );
   }
@@ -80,7 +89,7 @@ function ExternalLink({
       title={label}
       className={
         iconOnly
-          ? "inline-grid size-5 shrink-0 place-items-center text-[var(--gold-link)] transition hover:opacity-70"
+          ? "inline-grid size-[29px] shrink-0 place-items-center text-[var(--gold-link)] transition hover:opacity-70"
           : "inline-flex items-center gap-1.5 border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-2 text-sm font-medium text-[var(--gold-link)] transition hover:bg-[#483d1d]"
       }
     >
