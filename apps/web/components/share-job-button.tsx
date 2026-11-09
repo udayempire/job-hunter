@@ -3,13 +3,20 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { createJobShareLink } from "../lib/jobs-api";
+import {
+  buildJobShareText,
+  getJobShareDestinations,
+  type JobShareDetails,
+} from "../lib/job-share";
 import { Icon } from "./icon";
 
 export function ShareJobButton({
   jobId,
+  job,
   variant = "default",
 }: {
   jobId: string;
+  job?: JobShareDetails;
   variant?: "default" | "light" | "icon";
 }) {
   const [open, setOpen] = useState(false);
@@ -43,26 +50,41 @@ export function ShareJobButton({
     setCopied(true);
   }
 
+  async function shareWithDevice() {
+    if (!url || !job || !navigator.share) return;
+    try {
+      await navigator.share({
+        title: `${job.title} at ${job.company}`,
+        text: buildJobShareText(job),
+        url,
+      });
+    } catch {
+      // Closing the system share sheet is an expected user action.
+    }
+  }
+
+  const destinations = url && job ? getJobShareDestinations(job, url) : null;
+
   const buttonClass =
     variant === "light"
-      ? "bg-white text-[#6d4d3a] hover:bg-[#f4ece5]"
-      : "bg-[#faf6f1] text-[#6d4d3a] hover:bg-[#f1e5db]";
+      ? "bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--control)]"
+      : "bg-[var(--control)] text-[var(--ink)] hover:bg-zinc-800";
   const dialog = open && (
     <div
-      className="fixed inset-0 z-[100] grid place-items-center bg-[#211b1b]/30 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="share-job-title"
     >
-      <div className="w-full max-w-md rounded-3xl border border-black/10 bg-[#fffdf9] p-6 shadow-2xl">
+      <div className="w-full max-w-md border border-[var(--border)] bg-[var(--paper)] p-6 shadow-2xl">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9b6b4b]">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
               Share opportunity
             </p>
             <h2
               id="share-job-title"
-              className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[#292323]"
+              className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--ink)]"
             >
               Send this job to someone
             </h2>
@@ -70,42 +92,80 @@ export function ShareJobButton({
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="rounded-full px-2 py-1 text-xl text-[#827873] hover:bg-black/5"
+            className="px-2 py-1 text-xl text-[var(--muted)] hover:bg-[var(--control)] hover:text-[var(--ink)]"
             aria-label="Close"
           >
             ×
           </button>
         </div>
-        <p className="mt-3 text-sm leading-6 text-[#847a74]">
+        <p className="mt-3 text-sm leading-6 text-[var(--copy)]">
           Anyone with this link can view the job. Your personal notes are never
           included.
         </p>
         {loading ? (
-          <div className="mt-6 h-12 animate-pulse rounded-xl bg-[#eee6df]" />
+          <div className="mt-6 h-12 animate-pulse bg-[var(--control)]" />
         ) : error ? (
           <p className="mt-6 text-sm text-red-700">{error}</p>
         ) : (
-          <div className="mt-6 flex gap-2">
-            <input
-              readOnly
-              value={url}
-              className="min-w-0 flex-1 rounded-xl border border-black/10 bg-white px-3 py-3 text-xs text-[#625954] outline-none"
-              aria-label="Share link"
-            />
-            <button
-              type="button"
-              onClick={copyLink}
-              className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#292323] px-3 py-3 text-sm font-semibold text-white transition hover:bg-[#3b3330]"
-            >
-              <Icon name="copy" size={16} />
-              {copied ? "Copied" : "Copy"}
-            </button>
-          </div>
+          <>
+            <div className="mt-6 flex gap-2">
+              <input
+                readOnly
+                value={url}
+                className="min-w-0 flex-1 border border-[var(--border)] bg-[var(--canvas)] px-3 py-3 text-xs text-[var(--copy)] outline-none"
+                aria-label="Share link"
+              />
+              <button
+                type="button"
+                onClick={copyLink}
+                className="inline-flex shrink-0 items-center gap-2 border border-[#32634b] bg-[#1f4d3a] px-3 py-3 text-sm font-semibold text-[#e9f5eb] transition hover:bg-[#173b2e]"
+              >
+                <Icon name="copy" size={16} />
+                {copied ? "Copied" : "Copy"}
+              </button>
+            </div>
+            {destinations && (
+              <div className="mt-4">
+                <p className="text-xs text-[var(--muted)]">Share on these platforms</p>
+                <div className="mt-2 flex items-center gap-3">
+                  <a
+                    href={destinations.x}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Share on X"
+                    title="Share on X"
+                    className="inline-grid size-[34px] place-items-center transition hover:opacity-70"
+                  >
+                    <img src="/social-icons/x.png" alt="" className="size-[34px] object-contain" />
+                  </a>
+                  <a
+                    href={destinations.whatsapp}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Share on WhatsApp"
+                    title="Share on WhatsApp"
+                    className="inline-grid size-[34px] place-items-center transition hover:opacity-70"
+                  >
+                    <img src="/social-icons/whatsapp.png" alt="" className="size-[34px] object-contain" />
+                  </a>
+                  {typeof navigator !== "undefined" && "share" in navigator && (
+                    <button
+                      type="button"
+                      onClick={() => void shareWithDevice()}
+                      className="border border-[var(--border)] bg-[var(--control)] px-3 py-2.5 text-sm font-semibold text-[var(--ink)] transition hover:bg-zinc-800"
+                    >
+                      More
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </>
         )}
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="mt-5 w-full rounded-full px-4 py-2.5 text-sm font-medium text-[#6e6561] hover:bg-black/5"
+          className="mt-5 w-full px-4 py-2.5 text-sm font-medium text-[var(--muted)] hover:bg-[var(--control)] hover:text-[var(--ink)]"
         >
           Done
         </button>

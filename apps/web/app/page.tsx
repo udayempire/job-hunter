@@ -90,7 +90,7 @@ function WorkspacePreview() {
 
 function Landing() {
   return (
-    <main className="min-h-screen bg-[#171715] text-[#f4f1e8]">
+    <main className="landing-page min-h-screen bg-[#171715] text-[#f4f1e8]">
       <header className="mx-auto flex max-w-7xl items-center justify-between border-b border-[#3a3934] px-5 py-6 sm:px-8">
         <Link href="/" className="text-xl font-semibold tracking-tight">
           Job <span className="text-[#e0b63d]">Hunti</span>

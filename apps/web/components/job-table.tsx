@@ -129,7 +129,7 @@ export function JobTable({
               <TableCell className="py-4 pr-5">
                 <div className="flex items-center justify-end gap-1.5">
                   {!profileMode && <EditJobDialog job={job} onSaved={onJobUpdated} />}
-                  {showShare && <ShareJobButton jobId={job.id} variant="icon" />}
+                  {showShare && <ShareJobButton jobId={job.id} job={job} variant="icon" />}
                   {job.applyLink && (
                     <a
                       href={job.applyLink}

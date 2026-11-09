@@ -198,7 +198,7 @@ export function JobCard({
           <Icon name="calendar" size={14} /> Added {job.age || "recently"}
         </span>
         <div className="flex items-center gap-2">
-          {showShare && <ShareJobButton jobId={job.id} variant="icon" />}
+          {showShare && <ShareJobButton jobId={job.id} job={job} variant="icon" />}
           {job.applyLink && (
             <a
               href={job.applyLink}

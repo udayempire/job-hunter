@@ -7,6 +7,9 @@
     "dev": "bun --env-file=.env --watch src/index.ts",
     "build": "tsc --outDir dist",
     "start": "bun --env-file=.env dist/index.js",
+    "deploy": "wrangler deploy",
+    "dev:worker": "wrangler dev",
+    "cf-typegen": "wrangler types",
     "lint": "eslint src --max-warnings 0",
     "check-types": "tsc --noEmit"
   },
@@ -20,6 +23,7 @@
     "@types/express": "^5.0.3",
     "@types/node": "26.6.6",
     "@repo/typescript-config": "*",
+    "wrangler": "^4.44.0",
     "typescript": "7.0.2"
   }
 }

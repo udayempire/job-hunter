@@ -184,7 +184,7 @@ export function JobDetailsView({
           <div className="mt-8 flex flex-wrap gap-3">
             <ExternalLink href={job.applyLink} label="Apply now" />
             <ExternalLink href={job.detailsUrl} label="Job details" />
-            {!shared && <ShareJobButton jobId={job.id} variant="icon" />}
+            {!shared && <ShareJobButton jobId={job.id} job={job} variant="icon" />}
             {editAction}
           </div>
         </section>
