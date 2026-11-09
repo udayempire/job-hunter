@@ -37,14 +37,38 @@ function DetailBlock({
 
 type LinkIcon = "browser" | "external" | "linkedin" | "x";
 
+function LinkMark({ icon }: { icon: LinkIcon }) {
+  if (icon === "linkedin") {
+    return (
+      <img
+        src="/social-icons/LI-In-Bug2.png"
+        alt=""
+        className="size-[18px] object-contain"
+      />
+    );
+  }
+  if (icon === "x") {
+    return (
+      <img
+        src="/social-icons/x.png"
+        alt=""
+        className="size-[18px] object-contain"
+      />
+    );
+  }
+  return <Icon name={icon} size={18} />;
+}
+
 function ExternalLink({
   href,
   label,
   icon = "external",
+  iconOnly = false,
 }: {
   href?: string;
   label: string;
   icon?: LinkIcon;
+  iconOnly?: boolean;
 }) {
   if (!href) return null;
   return (
@@ -52,10 +76,16 @@ function ExternalLink({
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="inline-flex items-center gap-1.5 border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-2 text-sm font-medium text-[var(--gold-link)] transition hover:bg-[#483d1d]"
+      aria-label={label}
+      title={label}
+      className={
+        iconOnly
+          ? "inline-grid size-5 shrink-0 place-items-center text-[var(--gold-link)] transition hover:opacity-70"
+          : "inline-flex items-center gap-1.5 border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-2 text-sm font-medium text-[var(--gold-link)] transition hover:bg-[#483d1d]"
+      }
     >
-      <Icon name={icon} size={15} />
-      {label}
+      <LinkMark icon={icon} />
+      {!iconOnly && label}
     </a>
   );
 }
@@ -157,18 +187,20 @@ export function JobDetailsView({
               </p>
             </DetailBlock>
             <DetailBlock label="Company links">
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-3">
                 <ExternalLink
                   href={job.companyWebsite}
                   label="Website"
                   icon="browser"
+                  iconOnly
                 />
                 <ExternalLink
                   href={job.companyLinkedin}
                   label="LinkedIn"
                   icon="linkedin"
+                  iconOnly
                 />
-                <ExternalLink href={job.companyX} label="X" icon="x" />
+                <ExternalLink href={job.companyX} label="X" icon="x" iconOnly />
                 {!job.companyWebsite &&
                   !job.companyLinkedin &&
                   !job.companyX && (
@@ -189,7 +221,7 @@ export function JobDetailsView({
                       <p className="text-sm font-medium text-[var(--ink)]">
                         {recruiter.role || "Recruiter contact"}
                       </p>
-                      <div className="mt-2 flex flex-wrap gap-3 text-sm text-[var(--gold-link)]">
+                      <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-[var(--gold-link)]">
                         {recruiter.email && (
                           <a
                             href={`mailto:${recruiter.email}`}
@@ -203,6 +235,7 @@ export function JobDetailsView({
                             href={recruiter.link}
                             label={recruiterLinkLabel(recruiter.link)}
                             icon={recruiterLinkIcon(recruiter.link)}
+                            iconOnly
                           />
                         )}
                       </div>

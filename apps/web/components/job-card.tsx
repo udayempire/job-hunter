@@ -34,11 +34,15 @@ export function JobCard({
 }) {
   const router = useRouter();
 
-  async function openDetails(event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>) {
+  async function openDetails(
+    event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>,
+  ) {
     const target = event.target as HTMLElement;
     if (target.closest("a, button, select, input, textarea, label")) return;
     if (useSharedDetails && profileHandle) {
-      window.location.assign(await createPublicJobShareLink(profileHandle, job.id));
+      window.location.assign(
+        await createPublicJobShareLink(profileHandle, job.id),
+      );
       return;
     }
     router.push(`/jobs/${job.id}`);
@@ -87,7 +91,9 @@ export function JobCard({
               <select
                 id={`status-${job.id}`}
                 value={job.status}
-                onChange={(event) => onStatusChange(job.id, event.target.value as JobStatus)}
+                onChange={(event) =>
+                  onStatusChange(job.id, event.target.value as JobStatus)
+                }
                 className={`shrink-0 rounded-full border-0 px-2.5 py-1 text-xs font-medium outline-none ${statusStyles[job.status]}`}
               >
                 <option>Saved</option>
@@ -110,7 +116,7 @@ export function JobCard({
           </span>
         ))}
       </div>
-      <div className="mt-5 flex items-center justify-between border-t border-[var(--divider)] pt-4">
+      {/* <div className="mt-5 flex items-center justify-between border-t border-[var(--divider)] pt-4">
         <div className="text-xs text-[var(--muted)]">{job.age}</div>
         {job.score > 0 ? (
           <div className="flex items-center gap-2">
@@ -127,7 +133,7 @@ export function JobCard({
         ) : (
           <span className="text-xs text-[var(--muted)]">Not scored yet</span>
         )}
-      </div>
+      </div> */}
       <div className="mt-4 flex flex-wrap items-center gap-4">
         {showShare && <ShareJobButton jobId={job.id} variant="icon" />}
         {job.applyLink && (
@@ -135,9 +141,11 @@ export function JobCard({
             href={job.applyLink}
             target="_blank"
             rel="noreferrer"
-            className={profileMode
-              ? "inline-flex items-center bg-[#1f4d3a] px-3 py-1.5 text-xs font-semibold text-[#e9f5eb] transition hover:bg-[#173b2e]"
-              : "text-sm font-medium text-[var(--muted)] transition hover:text-[var(--gold-ink)]"}
+            className={
+              profileMode
+                ? "inline-flex items-center bg-[#1f4d3a] px-3 py-1.5 text-xs font-semibold text-[#e9f5eb] transition hover:bg-[#173b2e]"
+                : "text-sm font-medium text-[var(--muted)] transition hover:text-[var(--gold-ink)]"
+            }
           >
             Apply ↗
           </a>
