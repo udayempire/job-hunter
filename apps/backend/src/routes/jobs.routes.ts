@@ -123,6 +123,7 @@ jobRouter.post("/", async (request: Request, response: Response) => {
       return;
     }
 
+    console.error("Failed to create job", error);
     response.status(500).json({ error: "Failed to create job" });
   }
 });

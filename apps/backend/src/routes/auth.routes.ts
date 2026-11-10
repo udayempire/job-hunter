@@ -7,8 +7,9 @@ const authRouter: Router = express.Router();
 const frontendUrl = () => process.env.FRONTEND_URL ?? "http://localhost:3001";
 const persistentCookieLifetimeSeconds = 10 * 365 * 24 * 60 * 60;
 
-authRouter.get("/google", (_request, response) => {
-  response.redirect(googleAuthorizationUrl());
+authRouter.get("/google", (request, response) => {
+  const returnTo = sharedJobReturnPath(request.query.returnTo);
+  response.redirect(googleAuthorizationUrl(returnTo ?? undefined));
 });
 
 authRouter.get("/google/callback", async (request, response) => {
@@ -44,7 +45,8 @@ authRouter.get("/google/callback", async (request, response) => {
     await db.authSession.create({ data: { userId: user.id, refreshTokenHash: hashRefreshToken(refreshToken), expiresAt: refreshTokenExpiry() } });
     setCookie(response, "access_token", accessToken, persistentCookieLifetimeSeconds);
     setCookie(response, "refresh_token", refreshToken, 30 * 24 * 60 * 60);
-    return response.redirect(frontendUrl());
+    const returnTo = sharedJobReturnPath(request.query.state);
+    return response.redirect(`${frontendUrl()}${returnTo ?? "/"}`);
   } catch (error) {
     console.error("Google sign-in failed", error);
     return response.redirect(`${frontendUrl()}/login?error=google_signin_failed`);
@@ -109,6 +111,17 @@ async function userIdFromRequest(request: Request) {
   const token = readCookie(request, "access_token");
   if (!token) return null;
   try { return await readAccessToken(token); } catch { return null; }
+}
+
+function sharedJobReturnPath(value: unknown) {
+  if (typeof value !== "string" || !value.startsWith("/share/jobs/") || value.startsWith("//")) return null;
+  try {
+    const parsed = new URL(value, frontendUrl());
+    if (parsed.pathname.split("/").length < 4) return null;
+    return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch {
+    return null;
+  }
 }
 
 async function uniqueHandle(seed: string) {

@@ -25,40 +25,11 @@ export function Dashboard() {
   });
 
   async function handleAdd(draft: JobDraft) {
-    try {
-      const createdJob = await createJob(draft);
-      queryClient.setQueryData<Job[]>(["jobs"], (current = []) => [
-        createdJob,
-        ...current,
-      ]);
-    } catch {
-      const fallbackJob: Job = {
-        id: `job-${Date.now()}`,
-        url: draft.applyLink,
-        applyLink: draft.applyLink,
-        company: draft.company,
-        title: draft.title,
-        location: draft.location ?? "Location not specified",
-        source: "Manual entry",
-        score: 0,
-        status: "Saved",
-        age: "Added just now",
-        tags: [],
-        summary: draft.description ?? "No description added.",
-        detailsUrl: draft.detailsUrl,
-        salary: draft.salary,
-        companyWebsite: draft.companyWebsite,
-        companyLinkedin: draft.companyLinkedin,
-        companyX: draft.companyX,
-        personalNotes: draft.personalNotes,
-        recruiters: draft.recruiters,
-        visibility: draft.visibility,
-      };
-      queryClient.setQueryData<Job[]>(["jobs"], (current = []) => [
-        fallbackJob,
-        ...current,
-      ]);
-    }
+    const createdJob = await createJob(draft);
+    queryClient.setQueryData<Job[]>(["jobs"], (current = []) => [
+      createdJob,
+      ...current,
+    ]);
   }
 
   async function handleStatusChange(id: string, status: JobStatus) {

@@ -4,7 +4,16 @@ const backendUrl =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/?$/, "") ??
   "http://localhost:4000";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ returnTo?: string }>;
+}) {
+  const { returnTo } = await searchParams;
+  const safeReturnTo = returnTo?.startsWith("/share/jobs/") ? returnTo : undefined;
+  const googleSignInUrl = new URL(`${backendUrl}/api/auth/google`);
+  if (safeReturnTo) googleSignInUrl.searchParams.set("returnTo", safeReturnTo);
+
   return (
     <main className="grid min-h-screen place-items-center bg-[var(--canvas)] px-5 text-[var(--ink)]">
       <section className="w-full max-w-md border border-[var(--border)] bg-[var(--paper)] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.2)] sm:p-10">
@@ -22,7 +31,7 @@ export default function LoginPage() {
           private job board.
         </p>
         <a
-          href={`${backendUrl}/api/auth/google`}
+          href={googleSignInUrl.toString()}
           className="mt-8 flex h-12 items-center justify-center bg-[var(--gold)] text-sm font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]"
         >
           Continue with Google

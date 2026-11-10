@@ -11,7 +11,7 @@ function client() {
   return { clientId, clientSecret, redirectUri };
 }
 
-export function googleAuthorizationUrl() {
+export function googleAuthorizationUrl(state?: string) {
   const config = client();
   const params = new URLSearchParams({
     client_id: config.clientId,
@@ -21,6 +21,7 @@ export function googleAuthorizationUrl() {
     access_type: "offline",
     prompt: "select_account",
   });
+  if (state) params.set("state", state);
   return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 }
 

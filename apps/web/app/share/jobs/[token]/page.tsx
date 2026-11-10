@@ -28,7 +28,7 @@ export default function SharedJobPage() {
 
   async function saveToBoard() {
     if (!user) {
-      router.push("/login");
+      router.push(`/login?returnTo=${encodeURIComponent(`/share/jobs/${params.token}`)}`);
       return;
     }
     setSaving(true);
