@@ -119,7 +119,13 @@ jobRouter.post("/", async (request: Request, response: Response) => {
     response.status(201).json({ data: job });
   } catch (error) {
     if (isUniqueConstraintError(error)) {
-      response.status(409).json({ error: "A job with this URL already exists" });
+      const existingJob = detailsUrl
+        ? await db.job.findFirst({ where: { ownerId: userId, url: detailsUrl }, select: { id: true } })
+        : null;
+      response.status(409).json({
+        error: "A job with this URL already exists",
+        ...(existingJob ? { data: existingJob } : {}),
+      });
       return;
     }
 

@@ -22,6 +22,8 @@ button { margin-top: 4px; border: 0; border-radius: 4px; background: #8dbf9b; co
 button:disabled { cursor: wait; opacity: .65; }
 .sign-in { color: #b9d7c0; font-size: 12px; text-align: center; text-decoration: none; }
 .sign-in:hover { text-decoration: underline; }
+.open-job { color: #b9d7c0; font-size: 12px; text-align: center; text-decoration: none; }
+.open-job:hover { text-decoration: underline; }
 .message { min-height: 17px; margin: 0; color: #a8a8a8; font-size: 12px; }
 .message.error { color: #e99a9a; }
 .message.success { color: #9ed3aa; }

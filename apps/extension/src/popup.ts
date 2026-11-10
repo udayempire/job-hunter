@@ -6,6 +6,7 @@ const applyLinkInput = document.querySelector<HTMLInputElement>("#applyLink");
 const form = document.querySelector<HTMLFormElement>("#job-form");
 const saveButton = document.querySelector<HTMLButtonElement>("#save");
 const signInLink = document.querySelector<HTMLAnchorElement>("#sign-in");
+const openJobLink = document.querySelector<HTMLAnchorElement>("#open-job");
 const message = document.querySelector<HTMLParagraphElement>("#message");
 const accountLabel = document.querySelector<HTMLParagraphElement>("#account");
 const accountLink = document.querySelector<HTMLAnchorElement>("#account-link");
@@ -30,6 +31,12 @@ function showSignInLink(frontendUrl: string): void {
   if (!signInLink) return;
   signInLink.href = `${frontendUrl}/login?returnTo=%2Fhome`;
   signInLink.hidden = false;
+}
+
+function showJobLink(frontendUrl: string, jobId: string): void {
+  if (!openJobLink) return;
+  openJobLink.href = `${frontendUrl}/jobs/${encodeURIComponent(jobId)}`;
+  openJobLink.hidden = false;
 }
 
 async function loadAccount(): Promise<void> {
@@ -88,6 +95,7 @@ async function saveJob(event: SubmitEvent): Promise<void> {
   };
 
   saveButton.disabled = true;
+  if (openJobLink) openJobLink.hidden = true;
   setMessage("Saving…");
   try {
     const stored = await chrome.storage.local.get("apiUrl");
@@ -108,8 +116,16 @@ async function saveJob(event: SubmitEvent): Promise<void> {
       showSignInLink(frontendUrl);
       throw new Error("Sign in to Job Hunti, then reopen the extension.");
     }
-    if (response.status === 409) throw new Error("This job is already in your tracker.");
+    const storedFrontendUrl = stored.frontendUrl ?? "http://localhost:3001";
+    if (response.status === 409) {
+      const duplicate = await response.json() as { data?: { id?: string } };
+      if (duplicate.data?.id) showJobLink(storedFrontendUrl, duplicate.data.id);
+      setMessage("Job already saved.");
+      return;
+    }
     if (!response.ok) throw new Error("Unable to save this job right now.");
+    const payload = await response.json() as { data?: { id?: string } };
+    if (payload.data?.id) showJobLink(storedFrontendUrl, payload.data.id);
     setMessage("Job saved to Job Hunti.", "success");
   } catch (error) {
     setMessage(error instanceof Error ? error.message : "Unable to save this job right now.", "error");
