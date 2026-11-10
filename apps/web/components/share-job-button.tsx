@@ -17,7 +17,7 @@ export function ShareJobButton({
 }: {
   jobId: string;
   job?: JobShareDetails;
-  variant?: "default" | "light" | "icon";
+  variant?: "default" | "light" | "icon" | "action";
 }) {
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
@@ -66,7 +66,9 @@ export function ShareJobButton({
   const destinations = url && job ? getJobShareDestinations(job, url) : null;
 
   const buttonClass =
-    variant === "light"
+    variant === "action"
+      ? "border border-[#477fb5] bg-[var(--control)] text-[#9dccf5] hover:bg-[#263f5d]"
+      : variant === "light"
       ? "bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--control)]"
       : "bg-[var(--control)] text-[var(--ink)] hover:bg-zinc-800";
   const dialog = open && (
@@ -182,11 +184,13 @@ export function ShareJobButton({
         className={
           variant === "icon"
             ? "inline-grid size-8 place-items-center rounded-lg border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:bg-zinc-800"
-            : `inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition ${buttonClass}`
+            : variant === "action"
+              ? `inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition ${buttonClass}`
+              : `inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition ${buttonClass}`
         }
       >
         <Icon name="share" size={16} />
-        {variant !== "icon" && "Share job"}
+        {variant !== "icon" && (variant === "action" ? "Share" : "Share job")}
       </button>
       {mounted && open && createPortal(dialog, document.body)}
     </>

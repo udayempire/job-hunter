@@ -80,6 +80,7 @@ export default function JobDetailsPage() {
       editAction={
         <EditJobDialog
           job={job}
+          variant="action"
           onSaved={(updatedJob) => {
             queryClient.setQueryData<JobDetails>(["job", job.id], updatedJob);
             queryClient.setQueryData<Job[]>(["jobs"], (current = []) =>

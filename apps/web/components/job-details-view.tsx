@@ -183,12 +183,18 @@ export function JobDetailsView({
               </select>
             )}
           </div>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <ExternalLink href={job.applyLink} label="Apply now" />
-            <ExternalLink href={job.detailsUrl} label="Job details" />
-            {!shared && <ShareJobButton jobId={job.id} job={job} variant="icon" />}
-            {editAction}
-            {deleteAction}
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <ExternalLink href={job.applyLink} label="Apply now" />
+              <ExternalLink href={job.detailsUrl} label="Job details" />
+            </div>
+            {!shared && (
+              <div className="flex flex-wrap items-center gap-3">
+                <ShareJobButton jobId={job.id} job={job} variant="action" />
+                {editAction}
+                {deleteAction}
+              </div>
+            )}
           </div>
         </section>
         <div className="mt-6 grid gap-5 lg:grid-cols-[1.4fr_0.8fr]">

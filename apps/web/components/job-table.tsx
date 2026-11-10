@@ -113,22 +113,19 @@ export function JobTable({
           {jobs.map((job) => (
             <TableRow
               key={job.id}
-              className={profileMode ? "cursor-pointer" : ""}
-              {...(profileMode
-                ? {
-                    role: "link",
-                    tabIndex: 0,
-                    "aria-label": `View details for ${job.title} at ${job.company}`,
-                    onClick: (event: MouseEvent<HTMLTableRowElement>) =>
-                      void openDetails(event, job),
-                    onKeyDown: (event: KeyboardEvent<HTMLTableRowElement>) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        void openDetails(event, job);
-                      }
-                    },
-                  }
-                : {})}
+              className="cursor-pointer"
+              role="link"
+              tabIndex={0}
+              aria-label={`View details for ${job.title} at ${job.company}`}
+              onClick={(event: MouseEvent<HTMLTableRowElement>) =>
+                void openDetails(event, job)
+              }
+              onKeyDown={(event: KeyboardEvent<HTMLTableRowElement>) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  void openDetails(event, job);
+                }
+              }}
             >
               <TableCell className="px-6 py-4">
                 <p
