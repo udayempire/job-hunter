@@ -41,9 +41,7 @@ export default function PublicProfilePage() {
   const profile = data?.profile ?? null;
   const jobs = data?.jobs ?? [];
 
-  const isOwner =
-    user?.profile?.handle === params.handle ||
-    profile?.handle === params.handle;
+  const isOwner = user?.profile?.handle?.toLowerCase() === params.handle.toLowerCase();
   async function handleStatusChange(id: string, status: JobStatus) {
     queryClient.setQueryData<{ profile: PublicProfile; jobs: Job[] }>(
       ["public-profile", params.handle],

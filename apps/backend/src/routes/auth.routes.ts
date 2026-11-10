@@ -30,14 +30,14 @@ authRouter.get("/google/callback", async (request, response) => {
         data: {
           ...googleUser,
           emailVerified: true,
-          profile: { create: { handle: await uniqueHandle(googleUser.name ?? googleUser.email.split("@")[0] ?? "user") } },
+          profile: { create: { handle: await uniqueHandle(googleUser.name ?? googleUser.email.split("@")[0] ?? "user"), isPublic: true } },
         },
       });
 
     if (!existing) {
       // The profile is created with the first account insert above.
     } else if (!(await db.profile.findUnique({ where: { userId: user.id }, select: { id: true } }))) {
-      await db.profile.create({ data: { userId: user.id, handle: await uniqueHandle(googleUser.name ?? googleUser.email.split("@")[0] ?? "user") } });
+      await db.profile.create({ data: { userId: user.id, handle: await uniqueHandle(googleUser.name ?? googleUser.email.split("@")[0] ?? "user"), isPublic: true } });
     }
     await claimLegacyJobs(user.id);
     const accessToken = await createAccessToken(user.id);

@@ -1,6 +1,6 @@
 import express, { type Request, type Response, type Router } from "express";
 import { db, JobVisibility, Prisma } from "@repo/db";
-import { requireAuth, type AuthenticatedRequest } from "../auth/require-auth.js";
+import { optionalAuth, requireAuth, type AuthenticatedRequest } from "../auth/require-auth.js";
 
 const profileRouter: Router = express.Router();
 
@@ -108,7 +108,7 @@ profileRouter.post("/:handle/jobs/:jobId/share", async (request: Request, respon
   response.json({ data: { url: `${frontendUrl}/share/jobs/${shareLink.token}` } });
 });
 
-profileRouter.get("/:handle", async (request: Request, response: Response) => {
+profileRouter.get("/:handle", optionalAuth, async (request: Request, response: Response) => {
   const handle = stringValue(request.params.handle)?.toLowerCase();
   if (!handle) {
     response.status(404).json({ error: "Profile not found" });
@@ -133,7 +133,8 @@ profileRouter.get("/:handle", async (request: Request, response: Response) => {
     },
   });
 
-  if (!profile?.isPublic) {
+  const viewerId = (request as Partial<AuthenticatedRequest>).userId;
+  if (!profile || (!profile.isPublic && profile.userId !== viewerId)) {
     response.status(404).json({ error: "Profile not found" });
     return;
   }

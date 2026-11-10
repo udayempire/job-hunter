@@ -70,7 +70,7 @@ export default function ProfilePage() {
     bio: "",
     location: "",
     website: "",
-    isPublic: false,
+    isPublic: true,
   });
 
   useEffect(() => {
@@ -95,7 +95,7 @@ export default function ProfilePage() {
         bio: "",
         location: "",
         website: "",
-        isPublic: user.profile?.isPublic ?? false,
+        isPublic: user.profile?.isPublic ?? true,
       });
     }
   }, [profile, profileError, user]);

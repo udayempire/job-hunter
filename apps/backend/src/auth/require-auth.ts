@@ -23,6 +23,19 @@ export async function requireAuth(request: Request, response: Response, next: Ne
   }
 }
 
+export async function optionalAuth(request: Request, _response: Response, next: NextFunction) {
+  const token = readCookie(request, "access_token");
+  if (token) {
+    try {
+      const userId = await readAccessToken(token);
+      if (userId) (request as AuthenticatedRequest).userId = userId;
+    } catch {
+      // Treat an invalid optional session as anonymous.
+    }
+  }
+  next();
+}
+
 function readCookie(request: Request, name: string) {
   const header = request.headers.cookie ?? "";
   return header.split(";").map((part) => part.trim()).find((part) => part.startsWith(`${name}=`))?.slice(name.length + 1);

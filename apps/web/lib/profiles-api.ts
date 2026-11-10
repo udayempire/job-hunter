@@ -54,7 +54,7 @@ export async function updateProfile(input: ProfileDraftInput): Promise<StoredPro
 }
 
 export async function getPublicProfile(handle: string): Promise<{ profile: PublicProfile; jobs: Job[] }> {
-  const response = await fetch(`${apiUrl}/profiles/${encodeURIComponent(handle)}`, { cache: "no-store" });
+  const response = await fetch(`${apiUrl}/profiles/${encodeURIComponent(handle)}`, { cache: "no-store", credentials: "include" });
   if (!response.ok) throw new Error(response.status === 404 ? "Profile not found" : "Unable to load profile");
   const payload = (await response.json()) as { data: { profile: PublicProfile; jobs: ApiJob[] } };
   return { profile: payload.data.profile, jobs: payload.data.jobs.map(mapJob) };

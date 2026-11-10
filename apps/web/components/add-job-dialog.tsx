@@ -248,6 +248,25 @@ export function AddJobDialog({
                 />
               </div>
               <div className="my-6 border-t border-black/8" />
+              <div className="mb-6">
+                <FieldLabel htmlFor="job-visibility">
+                  Profile visibility
+                </FieldLabel>
+                <select
+                  id="job-visibility"
+                  name="visibility"
+                  defaultValue={initialJob?.visibility ?? "PRIVATE"}
+                  className={inputClass}
+                >
+                  <option value="PRIVATE">
+                    Private · not shown on my profile
+                  </option>
+                  <option value="PROFILE">Public · shown on my profile</option>
+                </select>
+                <p className="mt-2 text-xs text-[#8b817b]">
+                  You can share this job separately with the share button.
+                </p>
+              </div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
                 Helpful context <span className="font-normal normal-case tracking-normal text-[var(--muted)]">(Below details are optional to fill)</span>
               </p>
@@ -393,25 +412,6 @@ export function AddJobDialog({
                 )}
               </div>
 
-              <div className="mt-5">
-                <FieldLabel htmlFor="job-visibility">
-                  Profile visibility
-                </FieldLabel>
-                <select
-                  id="job-visibility"
-                  name="visibility"
-                  defaultValue={initialJob?.visibility ?? "PRIVATE"}
-                  className={inputClass}
-                >
-                  <option value="PRIVATE">
-                    Private · not shown on my profile
-                  </option>
-                  <option value="PROFILE">Public · shown on my profile</option>
-                </select>
-                <p className="mt-2 text-xs text-[#8b817b]">
-                  You can share this job separately with the share button.
-                </p>
-              </div>
               {error && (
                 <p className="mt-3 text-sm text-red-700" role="alert">
                   {error}
