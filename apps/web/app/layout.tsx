@@ -6,10 +6,55 @@ import { AuthProvider } from "../components/auth-provider";
 import { QueryProvider } from "../components/query-provider";
 
 export const metadata: Metadata = {
-  title: "Job Hunti | Your application workspace",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://jobhunti.space",
+  ),
+  title: {
+    default: "Job Hunti | Organize your job search",
+    template: "%s | Job Hunti",
+  },
   description:
-    "Capture, score, and move the job opportunities worth your attention.",
-  icons: { icon: "/jobhunti-logo.png", shortcut: "/jobhunti-logo.png" },
+    "Save opportunities, keep job and recruiter details together, and track every application in one focused workspace.",
+  applicationName: "Job Hunti",
+  keywords: [
+    "job search tracker",
+    "job application tracker",
+    "job hunt organizer",
+    "application workspace",
+    "career planning",
+  ],
+  authors: [{ name: "Job Hunti" }],
+  creator: "Job Hunti",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Job Hunti",
+    title: "Job Hunti | Organize your job search",
+    description:
+      "Save opportunities, keep job and recruiter details together, and track every application in one focused workspace.",
+    images: [
+      {
+        url: "/jobhunti-logo.png",
+        width: 1600,
+        height: 1600,
+        alt: "Job Hunti logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "Job Hunti | Organize your job search",
+    description:
+      "Save opportunities, keep job and recruiter details together, and track every application in one focused workspace.",
+    images: ["/jobhunti-logo.png"],
+  },
+  robots: { index: true, follow: true },
+  icons: {
+    icon: "/jobhunti-logo.png",
+    shortcut: "/jobhunti-logo.png",
+    apple: "/jobhunti-logo.png",
+  },
 };
 
 export default function RootLayout({
