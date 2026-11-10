@@ -17,6 +17,8 @@ input { width: 100%; border: 1px solid #363636; border-radius: 4px; background: 
 input:focus { border-color: #8dbf9b; }
 button { margin-top: 4px; border: 0; border-radius: 4px; background: #8dbf9b; color: #0d170f; cursor: pointer; padding: 11px 14px; font: inherit; font-size: 13px; font-weight: 700; }
 button:disabled { cursor: wait; opacity: .65; }
+.sign-in { color: #b9d7c0; font-size: 12px; text-align: center; text-decoration: none; }
+.sign-in:hover { text-decoration: underline; }
 .message { min-height: 17px; margin: 0; color: #a8a8a8; font-size: 12px; }
 .message.error { color: #e99a9a; }
 .message.success { color: #9ed3aa; }

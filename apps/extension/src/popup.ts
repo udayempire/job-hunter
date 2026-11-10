@@ -5,6 +5,7 @@ const titleInput = document.querySelector<HTMLInputElement>("#title");
 const applyLinkInput = document.querySelector<HTMLInputElement>("#applyLink");
 const form = document.querySelector<HTMLFormElement>("#job-form");
 const saveButton = document.querySelector<HTMLButtonElement>("#save");
+const signInLink = document.querySelector<HTMLAnchorElement>("#sign-in");
 const message = document.querySelector<HTMLParagraphElement>("#message");
 let capturedDetailsUrl = "";
 let capturedSource = "";
@@ -52,13 +53,26 @@ async function saveJob(event: SubmitEvent): Promise<void> {
   setMessage("Saving…");
   try {
     const stored = await chrome.storage.local.get("apiUrl");
-    const response = await fetch(`${stored.apiUrl ?? "http://localhost:4000/api"}/jobs`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(job),
-    });
-    if (response.status === 401) throw new Error("Sign in to Job Hunti before saving from the extension.");
+    const apiUrl = stored.apiUrl ?? "http://localhost:4000/api";
+    const request = () => fetch(`${apiUrl}/jobs`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(job),
+      });
+    let response = await request();
+    if (response.status === 401) {
+      const refresh = await fetch(`${apiUrl}/auth/refresh`, { method: "POST", credentials: "include" });
+      if (refresh.ok) response = await request();
+    }
+    if (response.status === 401) {
+      const frontendUrl = stored.frontendUrl ?? "http://localhost:3001";
+      if (signInLink) {
+        signInLink.href = `${frontendUrl}/login?returnTo=%2Fhome`;
+        signInLink.hidden = false;
+      }
+      throw new Error("Sign in to Job Hunti, then reopen the extension.");
+    }
     if (response.status === 409) throw new Error("This job is already in your tracker.");
     if (!response.ok) throw new Error("Unable to save this job right now.");
     setMessage("Job saved to Job Hunti.", "success");
