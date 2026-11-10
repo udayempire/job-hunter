@@ -29,8 +29,4 @@ export const db = new Proxy({} as PrismaClient, {
   },
 });
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = globalForPrisma.prisma ?? createDb();
-}
-
 export * from "@prisma/client";

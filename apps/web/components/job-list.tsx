@@ -19,6 +19,7 @@ export function JobList({
   jobs,
   onStatusChange,
   onJobUpdated,
+  onJobDeleted,
   showFilters = true,
   showStatus = true,
   profileMode = false,
@@ -29,6 +30,7 @@ export function JobList({
   jobs: Job[];
   onStatusChange: (id: string, status: JobStatus) => void;
   onJobUpdated: (job: Job) => void;
+  onJobDeleted?: (id: string) => void;
   showFilters?: boolean;
   showStatus?: boolean;
   profileMode?: boolean;
@@ -113,11 +115,11 @@ export function JobList({
       </div>
       {visibleJobs.length ? (
         view === "list" ? (
-          <JobTable jobs={visibleJobs} onStatusChange={onStatusChange} onJobUpdated={onJobUpdated} showStatus={showStatus} profileMode={profileMode} profileHandle={profileHandle} showShare={showShare} useSharedDetails={useSharedDetails} />
+          <JobTable jobs={visibleJobs} onStatusChange={onStatusChange} onJobUpdated={onJobUpdated} onJobDeleted={onJobDeleted} showStatus={showStatus} profileMode={profileMode} profileHandle={profileHandle} showShare={showShare} useSharedDetails={useSharedDetails} />
         ) : (
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             {visibleJobs.map((job) => (
-              <JobCard key={job.id} job={job} onStatusChange={onStatusChange} onJobUpdated={onJobUpdated} showStatus={showStatus} profileMode={profileMode} profileHandle={profileHandle} showShare={showShare} useSharedDetails={useSharedDetails} />
+              <JobCard key={job.id} job={job} onStatusChange={onStatusChange} onJobUpdated={onJobUpdated} onJobDeleted={onJobDeleted} showStatus={showStatus} profileMode={profileMode} profileHandle={profileHandle} showShare={showShare} useSharedDetails={useSharedDetails} />
             ))}
           </div>
         )

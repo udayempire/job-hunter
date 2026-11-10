@@ -6,6 +6,7 @@ import { PublicJobDetailsButton } from "./public-job-details-button";
 import { useRouter } from "next/navigation";
 import type { KeyboardEvent, MouseEvent } from "react";
 import { createPublicJobShareLink } from "../lib/profiles-api";
+import { DeleteJobButton } from "./delete-job-button";
 
 const statusStyles = {
   Saved: "bg-zinc-800 text-[var(--copy)]",
@@ -60,6 +61,7 @@ export function JobCard({
   job,
   onStatusChange,
   onJobUpdated,
+  onJobDeleted,
   showStatus = true,
   profileMode = false,
   profileHandle,
@@ -69,6 +71,7 @@ export function JobCard({
   job: Job;
   onStatusChange: (id: string, status: JobStatus) => void;
   onJobUpdated: (job: Job) => void;
+  onJobDeleted?: (id: string) => void;
   showStatus?: boolean;
   profileMode?: boolean;
   profileHandle?: string;
@@ -124,6 +127,13 @@ export function JobCard({
         </div>
         <div className="flex items-center gap-2">
           {!profileMode && <EditJobDialog job={job} onSaved={onJobUpdated} />}
+          {!profileMode && onJobDeleted && (
+            <DeleteJobButton
+              jobId={job.id}
+              jobTitle={job.title}
+              onDeleted={() => onJobDeleted(job.id)}
+            />
+          )}
           {showStatus && (
             <>
               <label className="sr-only" htmlFor={`status-${job.id}`}>
@@ -198,7 +208,9 @@ export function JobCard({
           <Icon name="calendar" size={14} /> Added {job.age || "recently"}
         </span>
         <div className="flex items-center gap-2">
-          {showShare && <ShareJobButton jobId={job.id} job={job} variant="icon" />}
+          {showShare && (
+            <ShareJobButton jobId={job.id} job={job} variant="icon" />
+          )}
           {job.applyLink && (
             <a
               href={job.applyLink}

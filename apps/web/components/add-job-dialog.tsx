@@ -247,7 +247,11 @@ export function AddJobDialog({
                   defaultValue={initialJob?.applyLink ?? initialJob?.url}
                 />
               </div>
-              <div className="mt-3">
+              <div className="my-6 border-t border-black/8" />
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
+                Helpful context <span className="font-normal normal-case tracking-normal text-[var(--muted)]">(Below details are optional to fill)</span>
+              </p>
+              <div className="mt-4">
                 <TextField
                   id="job-details-url"
                   name="detailsUrl"
@@ -266,11 +270,6 @@ export function AddJobDialog({
                   defaultValue={initialJob?.summary}
                 />
               </div>
-
-              <div className="my-6 border-t border-black/8" />
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9b6b4b]">
-                Helpful context
-              </p>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <TextField
                   id="job-salary"

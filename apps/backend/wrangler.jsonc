@@ -2,12 +2,19 @@
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "job-hunter-backend",
   "main": "src/worker.ts",
-  "compatibility_date": "2026-11-10",
+  "compatibility_date": "2026-11-09",
   "compatibility_flags": ["nodejs_compat"],
+  "routes": [
+    {
+      "pattern": "api.jobhunti.space",
+      "zone_name": "jobhunti.space",
+      "custom_domain": true,
+    },
+  ],
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
-      "id": "REPLACE_WITH_HYPERDRIVE_ID"
-    }
-  ]
+      "id": "aacca227ec7943c79d2905e72112fbbc",
+    },
+  ],
 }

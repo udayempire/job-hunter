@@ -3,9 +3,10 @@ import { env } from "cloudflare:workers";
 import { configureDb } from "@repo/db";
 import { createApp } from "./app.js";
 
-configureDb(env.HYPERDRIVE.connectionString);
-
-const app = createApp();
+const app = createApp(() => {
+  // Hyperdrive connection access must happen inside a request handler.
+  configureDb(env.HYPERDRIVE.connectionString);
+});
 app.listen(3000);
 
 export default httpServerHandler({ port: 3000 });

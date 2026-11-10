@@ -147,3 +147,11 @@ export async function updateJobStatus(id: string, status: JobStatus): Promise<Jo
   const payload = (await response.json()) as { data: ApiJob };
   return mapJobDetails(payload.data);
 }
+
+export async function deleteJob(id: string): Promise<void> {
+  const response = await fetch(`${apiUrl}/jobs/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error("Unable to delete job");
+}

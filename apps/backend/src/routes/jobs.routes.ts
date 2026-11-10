@@ -1,5 +1,4 @@
 import express, { type Request, type Response, type Router } from "express";
-import { randomBytes } from "node:crypto";
 import { db, JobStatus, JobVisibility, Prisma } from "@repo/db";
 import { requireAuth, type AuthenticatedRequest } from "../auth/require-auth.js";
 
@@ -142,8 +141,7 @@ jobRouter.post("/:id/share", async (request: Request, response: Response) => {
     return;
   }
 
-  const token = randomBytes(24).toString("base64url");
-  const shareLink = await db.shareLink.create({ data: { token, type: "JOB", userId, jobId: job.id } });
+  const shareLink = await db.shareLink.create({ data: { type: "JOB", userId, jobId: job.id } });
   const frontendUrl = process.env.FRONTEND_URL ?? "http://localhost:3001";
   response.status(201).json({ data: { token: shareLink.token, url: `${frontendUrl}/share/jobs/${shareLink.token}` } });
 });

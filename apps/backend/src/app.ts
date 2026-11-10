@@ -1,9 +1,16 @@
 import cors from "cors";
-import express from "express";
+import express, { type Express } from "express";
 import apiRouter from "./routes/index.js";
 
-export function createApp() {
+export function createApp(initialize?: () => void): Express {
   const app = express();
+
+  if (initialize) {
+    app.use((_request, _response, next) => {
+      initialize();
+      next();
+    });
+  }
 
   app.use(cors({
     origin: process.env.FRONTEND_URL ?? "http://localhost:3001",

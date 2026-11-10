@@ -12,11 +12,14 @@ import {
 } from "../../../lib/jobs-api";
 import type { Job, JobStatus } from "../../../components/types";
 import { EditJobDialog } from "../../../components/edit-job-dialog";
+import { DeleteJobButton } from "../../../components/delete-job-button";
+import { useRouter } from "next/navigation";
 
 export default function JobDetailsPage() {
   const params = useParams<{ id: string }>();
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
+  const router = useRouter();
   const {
     data: job,
     error,
@@ -84,6 +87,20 @@ export default function JobDetailsPage() {
                 listedJob.id === updatedJob.id ? updatedJob : listedJob,
               ),
             );
+          }}
+        />
+      }
+      deleteAction={
+        <DeleteJobButton
+          jobId={job.id}
+          jobTitle={job.title}
+          variant="text"
+          onDeleted={() => {
+            queryClient.removeQueries({ queryKey: ["job", job.id] });
+            queryClient.setQueryData<Job[]>(["jobs"], (current = []) =>
+              current.filter((listedJob) => listedJob.id !== job.id),
+            );
+            router.replace("/");
           }}
         />
       }

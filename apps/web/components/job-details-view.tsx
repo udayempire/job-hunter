@@ -125,12 +125,14 @@ export function JobDetailsView({
   onStatusChange,
   headerAction,
   editAction,
+  deleteAction,
 }: {
   job: JobDetails;
   shared?: boolean;
   onStatusChange?: (status: JobStatus) => Promise<void> | void;
   headerAction?: React.ReactNode;
   editAction?: React.ReactNode;
+  deleteAction?: React.ReactNode;
 }) {
   const [status, setStatus] = useState(job.status);
 
@@ -186,6 +188,7 @@ export function JobDetailsView({
             <ExternalLink href={job.detailsUrl} label="Job details" />
             {!shared && <ShareJobButton jobId={job.id} job={job} variant="icon" />}
             {editAction}
+            {deleteAction}
           </div>
         </section>
         <div className="mt-6 grid gap-5 lg:grid-cols-[1.4fr_0.8fr]">

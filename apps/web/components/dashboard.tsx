@@ -87,6 +87,13 @@ export function Dashboard() {
       current ? { ...current, ...updatedJob } : current,
     );
   }
+
+  function handleJobDeleted(id: string) {
+    queryClient.setQueryData<Job[]>(["jobs"], (current = []) =>
+      current.filter((job) => job.id !== id),
+    );
+    queryClient.removeQueries({ queryKey: ["job", id] });
+  }
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
       <AppBar />
@@ -124,6 +131,7 @@ export function Dashboard() {
           jobs={jobs}
           onStatusChange={handleStatusChange}
           onJobUpdated={handleJobUpdated}
+          onJobDeleted={handleJobDeleted}
         />
       </div>
     </main>

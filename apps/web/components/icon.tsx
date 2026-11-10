@@ -16,7 +16,8 @@ type IconName =
   | "external"
   | "browser"
   | "logout"
-  | "download";
+  | "download"
+  | "trash";
 
 export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   const common = {
@@ -125,6 +126,11 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
         <path d="M12 3v12" />
         <path d="m7 10 5 5 5-5" />
         <path d="M5 20h14" />
+      </>
+    ),
+    trash: (
+      <>
+        <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
       </>
     ),
     spark: (
