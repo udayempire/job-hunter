@@ -92,9 +92,9 @@ function Landing() {
   return (
     <main className="landing-page min-h-screen bg-[#171715] text-[#f4f1e8]">
       <header className="mx-auto flex max-w-7xl items-center justify-between border-b border-[#3a3934] px-5 py-6 sm:px-8">
-        <Link href="/" className="text-xl font-semibold tracking-tight">
-          Job <span className="text-[#e0b63d]">Hunti</span>
-          <span className="text-[#e0b63d]">.</span>
+        <Link href="/" className="flex items-center gap-3 text-xl font-semibold tracking-tight">
+          <img src="/jobhunti-logo.png" alt="" width={40} height={40} className="size-10" />
+          <span>Job <span className="text-[#e0b63d]">Hunti.</span></span>
         </Link>
         <nav className="hidden items-center gap-8 text-sm text-[#c0bdb3] sm:flex">
           <a href="#how-it-works" className="hover:text-white">

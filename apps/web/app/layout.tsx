@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Job Hunti | Your application workspace",
   description:
     "Capture, score, and move the job opportunities worth your attention.",
+  icons: { icon: "/jobhunti-logo.png", shortcut: "/jobhunti-logo.png" },
 };
 
 export default function RootLayout({
