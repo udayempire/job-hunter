@@ -2,8 +2,17 @@ import "@repo/ui/styles.css";
 import "./globals.css";
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
+import { Fraunces } from "next/font/google";
 import { AuthProvider } from "../components/auth-provider";
 import { QueryProvider } from "../components/query-provider";
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  axes: ["SOFT", "opsz"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -63,7 +72,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={fraunces.variable}>
       <body className={GeistSans.className}>
         <QueryProvider>
           <AuthProvider>{children}</AuthProvider>
