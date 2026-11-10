@@ -1,74 +1,184 @@
-# Turborepo Tailwind CSS starter
+# Job Hunti
 
-This Turborepo starter is maintained by the Turborepo core team.
+Job Hunti is a job-tracking application for saving, organizing, and reviewing job opportunities. It is a Bun/Turborepo monorepo with a Next.js frontend, an Express API that runs locally and as a Cloudflare Worker in production, and a Prisma/PostgreSQL data layer.
 
-## Using this example
+## Repository structure
 
-Use Node.js 26.13.0 or newer and pnpm 12.16.1.
-
-Create a new repository with this example:
-
-```sh
-npx create-turbo@latest -e with-tailwind
+```text
+apps/
+  web/       Next.js frontend
+  backend/   Express API locally; Cloudflare Worker in production
+  docs/      Documentation app from the Turborepo starter
+packages/
+  db/        Prisma schema and PostgreSQL client
+  ui/        Shared UI components and styles
+  eslint-config/
+  tailwind-config/
+  typescript-config/
 ```
 
-From the generated repository (or this example's directory), install dependencies and start both apps:
+The normal request path is `Next.js web app -> backend API -> Prisma -> PostgreSQL`. In production, the Worker uses Cloudflare Hyperdrive for the database connection.
+
+## Prerequisites
+
+- [Bun](https://bun.sh/) 1.3.14 or newer
+- [Node.js](https://nodejs.org/) 26 or newer
+- [Docker](https://docs.docker.com/get-docker/) for the local PostgreSQL database
+- Google OAuth credentials if you want to test sign-in
+
+## Local setup
+
+Clone the repository, install dependencies, and start PostgreSQL:
 
 ```sh
+git clone <your-fork-url>
+cd job-hunter
 bun install
-bun dev
-```
-
-Open `docs` at [http://localhost:3000](http://localhost:3000) and `web` at [http://localhost:3001](http://localhost:3001).
-
-Run `bun build`, `bun lint`, and `bun check-types` from the repository root to build, lint, and type-check all packages.
-
-## Database
-
-The database package lives in `packages/db` and uses Prisma with PostgreSQL.
-
-```sh
 docker compose up -d postgres
-bun install
-bun db:generate
-bun db:migrate --name init
 ```
 
-Use `bun db:studio` to inspect the local database. Copy `.env.example` to `.env` when setting up a new checkout.
+Create the local environment files:
 
-Google sign-in will use the backend callback URL `http://localhost:4000/api/auth/callback/google` during local development. Add the matching redirect URI to the Google OAuth web application credentials, then set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in the backend environment.
+```sh
+cp .env.example apps/backend/.env
+cp .env.example packages/db/.env
+cp apps/web/.env.example apps/web/.env
+```
 
-## What's inside?
+Update `apps/backend/.env` with values for local development:
 
-This Turborepo includes the following packages/apps:
+```dotenv
+DATABASE_URL="postgresql://job_hunter:job_hunter@localhost:5433/job_hunter?schema=public"
+FRONTEND_URL="http://localhost:3001"
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+GOOGLE_REDIRECT_URI="http://localhost:4000/api/auth/google/callback"
+JWT_SECRET="use-a-long-random-secret-at-least-32-characters"
+```
 
-### Apps and Packages
+Update `apps/web/.env`:
 
-- `docs`: a [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `web`: another [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `ui`: a compiled React component library with [Tailwind CSS](https://tailwindcss.com/) shared by both `web` and `docs` applications
-- `@repo/tailwind-config`: shared Tailwind CSS theme and PostCSS configuration
-- `@repo/eslint-config`: `eslint` flat configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+```dotenv
+NEXT_PUBLIC_API_URL="http://localhost:4000/api"
+NEXT_PUBLIC_SITE_URL="http://localhost:3001"
+```
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+Generate Prisma Client and create the local database schema:
 
-### Building packages/ui
+```sh
+bun db:generate
+bun db:push
+```
 
-The `ui` package compiles its components and type declarations with TypeScript and its styles with the Tailwind CSS CLI into `dist`. Both Next.js apps consume these built exports. Turborepo runs `build:components` and `build:styles` before building dependent apps, and builds the shared package before starting their development servers. The `ui` development tasks then watch for component and style changes.
+Start the backend and frontend in separate terminals:
 
-- Share one theme from `packages/tailwind-config/shared-styles.css` across apps and packages.
-- Keep component compilation independent of the consuming framework.
-- Avoid class-name collisions by using Tailwind CSS v4's `ui:` prefix via `@import "tailwindcss" prefix(ui);` in [packages/ui/src/styles.css](packages/ui/src/styles.css).
-- Maintain clear package export boundaries.
+```sh
+bun run backend:dev
+bun run --cwd apps/web dev
+```
 
-Another option is to consume `packages/ui` directly from source without building. Tailwind CSS v4 automatically detects class names in your source files, but it does not scan other packages in `node_modules`. If you use this option, update the package exports to point to source, configure Next.js to transpile `@repo/ui`, and add [`@source` directives](https://tailwindcss.com/docs/functions-and-directives#source-directive) to your apps' CSS entry points. Keep a prefixed CSS entry point for the `ui:` classes, or remove the prefixes when letting the apps generate those styles.
+Open [http://localhost:3001](http://localhost:3001). The API runs at [http://localhost:4000](http://localhost:4000).
 
-### Utilities
+For Google sign-in, add `http://localhost:4000/api/auth/google/callback` as an authorized redirect URI in your Google OAuth application.
 
-This Turborepo has some additional tools already set up for you:
+You can also start all configured development tasks with `bun dev`.
 
-- [Tailwind CSS](https://tailwindcss.com/) for styles
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+## Database workflow
+
+The Prisma schema is at [packages/db/prisma/schema.prisma](packages/db/prisma/schema.prisma).
+
+```sh
+# Regenerate Prisma Client after schema or Prisma changes
+bun db:generate
+
+# Apply the current schema directly during local development
+bun db:push
+
+# Create and apply a migration when using migration-based development
+bun db:migrate
+
+# Open Prisma Studio
+bun db:studio
+```
+
+Do not commit database URLs, OAuth secrets, JWT secrets, or other credentials. Production database connectivity is configured through Cloudflare rather than by committing a database environment file.
+
+## Useful commands
+
+Run these from the repository root:
+
+```sh
+bun dev            # Start development tasks through Turborepo
+bun build          # Build the workspace
+bun lint           # Run linting
+bun check-types    # Type-check the workspace
+bun format         # Format TypeScript, TSX, and Markdown files
+```
+
+For focused work:
+
+```sh
+bun run --cwd apps/web dev
+bun run --cwd apps/web check-types
+bun run --cwd apps/backend check-types
+bun run --cwd apps/backend build
+```
+
+## Production deployment
+
+The backend Worker configuration is in [apps/backend/wrangler.jsonc](apps/backend/wrangler.jsonc). Deploy the backend with:
+
+```sh
+bun run --cwd apps/backend deploy
+```
+
+To inspect live Worker logs:
+
+```sh
+bun run --cwd apps/backend wrangler tail job-hunter-backend --format pretty
+```
+
+The frontend is deployed separately. Configure its host with `NEXT_PUBLIC_API_URL` for the production API URL and `NEXT_PUBLIC_SITE_URL` for the public website URL.
+
+Ask a maintainer before changing production database bindings, OAuth callback URLs, or Worker secrets.
+
+## Contributing
+
+1. Fork the repository and create a focused branch from `main`.
+2. Read the surrounding code and existing call sites before changing shared logic.
+3. Keep the change scoped; avoid unrelated formatting or generated-file churn.
+4. Run the relevant type checks, linting, and tests before opening a pull request.
+5. Explain what changed, how it was verified, and whether database or deployment steps are required.
+
+Suggested branch names:
+
+```text
+feat/job-filters
+fix/job-delete-error
+docs/contributing-guide
+```
+
+Suggested commit messages:
+
+```text
+feat: add job filters
+fix: handle failed job deletion
+docs: improve contributor setup
+```
+
+### Pull request checklist
+
+- [ ] The change has a clear, focused purpose.
+- [ ] Local setup and relevant checks were completed.
+- [ ] Environment variables and secrets are not included.
+- [ ] Prisma schema changes include the required database workflow note.
+- [ ] UI changes work at the existing desktop and mobile breakpoints.
+- [ ] Production-only behavior was verified separately when applicable.
+
+## Reporting issues
+
+When reporting a bug, include the steps to reproduce, expected behavior, actual behavior, browser/runtime details, and relevant sanitized logs or screenshots. Never include passwords, tokens, cookies, full database URLs, or OAuth secrets in an issue.
+
+## License
+
+This repository does not currently include a license file. Please discuss licensing with the project owner before redistributing the code.
