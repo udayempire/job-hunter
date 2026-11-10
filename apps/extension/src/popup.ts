@@ -7,6 +7,8 @@ const form = document.querySelector<HTMLFormElement>("#job-form");
 const saveButton = document.querySelector<HTMLButtonElement>("#save");
 const signInLink = document.querySelector<HTMLAnchorElement>("#sign-in");
 const message = document.querySelector<HTMLParagraphElement>("#message");
+const accountLabel = document.querySelector<HTMLParagraphElement>("#account");
+const accountLink = document.querySelector<HTMLAnchorElement>("#account-link");
 let capturedDetailsUrl = "";
 let capturedSource = "";
 
@@ -22,6 +24,42 @@ function fillForm(job: ContentResponse): void {
   if (applyLinkInput) applyLinkInput.value = job.applyLink ?? "";
   capturedDetailsUrl = job.detailsUrl ?? job.applyLink ?? "";
   capturedSource = job.source ?? "";
+}
+
+function showSignInLink(frontendUrl: string): void {
+  if (!signInLink) return;
+  signInLink.href = `${frontendUrl}/login?returnTo=%2Fhome`;
+  signInLink.hidden = false;
+}
+
+async function loadAccount(): Promise<void> {
+  const stored = await chrome.storage.local.get(["apiUrl", "frontendUrl"]);
+  const apiUrl = stored.apiUrl ?? "http://localhost:4000/api";
+  const frontendUrl = stored.frontendUrl ?? "http://localhost:3001";
+
+  try {
+    const response = await fetch(`${apiUrl}/auth/me`, { credentials: "include", cache: "no-store" });
+    if (!response.ok) {
+      if (accountLabel) accountLabel.textContent = "Not signed in";
+      showSignInLink(frontendUrl);
+      return;
+    }
+
+    const payload = await response.json() as { data?: { profile?: { handle?: string | null } | null } };
+    const handle = payload.data?.profile?.handle;
+    if (!handle) {
+      if (accountLabel) accountLabel.textContent = "Signed in · public username unavailable";
+      return;
+    }
+    if (accountLabel) accountLabel.textContent = "Signed in as";
+    if (accountLink) {
+      accountLink.textContent = `@${handle}`;
+      accountLink.href = `${frontendUrl}/profile/${encodeURIComponent(handle)}`;
+      accountLink.hidden = false;
+    }
+  } catch {
+    if (accountLabel) accountLabel.textContent = "Account unavailable";
+  }
 }
 
 async function captureActiveTab(): Promise<void> {
@@ -67,10 +105,7 @@ async function saveJob(event: SubmitEvent): Promise<void> {
     }
     if (response.status === 401) {
       const frontendUrl = stored.frontendUrl ?? "http://localhost:3001";
-      if (signInLink) {
-        signInLink.href = `${frontendUrl}/login?returnTo=%2Fhome`;
-        signInLink.hidden = false;
-      }
+      showSignInLink(frontendUrl);
       throw new Error("Sign in to Job Hunti, then reopen the extension.");
     }
     if (response.status === 409) throw new Error("This job is already in your tracker.");
@@ -84,4 +119,5 @@ async function saveJob(event: SubmitEvent): Promise<void> {
 }
 
 form?.addEventListener("submit", saveJob);
+void loadAccount();
 void captureActiveTab();
