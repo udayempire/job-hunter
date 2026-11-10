@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "./auth-provider";
 import { Avatar } from "./avatar";
@@ -8,6 +9,7 @@ import { Icon } from "./icon";
 
 export function AuthStatus() {
   const { user, loading, logout } = useAuth();
+  const router = useRouter();
   const [signingOut, setSigningOut] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -89,7 +91,9 @@ export function AuthStatus() {
         disabled={signingOut}
         onClick={() => {
           setSigningOut(true);
-          logout().catch(() => setSigningOut(false));
+          logout()
+            .then(() => router.replace("/"))
+            .catch(() => setSigningOut(false));
         }}
         className="inline-flex border-l bg-red-800 p-2 text-center text-white border-[var(--border)]  text-sm font-medium  transition hover:text-[var(--gold-ink)] disabled:opacity-50"
       >
