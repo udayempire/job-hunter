@@ -23,7 +23,12 @@ function createDb() {
 
 export const db = new Proxy({} as PrismaClient, {
   get(_target, property, receiver) {
-    const client = globalForPrisma.prisma ?? (globalForPrisma.prisma = createDb());
+    // Hyperdrive owns the durable connection pool in Workers. Do not retain a
+    // Prisma client between Worker invocations because it can hold a stale
+    // edge connection while Hyperdrive has already recycled its origin pool.
+    const client = configuredConnectionString
+      ? createDb()
+      : (globalForPrisma.prisma ?? (globalForPrisma.prisma = createDb()));
     const value = Reflect.get(client, property, receiver);
     return typeof value === "function" ? value.bind(client) : value;
   },
