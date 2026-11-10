@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Save to Job Hunti</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="popup">
+      <header>
+        <p class="eyebrow">Job Hunti</p>
+        <h1>Save this job</h1>
+        <p class="subtitle">Review the details before adding it to your tracker.</p>
+      </header>
+
+      <form id="job-form">
+        <label>
+          Company
+          <input id="company" name="company" autocomplete="organization" required />
+        </label>
+        <label>
+          Role
+          <input id="title" name="title" autocomplete="off" required />
+        </label>
+        <label>
+          Apply link
+          <input id="applyLink" name="applyLink" type="url" required />
+        </label>
+        <button id="save" type="submit">Save job</button>
+        <p id="message" class="message" role="status" aria-live="polite"></p>
+      </form>
+    </main>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

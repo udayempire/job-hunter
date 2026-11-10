@@ -1,0 +1,14 @@
+{
+  "name": "extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc && cp public/manifest.json public/popup.html public/styles.css dist/ && mkdir -p dist/icons",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.31",
+    "typescript": "7.0.2"
+  }
+}
