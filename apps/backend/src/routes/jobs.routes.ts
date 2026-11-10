@@ -247,18 +247,10 @@ jobRouter.delete("/:id", async (request: Request, response: Response) => {
     return;
   }
   try {
-    const ownedJob = await db.job.findFirst({ where: { id, ownerId: userId }, select: { id: true } });
-    if (!ownedJob) {
-      response.status(404).json({ error: "Job not found" });
-      return;
-    }
-    await db.job.delete({ where: { id } });
+    await db.job.deleteMany({ where: { id, ownerId: userId } });
     response.status(204).send();
   } catch (error) {
-    if (isRecordNotFoundError(error)) {
-      response.status(404).json({ error: "Job not found" });
-      return;
-    }
+    console.error("Failed to delete job", error);
     response.status(500).json({ error: "Failed to delete job" });
   }
 });

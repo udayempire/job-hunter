@@ -153,5 +153,17 @@ export async function deleteJob(id: string): Promise<void> {
     method: "DELETE",
     credentials: "include",
   });
-  if (!response.ok) throw new Error("Unable to delete job");
+  if (response.ok || response.status === 404) return;
+
+  // A database delete can commit before a production proxy loses the response.
+  // Confirm the final state before showing an error to the user.
+  if (response.status >= 500) {
+    const verification = await fetch(`${apiUrl}/jobs/${encodeURIComponent(id)}`, {
+      credentials: "include",
+      cache: "no-store",
+    });
+    if (verification.status === 404) return;
+  }
+
+  throw new Error("Unable to delete job");
 }
