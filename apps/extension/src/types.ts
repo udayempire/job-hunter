@@ -8,3 +8,5 @@ export type CapturedJob = {
 
 export type ContentMessage = { type: "extract-job" };
 export type ContentResponse = Partial<CapturedJob> & { selection?: string };
+
+export type PopupDraft = CapturedJob;

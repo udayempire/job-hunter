@@ -13,6 +13,8 @@ The packaged extension defaults to:
 - Website: `https://jobhunti.space`
 - API: `https://api.jobhunti.space/api`
 
+To capture text reliably, select text on a page, right-click it, and choose `Use selection as company` or `Use selection as role`. The popup buttons remain available as a fallback.
+
 For local development, override `apiUrl` and `frontendUrl` in the extension's `chrome.storage.local` values, then add the extension origin to the backend `EXTENSION_ORIGINS` allowlist.
 
 Before publishing, add the Chrome Web Store extension origin to the production backend `EXTENSION_ORIGINS` configuration. The value is `chrome-extension://<store-extension-id>` and is only known after Chrome assigns the published extension ID.

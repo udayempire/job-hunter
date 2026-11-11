@@ -30,6 +30,7 @@ Job Hunti Clip does not submit applications, show ads, sell data, or collect bro
 ## Permission justifications
 
 - `activeTab`: read the active job page only after the user opens the extension.
+- `contextMenus`: let the user explicitly send selected text to the Company or Role field.
 - `scripting`: inject the extractor into the active page after the user opens the extension.
 - `storage`: remember the configured Job Hunti API and website endpoints.
 - `tabs`: identify the active page and use its URL/title as extraction fallbacks.

@@ -1,4 +1,4 @@
-import type { CapturedJob, ContentResponse } from "./types";
+import type { CapturedJob, ContentResponse, PopupDraft } from "./types";
 import { DEFAULT_API_URL, DEFAULT_FRONTEND_URL } from "./config";
 
 const companyInput = document.querySelector<HTMLInputElement>("#company");
@@ -14,6 +14,7 @@ const accountLabel = document.querySelector<HTMLParagraphElement>("#account");
 const accountLink = document.querySelector<HTMLAnchorElement>("#account-link");
 let capturedDetailsUrl = "";
 let capturedSource = "";
+const draftStorageKey = "jobDraft";
 
 function setMessage(text: string, kind?: "error" | "success"): void {
   if (!message) return;
@@ -28,6 +29,32 @@ function fillForm(job: ContentResponse): void {
   if (detailsUrlInput) detailsUrlInput.value = job.detailsUrl ?? "";
   capturedDetailsUrl = job.detailsUrl ?? "";
   capturedSource = job.source ?? "";
+}
+
+function currentDraft(): PopupDraft {
+  return {
+    company: companyInput?.value.trim() || undefined,
+    title: titleInput?.value.trim() || undefined,
+    applyLink: applyLinkInput?.value.trim() || undefined,
+    detailsUrl: detailsUrlInput?.value.trim() || undefined,
+    source: capturedSource,
+  };
+}
+
+async function persistDraft(): Promise<void> {
+  await chrome.storage.local.set({ [draftStorageKey]: currentDraft() });
+}
+
+async function restoreDraft(pageUrl?: string): Promise<void> {
+  const stored = await chrome.storage.local.get(draftStorageKey);
+  const draft = stored[draftStorageKey] as PopupDraft | undefined;
+  if (!draft || !pageUrl || draft.detailsUrl !== pageUrl) return;
+
+  fillForm(draft);
+}
+
+async function clearDraft(): Promise<void> {
+  await chrome.storage.local.remove(draftStorageKey);
 }
 
 async function sendContentMessage<T>(tabId: number, message: { type: string }): Promise<T> {
@@ -88,13 +115,26 @@ async function captureActiveTab(): Promise<void> {
   try {
     const captured = await sendContentMessage<ContentResponse>(tab.id, { type: "extract-job" });
     fillForm(captured);
+    await restoreDraft(captured.detailsUrl ?? tab.url);
   } catch {
     fillForm({ applyLink: tab.url, title: tab.title });
+    await restoreDraft(tab.url);
     setMessage("This page needs a quick manual review.");
   }
 }
 
 async function useSelectedText(target: "company" | "title"): Promise<void> {
+  const stored = await chrome.storage.session.get("pendingSelection");
+  const storedSelection = typeof stored.pendingSelection === "string" ? stored.pendingSelection : "";
+  if (storedSelection) {
+    if (target === "company" && companyInput) companyInput.value = storedSelection;
+    if (target === "title" && titleInput) titleInput.value = storedSelection;
+    await chrome.storage.session.remove(["pendingSelection", "pendingSelectionTarget"]);
+    await persistDraft();
+    setMessage(`Selected text used as ${target === "company" ? "company" : "role"}.`, "success");
+    return;
+  }
+
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) return;
 
@@ -106,10 +146,26 @@ async function useSelectedText(target: "company" | "title"): Promise<void> {
     }
     if (target === "company" && companyInput) companyInput.value = response.selection;
     if (target === "title" && titleInput) titleInput.value = response.selection;
+    await persistDraft();
     setMessage(`Selected text used as ${target === "company" ? "company" : "role"}.`, "success");
   } catch {
     setMessage("This page does not allow selected-text capture.", "error");
   }
+}
+
+async function applyPendingSelection(): Promise<void> {
+  const stored = await chrome.storage.session.get(["pendingSelection", "pendingSelectionTarget"]);
+  const selection = typeof stored.pendingSelection === "string" ? stored.pendingSelection : "";
+  const target = stored.pendingSelectionTarget === "company" || stored.pendingSelectionTarget === "title"
+    ? stored.pendingSelectionTarget
+    : null;
+  if (!selection || !target) return;
+
+  if (target === "company" && companyInput) companyInput.value = selection;
+  if (target === "title" && titleInput) titleInput.value = selection;
+  await chrome.storage.session.remove(["pendingSelection", "pendingSelectionTarget"]);
+  await persistDraft();
+  setMessage(`Selected text used as ${target === "company" ? "company" : "role"}.`, "success");
 }
 
 async function saveJob(event: SubmitEvent): Promise<void> {
@@ -157,12 +213,14 @@ async function saveJob(event: SubmitEvent): Promise<void> {
     if (response.status === 409) {
       const duplicate = await response.json() as { data?: { id?: string } };
       if (duplicate.data?.id) showJobLink(storedFrontendUrl, duplicate.data.id);
+      await clearDraft();
       setMessage("Job already saved.");
       return;
     }
     if (!response.ok) throw new Error("Unable to save this job right now.");
     const payload = await response.json() as { data?: { id?: string } };
     if (payload.data?.id) showJobLink(storedFrontendUrl, payload.data.id);
+    await clearDraft();
     setMessage("Job saved to Job Hunti.", "success");
   } catch (error) {
     setMessage(error instanceof Error ? error.message : "Unable to save this job right now.", "error");
@@ -178,5 +236,14 @@ document.querySelectorAll<HTMLButtonElement>("[data-selection-target]").forEach(
     if (target === "company" || target === "title") void useSelectedText(target);
   });
 });
-void loadAccount();
-void captureActiveTab();
+
+[companyInput, titleInput, applyLinkInput, detailsUrlInput].forEach((input) => {
+  input?.addEventListener("input", () => void persistDraft());
+});
+
+async function initializePopup(): Promise<void> {
+  await Promise.all([loadAccount(), captureActiveTab()]);
+  await applyPendingSelection();
+}
+
+void initializePopup();
