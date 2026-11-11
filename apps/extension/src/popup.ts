@@ -7,6 +7,10 @@ const applyLinkInput = document.querySelector<HTMLInputElement>("#applyLink");
 const detailsUrlInput = document.querySelector<HTMLInputElement>("#detailsUrl");
 const salaryInput = document.querySelector<HTMLInputElement>("#salary");
 const locationInput = document.querySelector<HTMLInputElement>("#location");
+const descriptionInput = document.querySelector<HTMLTextAreaElement>("#description");
+const companyWebsiteInput = document.querySelector<HTMLInputElement>("#companyWebsite");
+const companyLinkedinInput = document.querySelector<HTMLInputElement>("#companyLinkedin");
+const companyXInput = document.querySelector<HTMLInputElement>("#companyX");
 const personalNotesInput = document.querySelector<HTMLTextAreaElement>("#personalNotes");
 const visibilityToggle = document.querySelector<HTMLButtonElement>("#visibility-toggle");
 const form = document.querySelector<HTMLFormElement>("#job-form");
@@ -34,6 +38,10 @@ function fillForm(job: ContentResponse): void {
   if (detailsUrlInput) detailsUrlInput.value = job.detailsUrl ?? "";
   if (salaryInput) salaryInput.value = job.salary ?? "";
   if (locationInput) locationInput.value = job.location ?? "";
+  if (descriptionInput) descriptionInput.value = job.description ?? "";
+  if (companyWebsiteInput) companyWebsiteInput.value = job.companyWebsite ?? "";
+  if (companyLinkedinInput) companyLinkedinInput.value = job.companyLinkedin ?? "";
+  if (companyXInput) companyXInput.value = job.companyX ?? "";
   if (personalNotesInput) personalNotesInput.value = job.personalNotes ?? "";
   setVisibility(job.visibility ?? "PRIVATE");
   capturedDetailsUrl = job.detailsUrl ?? "";
@@ -56,6 +64,10 @@ function currentDraft(): PopupDraft {
     detailsUrl: detailsUrlInput?.value.trim() || undefined,
     salary: salaryInput?.value.trim() || undefined,
     location: locationInput?.value.trim() || undefined,
+    description: descriptionInput?.value.trim() || undefined,
+    companyWebsite: companyWebsiteInput?.value.trim() || undefined,
+    companyLinkedin: companyLinkedinInput?.value.trim() || undefined,
+    companyX: companyXInput?.value.trim() || undefined,
     personalNotes: personalNotesInput?.value.trim() || undefined,
     visibility,
     source: capturedSource,
@@ -150,7 +162,7 @@ async function captureActiveTab(): Promise<void> {
   }
 }
 
-type SelectionTarget = "company" | "title" | "salary" | "location" | "personalNotes";
+type SelectionTarget = "company" | "title" | "salary" | "location" | "description" | "personalNotes";
 
 function setSelectedValue(target: SelectionTarget, value: string): void {
   const input = {
@@ -158,6 +170,7 @@ function setSelectedValue(target: SelectionTarget, value: string): void {
     title: titleInput,
     salary: salaryInput,
     location: locationInput,
+    description: descriptionInput,
     personalNotes: personalNotesInput,
   }[target];
   if (input) input.value = value;
@@ -227,6 +240,10 @@ async function saveJob(event: SubmitEvent): Promise<void> {
     detailsUrl: detailsUrl || capturedDetailsUrl || undefined,
     salary: salaryInput?.value.trim() || undefined,
     location: locationInput?.value.trim() || undefined,
+    description: descriptionInput?.value.trim() || undefined,
+    companyWebsite: companyWebsiteInput?.value.trim() || undefined,
+    companyLinkedin: companyLinkedinInput?.value.trim() || undefined,
+    companyX: companyXInput?.value.trim() || undefined,
     personalNotes: personalNotesInput?.value.trim() || undefined,
     visibility,
     source: capturedSource || new URL(detailsUrl || applyLink).hostname,
@@ -275,13 +292,13 @@ form?.addEventListener("submit", saveJob);
 document.querySelectorAll<HTMLButtonElement>("[data-selection-target]").forEach((button) => {
   button.addEventListener("click", () => {
     const target = button.dataset.selectionTarget;
-    if (target === "company" || target === "title" || target === "salary" || target === "location" || target === "personalNotes") {
+    if (target === "company" || target === "title" || target === "salary" || target === "location" || target === "description" || target === "personalNotes") {
       void useSelectedText(target);
     }
   });
 });
 
-[companyInput, titleInput, applyLinkInput, detailsUrlInput, salaryInput, locationInput, personalNotesInput].forEach((input) => {
+[companyInput, titleInput, applyLinkInput, detailsUrlInput, salaryInput, locationInput, descriptionInput, companyWebsiteInput, companyLinkedinInput, companyXInput, personalNotesInput].forEach((input) => {
   input?.addEventListener("input", () => void persistDraft());
 });
 
