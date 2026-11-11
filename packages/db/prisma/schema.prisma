@@ -89,7 +89,7 @@ model Profile {
 model Job {
   id            String        @id @default(cuid())
   company       String
-  title         String
+  title         String?
   applyLink     String?
   url           String?
   source        String?
