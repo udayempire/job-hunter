@@ -5,7 +5,7 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
 export type ApiJob = {
   id: string;
   company: string;
-  title: string;
+  title: string | null;
   location: string | null;
   source: string | null;
   fitScore: number | null;
@@ -47,7 +47,7 @@ export function mapJob(job: ApiJob): Job {
     url: job.applyLink ?? undefined,
     applyLink: job.applyLink ?? undefined,
     company: job.company,
-    title: job.title,
+    title: job.title ?? "",
     location: job.location ?? "Location not specified",
     source: job.source ?? "Manual entry",
     score: job.fitScore ?? 0,

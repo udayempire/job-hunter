@@ -211,11 +211,13 @@ export function JobCard({
           {showShare && (
             <ShareJobButton jobId={job.id} job={job} variant="icon" />
           )}
-          {job.applyLink && (
+          {(job.applyLink || job.detailsUrl) && (
             <a
-              href={job.applyLink}
+              href={job.applyLink ?? job.detailsUrl}
               target="_blank"
               rel="noreferrer"
+              aria-label={job.applyLink ? `Apply to ${job.title}` : `View details for ${job.title}`}
+              title={job.applyLink ? "Apply" : "View job details"}
               className="inline-flex items-center gap-1.5 border border-[#32634b] bg-[#1f4d3a] px-3 py-1.5 text-xs font-semibold text-[#e9f5eb] transition hover:bg-[#173b2e]"
             >
               Apply <Icon name="external" size={14} />

@@ -79,15 +79,16 @@ jobRouter.get("/:id", async (request: Request, response: Response) => {
 
 jobRouter.post("/", async (request: Request, response: Response) => {
   const userId = (request as AuthenticatedRequest).userId;
-  const company = stringValue(request.body.company);
+  const providedCompany = stringValue(request.body.company);
+  const company = providedCompany ?? "Unnamed company";
   const title = stringValue(request.body.title);
   const applyLink = stringValue(request.body.applyLink);
   const detailsUrl = stringValue(request.body.detailsUrl ?? request.body.url);
   const description = stringValue(request.body.description);
 
-  if (!company || !title || !applyLink) {
+  if (!applyLink && !detailsUrl) {
     response.status(400).json({
-      error: "company, title, and applyLink are required",
+      error: "applyLink or detailsUrl is required",
     });
     return;
   }
@@ -96,10 +97,9 @@ jobRouter.post("/", async (request: Request, response: Response) => {
     const job = await db.job.create({
       data: {
         company,
-        title,
         owner: { connect: { id: userId } },
         applyLink,
-        url: detailsUrl,
+        url: detailsUrl ?? applyLink,
         description,
         source: stringValue(request.body.source),
         location: stringValue(request.body.location),
@@ -112,6 +112,7 @@ jobRouter.post("/", async (request: Request, response: Response) => {
         resumeVersion: stringValue(request.body.resumeVersion),
         recruiters: { create: recruiterContacts(request.body.recruiters) },
         visibility: visibilityValue(request.body.visibility) ?? JobVisibility.PRIVATE,
+        ...(title && providedCompany ? { title } : { title: title ?? null, status: JobStatus.REVIEW }),
       },
       include: { recruiters: true },
     });
@@ -119,8 +120,9 @@ jobRouter.post("/", async (request: Request, response: Response) => {
     response.status(201).json({ data: job });
   } catch (error) {
     if (isUniqueConstraintError(error)) {
-      const existingJob = detailsUrl
-        ? await db.job.findFirst({ where: { ownerId: userId, url: detailsUrl }, select: { id: true } })
+      const duplicateUrl = detailsUrl ?? applyLink;
+      const existingJob = duplicateUrl
+        ? await db.job.findFirst({ where: { ownerId: userId, OR: [{ url: duplicateUrl }, { applyLink: duplicateUrl }] }, select: { id: true } })
         : null;
       response.status(409).json({
         error: "A job with this URL already exists",
@@ -163,7 +165,7 @@ jobRouter.patch("/:id", async (request: Request, response: Response) => {
   const data: Prisma.JobUpdateInput = {};
   if ("detailsUrl" in request.body && !("url" in request.body)) request.body.url = request.body.detailsUrl;
   const textFields = ["company", "title", "applyLink", "url", "source", "location", "salary", "companyWebsite", "companyLinkedin", "companyX", "description", "personalNotes", "matchReason", "resumeVersion"];
-  const requiredTextFields = new Set(["company", "title", "applyLink"]);
+  const requiredTextFields = new Set<string>();
 
   for (const field of textFields) {
     if (field in request.body) {

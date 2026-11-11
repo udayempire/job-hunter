@@ -7,7 +7,7 @@ function firstText(selectors: string[]): string {
   return "";
 }
 
-function structuredJob(): { company?: string; title?: string; applyLink?: string } {
+function structuredJob(): { company?: string; title?: string } {
   const scripts = [...document.querySelectorAll('script[type="application/ld+json"]')];
   for (const script of scripts) {
     try {
@@ -19,7 +19,6 @@ function structuredJob(): { company?: string; title?: string; applyLink?: string
       return {
         company: typeof organization?.name === "string" ? organization.name : undefined,
         title: typeof job.title === "string" ? job.title : undefined,
-        applyLink: typeof job.url === "string" ? job.url : undefined,
       };
     } catch {
       // Ignore malformed structured data and use normal page metadata.
@@ -34,14 +33,18 @@ chrome.runtime.onMessage.addListener((message: { type?: string }, _sender, sendR
   const structured = structuredJob();
   const title = structured.title || firstText(["h1", "[data-testid*='job-title']", "[class*='job-title']"]);
   const company = structured.company || firstText(["[data-testid*='company']", "[class*='company-name']", "[class*='employer']"]);
-  const applyElement = document.querySelector<HTMLAnchorElement>(
-    "a[href*='apply' i], a[aria-label*='apply' i], button[aria-label*='apply' i]",
-  );
+  const applyElement = [...document.querySelectorAll<HTMLAnchorElement>("a[href]")].find((anchor) => {
+    const hint = [anchor.textContent, anchor.getAttribute("aria-label"), anchor.getAttribute("title"), anchor.href]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    return /\bapply\b/.test(hint) && /^https?:$/.test(new URL(anchor.href).protocol);
+  });
 
   sendResponse({
     company,
     title,
-    applyLink: structured.applyLink || applyElement?.href || location.href,
+    applyLink: applyElement?.href,
     detailsUrl: location.href,
     source: location.hostname,
   });

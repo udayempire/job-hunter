@@ -9,8 +9,8 @@ export type RecruiterContact = {
 
 export type JobDraft = {
   company: string;
-  title: string;
-  applyLink: string;
+  title?: string;
+  applyLink?: string;
   detailsUrl?: string;
   description?: string;
   salary?: string;

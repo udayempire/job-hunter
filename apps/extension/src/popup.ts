@@ -3,6 +3,7 @@ import type { CapturedJob, ContentResponse } from "./types";
 const companyInput = document.querySelector<HTMLInputElement>("#company");
 const titleInput = document.querySelector<HTMLInputElement>("#title");
 const applyLinkInput = document.querySelector<HTMLInputElement>("#applyLink");
+const detailsUrlInput = document.querySelector<HTMLInputElement>("#detailsUrl");
 const form = document.querySelector<HTMLFormElement>("#job-form");
 const saveButton = document.querySelector<HTMLButtonElement>("#save");
 const signInLink = document.querySelector<HTMLAnchorElement>("#sign-in");
@@ -23,7 +24,8 @@ function fillForm(job: ContentResponse): void {
   if (companyInput) companyInput.value = job.company ?? "";
   if (titleInput) titleInput.value = job.title ?? "";
   if (applyLinkInput) applyLinkInput.value = job.applyLink ?? "";
-  capturedDetailsUrl = job.detailsUrl ?? job.applyLink ?? "";
+  if (detailsUrlInput) detailsUrlInput.value = job.detailsUrl ?? "";
+  capturedDetailsUrl = job.detailsUrl ?? "";
   capturedSource = job.source ?? "";
 }
 
@@ -84,14 +86,21 @@ async function captureActiveTab(): Promise<void> {
 
 async function saveJob(event: SubmitEvent): Promise<void> {
   event.preventDefault();
-  if (!companyInput || !titleInput || !applyLinkInput || !saveButton) return;
+  if (!companyInput || !titleInput || !applyLinkInput || !detailsUrlInput || !saveButton) return;
+
+  const applyLink = applyLinkInput.value.trim();
+  const detailsUrl = detailsUrlInput.value.trim();
+  if (!applyLink && !detailsUrl) {
+    setMessage("Add an apply link or job details URL.", "error");
+    return;
+  }
 
   const job: CapturedJob = {
-    company: companyInput.value.trim(),
-    title: titleInput.value.trim(),
-    applyLink: applyLinkInput.value.trim(),
-    detailsUrl: capturedDetailsUrl || applyLinkInput.value.trim(),
-    source: capturedSource || new URL(applyLinkInput.value).hostname,
+    company: companyInput.value.trim() || "Unnamed company",
+    title: titleInput.value.trim() || undefined,
+    applyLink: applyLink || undefined,
+    detailsUrl: detailsUrl || capturedDetailsUrl || undefined,
+    source: capturedSource || new URL(detailsUrl || applyLink).hostname,
   };
 
   saveButton.disabled = true;

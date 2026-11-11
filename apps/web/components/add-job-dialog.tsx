@@ -122,9 +122,10 @@ export function AddJobDialog({
     const company = value(form, "company");
     const title = value(form, "title");
     const applyLink = value(form, "applyLink");
+    const detailsUrl = value(form, "detailsUrl");
 
-    if (!company || !title || !applyLink) {
-      setError("Company, role title, and apply link are required.");
+    if (!applyLink && !detailsUrl) {
+      setError("Add an apply link or job details URL to save this job.");
       return;
     }
 
@@ -139,10 +140,10 @@ export function AddJobDialog({
     setSaving(true);
     try {
       await onAdd({
-        company,
-        title,
-        applyLink,
-        detailsUrl: value(form, "detailsUrl") || undefined,
+        company: company || "Unnamed company",
+        title: title || undefined,
+        applyLink: applyLink || undefined,
+        detailsUrl: detailsUrl || undefined,
         description: value(form, "description") || undefined,
         salary: value(form, "salary") || undefined,
         location: value(form, "location") || undefined,
@@ -224,7 +225,7 @@ export function AddJobDialog({
                   name="company"
                   label="Company"
                   placeholder="e.g. Orbit Labs"
-                  optional={false}
+                  optional
                   defaultValue={initialJob?.company}
                 />
                 <TextField
@@ -232,7 +233,7 @@ export function AddJobDialog({
                   name="title"
                   label="Role title"
                   placeholder="e.g. Applied AI Engineer"
-                  optional={false}
+                  optional
                   defaultValue={initialJob?.title}
                 />
               </div>
@@ -243,11 +244,26 @@ export function AddJobDialog({
                   label="Apply link"
                   type="url"
                   placeholder="https://company.com/apply/…"
-                  optional={false}
-                  defaultValue={initialJob?.applyLink ?? initialJob?.url}
+                  optional
+                  defaultValue={initialJob?.applyLink}
                 />
               </div>
-              <div className="my-6 border-t border-black/8" />
+              <div className="mt-4">
+                <TextField
+                  id="job-details-url"
+                  name="detailsUrl"
+                  label="Job details URL"
+                  type="url"
+                  placeholder="https://company.com/jobs/…"
+                  defaultValue={initialJob?.detailsUrl}
+                />
+              </div>
+              <p className="mt-4 text-sm text-[var(--muted)]">
+                {" "}
+                Either apply link or job details URL is required to save this
+                job.
+              </p>
+              <div className="my-6 border-t border-zinc-700" />
               <div className="mb-6">
                 <FieldLabel htmlFor="job-visibility">
                   Profile visibility
@@ -268,9 +284,12 @@ export function AddJobDialog({
                 </p>
               </div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
-                Helpful context <span className="font-normal normal-case tracking-normal text-[var(--muted)]">(Below details are optional to fill)</span>
+                Helpful context{" "}
+                <span className="font-normal normal-case tracking-normal text-[var(--muted)]">
+                  (Below details are optional to fill)
+                </span>
               </p>
-              <div className="mt-4">
+              {/* <div className="mt-4">
                 <TextField
                   id="job-details-url"
                   name="detailsUrl"
@@ -279,7 +298,7 @@ export function AddJobDialog({
                   placeholder="https://company.com/jobs/…"
                   defaultValue={initialJob?.detailsUrl}
                 />
-              </div>
+              </div> */}
               <div className="mt-3">
                 <TextAreaField
                   id="job-description"

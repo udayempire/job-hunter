@@ -1,8 +1,8 @@
 export type CapturedJob = {
-  company: string;
-  title: string;
-  applyLink: string;
-  detailsUrl: string;
+  company?: string;
+  title?: string;
+  applyLink?: string;
+  detailsUrl?: string;
   source: string;
 };
 

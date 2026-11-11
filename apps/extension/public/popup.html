@@ -19,15 +19,19 @@
       <form id="job-form">
         <label>
           Company
-          <input id="company" name="company" autocomplete="organization" required />
+          <input id="company" name="company" autocomplete="organization" />
         </label>
         <label>
           Role
-          <input id="title" name="title" autocomplete="off" required />
+          <input id="title" name="title" autocomplete="off" />
         </label>
         <label>
           Apply link
-          <input id="applyLink" name="applyLink" type="url" required />
+          <input id="applyLink" name="applyLink" type="url" />
+        </label>
+        <label>
+          Job details URL
+          <input id="detailsUrl" name="detailsUrl" type="url" />
         </label>
         <button id="save" type="submit">Save job</button>
         <a id="sign-in" class="sign-in" href="#" target="_blank" rel="noreferrer" hidden>Sign in to Job Hunti</a>

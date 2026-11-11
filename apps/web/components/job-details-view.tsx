@@ -135,6 +135,7 @@ export function JobDetailsView({
   deleteAction?: React.ReactNode;
 }) {
   const [status, setStatus] = useState(job.status);
+  const [applyNoticeOpen, setApplyNoticeOpen] = useState(false);
 
   async function changeStatus(nextStatus: JobStatus) {
     setStatus(nextStatus);
@@ -185,7 +186,18 @@ export function JobDetailsView({
           </div>
           <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-3">
-              <ExternalLink href={job.applyLink} label="Apply now" />
+              {job.applyLink ? (
+                <ExternalLink href={job.applyLink} label="Apply now" />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setApplyNoticeOpen(true)}
+                  className="inline-flex items-center gap-1.5 border border-[#514b42] bg-[#39352f] px-3 py-2 text-sm font-medium text-[#c9c1b5] transition hover:bg-[#454038]"
+                >
+                  <Icon name="external" size={18} />
+                  Apply now
+                </button>
+              )}
               <ExternalLink href={job.detailsUrl} label="Job details" />
             </div>
             {!shared && (
@@ -197,6 +209,50 @@ export function JobDetailsView({
             )}
           </div>
         </section>
+        {applyNoticeOpen && (
+          <div
+            className="fixed inset-0 z-[110] grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="apply-notice-title"
+          >
+            <div className="w-full max-w-md border border-[var(--border)] bg-[var(--paper)] p-6 shadow-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--gold-ink)]">
+                Apply link unavailable
+              </p>
+              <h2
+                id="apply-notice-title"
+                className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--ink)]"
+              >
+                Apply link not provided
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-[var(--copy)]">
+                This job does not have a direct application link yet. You can
+                still open the job details page to look for one.
+              </p>
+              <div className="mt-6 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setApplyNoticeOpen(false)}
+                  className="border border-[var(--border)] bg-[var(--control)] px-4 py-2.5 text-sm font-semibold text-[var(--copy)] transition hover:bg-zinc-800"
+                >
+                  Close
+                </button>
+                {job.detailsUrl && (
+                  <a
+                    href={job.detailsUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => setApplyNoticeOpen(false)}
+                    className="border border-[var(--gold-border)] bg-[var(--gold-surface)] px-4 py-2.5 text-sm font-semibold text-[var(--gold-ink)] transition hover:bg-[#483d1d]"
+                  >
+                    Open details
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         <div className="mt-6 grid gap-5 lg:grid-cols-[1.4fr_0.8fr]">
           <div className="space-y-5">
             <DetailBlock label="Job description">
