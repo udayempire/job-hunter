@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc && cp public/manifest.json public/popup.html public/styles.css dist/ && mkdir -p dist/icons && cp public/icons/*.png dist/icons/",
+    "build": "mkdir -p dist/icons && bun build src/popup.ts src/content.ts src/background.ts --outdir dist --target browser && cp public/manifest.json public/popup.html public/styles.css dist/ && cp public/icons/*.png dist/icons/",
     "check-types": "tsc --noEmit"
   },
   "devDependencies": {

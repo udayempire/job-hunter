@@ -15,6 +15,8 @@ The packaged extension defaults to:
 
 For local development, override `apiUrl` and `frontendUrl` in the extension's `chrome.storage.local` values, then add the extension origin to the backend `EXTENSION_ORIGINS` allowlist.
 
+Before publishing, add the Chrome Web Store extension origin to the production backend `EXTENSION_ORIGINS` configuration. The value is `chrome-extension://<store-extension-id>` and is only known after Chrome assigns the published extension ID.
+
 ## Store listing privacy disclosure
 
 The extension reads the active job page to extract job details when the user opens the popup. When the user selects Save job, it sends the selected job fields to Job Hunti and uses the user's existing Job Hunti session. It does not sell data, inject advertisements, collect browsing history, or submit applications.
