@@ -28,6 +28,10 @@ function structuredJob(): { company?: string; title?: string } {
 }
 
 chrome.runtime.onMessage.addListener((message: { type?: string }, _sender, sendResponse) => {
+  if (message.type === "get-selection") {
+    sendResponse({ selection: window.getSelection()?.toString().trim().replace(/\s+/g, " ").slice(0, 200) ?? "" });
+    return;
+  }
   if (message.type !== "extract-job") return;
 
   const structured = structuredJob();

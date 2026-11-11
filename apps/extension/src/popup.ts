@@ -1,4 +1,5 @@
 import type { CapturedJob, ContentResponse } from "./types";
+import { DEFAULT_API_URL, DEFAULT_FRONTEND_URL } from "./config";
 
 const companyInput = document.querySelector<HTMLInputElement>("#company");
 const titleInput = document.querySelector<HTMLInputElement>("#title");
@@ -29,6 +30,15 @@ function fillForm(job: ContentResponse): void {
   capturedSource = job.source ?? "";
 }
 
+async function sendContentMessage<T>(tabId: number, message: { type: string }): Promise<T> {
+  try {
+    return await chrome.tabs.sendMessage<unknown, T>(tabId, message);
+  } catch {
+    await chrome.scripting.executeScript({ target: { tabId }, files: ["content.js"] });
+    return chrome.tabs.sendMessage<unknown, T>(tabId, message);
+  }
+}
+
 function showSignInLink(frontendUrl: string): void {
   if (!signInLink) return;
   signInLink.href = `${frontendUrl}/login?returnTo=%2Fhome`;
@@ -43,8 +53,8 @@ function showJobLink(frontendUrl: string, jobId: string): void {
 
 async function loadAccount(): Promise<void> {
   const stored = await chrome.storage.local.get(["apiUrl", "frontendUrl"]);
-  const apiUrl = stored.apiUrl ?? "http://localhost:4000/api";
-  const frontendUrl = stored.frontendUrl ?? "http://localhost:3001";
+  const apiUrl = stored.apiUrl ?? DEFAULT_API_URL;
+  const frontendUrl = stored.frontendUrl ?? DEFAULT_FRONTEND_URL;
 
   try {
     const response = await fetch(`${apiUrl}/auth/me`, { credentials: "include", cache: "no-store" });
@@ -76,11 +86,29 @@ async function captureActiveTab(): Promise<void> {
   if (!tab?.id) return;
 
   try {
-    const captured = await chrome.tabs.sendMessage<unknown, ContentResponse>(tab.id, { type: "extract-job" });
+    const captured = await sendContentMessage<ContentResponse>(tab.id, { type: "extract-job" });
     fillForm(captured);
   } catch {
     fillForm({ applyLink: tab.url, title: tab.title });
     setMessage("This page needs a quick manual review.");
+  }
+}
+
+async function useSelectedText(target: "company" | "title"): Promise<void> {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) return;
+
+  try {
+    const response = await sendContentMessage<ContentResponse>(tab.id, { type: "get-selection" });
+    if (!response.selection) {
+      setMessage("Select some text on the page first.", "error");
+      return;
+    }
+    if (target === "company" && companyInput) companyInput.value = response.selection;
+    if (target === "title" && titleInput) titleInput.value = response.selection;
+    setMessage(`Selected text used as ${target === "company" ? "company" : "role"}.`, "success");
+  } catch {
+    setMessage("This page does not allow selected-text capture.", "error");
   }
 }
 
@@ -108,7 +136,7 @@ async function saveJob(event: SubmitEvent): Promise<void> {
   setMessage("Saving…");
   try {
     const stored = await chrome.storage.local.get("apiUrl");
-    const apiUrl = stored.apiUrl ?? "http://localhost:4000/api";
+    const apiUrl = stored.apiUrl ?? DEFAULT_API_URL;
     const request = () => fetch(`${apiUrl}/jobs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -121,11 +149,11 @@ async function saveJob(event: SubmitEvent): Promise<void> {
       if (refresh.ok) response = await request();
     }
     if (response.status === 401) {
-      const frontendUrl = stored.frontendUrl ?? "http://localhost:3001";
+      const frontendUrl = stored.frontendUrl ?? DEFAULT_FRONTEND_URL;
       showSignInLink(frontendUrl);
       throw new Error("Sign in to Job Hunti, then reopen the extension.");
     }
-    const storedFrontendUrl = stored.frontendUrl ?? "http://localhost:3001";
+    const storedFrontendUrl = stored.frontendUrl ?? DEFAULT_FRONTEND_URL;
     if (response.status === 409) {
       const duplicate = await response.json() as { data?: { id?: string } };
       if (duplicate.data?.id) showJobLink(storedFrontendUrl, duplicate.data.id);
@@ -144,5 +172,11 @@ async function saveJob(event: SubmitEvent): Promise<void> {
 }
 
 form?.addEventListener("submit", saveJob);
+document.querySelectorAll<HTMLButtonElement>("[data-selection-target]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const target = button.dataset.selectionTarget;
+    if (target === "company" || target === "title") void useSelectedText(target);
+  });
+});
 void loadAccount();
 void captureActiveTab();

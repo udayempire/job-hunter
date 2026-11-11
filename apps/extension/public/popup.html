@@ -19,11 +19,17 @@
       <form id="job-form">
         <label>
           Company
-          <input id="company" name="company" autocomplete="organization" />
+          <div class="field-with-action">
+            <input id="company" name="company" autocomplete="organization" />
+            <button class="selection-button" data-selection-target="company" type="button">Use selection</button>
+          </div>
         </label>
         <label>
           Role
-          <input id="title" name="title" autocomplete="off" />
+          <div class="field-with-action">
+            <input id="title" name="title" autocomplete="off" />
+            <button class="selection-button" data-selection-target="title" type="button">Use selection</button>
+          </div>
         </label>
         <label>
           Apply link
