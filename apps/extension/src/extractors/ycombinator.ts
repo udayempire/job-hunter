@@ -1,5 +1,14 @@
 import type { JobExtractor } from "./types";
-import { firstLink, firstText } from "./utils";
+import { firstLink, firstText, normalizeText } from "./utils";
+
+function labeledValue(document: Document, label: string): string {
+  for (const row of document.querySelectorAll("div.flex.flex-row.justify-between")) {
+    const key = normalizeText(row.children.item(0)?.textContent).replace(/:$/, "").toLowerCase();
+    if (key !== label.toLowerCase()) continue;
+    return normalizeText(row.children.item(1)?.textContent);
+  }
+  return "";
+}
 
 export const extractYCombinatorJob: JobExtractor = (document) => ({
   company: firstText(document, [
@@ -14,7 +23,7 @@ export const extractYCombinatorJob: JobExtractor = (document) => ({
     "[class*='salary']",
     "[class*='compensation']",
   ]),
-  location: firstText(document, [
+  location: labeledValue(document, "location") || firstText(document, [
     "[class*='location']",
     "[class*='job-location']",
   ]),

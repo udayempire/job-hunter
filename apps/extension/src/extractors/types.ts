@@ -7,7 +7,6 @@ export type ExtractedJob = {
   companyWebsite?: string;
   companyLinkedin?: string;
   companyX?: string;
-  applyLink?: string;
 };
 
 export type JobExtractor = (document: Document) => ExtractedJob;

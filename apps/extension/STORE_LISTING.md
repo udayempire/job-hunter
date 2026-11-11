@@ -14,7 +14,7 @@ Productivity
 
 ## Detailed description
 
-Job Hunti Clip helps you save a job opportunity while you browse. Open the extension on a job page, review the detected company, role, job details URL, and application link, then save it to your Job Hunti account.
+Job Hunti Clip helps you save a job opportunity while you browse. Open the extension on a job page, review the detected company, role, and job details URL, optionally add an application link, then save it to your Job Hunti account.
 
 You stay in control of every capture:
 

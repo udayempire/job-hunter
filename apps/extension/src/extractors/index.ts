@@ -29,5 +29,20 @@ function siteExtractor(hostname: string): JobExtractor | undefined {
 
 export function extractJob(document: Document, hostname: string): ExtractedJob {
   const site = siteExtractor(hostname);
-  return mergeExtractedJobs(extractGenericJob(document), site ? site(document) : {});
+  const extracted = mergeExtractedJobs(extractGenericJob(document), site ? site(document) : {});
+
+  if (hostname.toLowerCase().endsWith("ycombinator.com") && extracted.companyX) {
+    try {
+      const socialUrl = new URL(extracted.companyX);
+      const socialHost = socialUrl.hostname.toLowerCase();
+      const socialPath = socialUrl.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
+      if ((socialHost === "x.com" || socialHost === "twitter.com") && socialPath === "ycombinator") {
+        extracted.companyX = undefined;
+      }
+    } catch {
+      // Ignore malformed optional social links.
+    }
+  }
+
+  return extracted;
 }

@@ -1,5 +1,5 @@
 import type { ExtractedJob } from "./types";
-import { firstApplyLink, firstLink, firstText, structuredJob } from "./utils";
+import { firstLink, firstText, structuredJob } from "./utils";
 
 export function extractGenericJob(document: Document): ExtractedJob {
   const structured = structuredJob(document);
@@ -12,6 +12,5 @@ export function extractGenericJob(document: Document): ExtractedJob {
     companyWebsite: structured.companyWebsite || firstLink(document, ["[data-testid*='company'] a[href]", "[class*='company'] a[href]"]),
     companyLinkedin: structured.companyLinkedin || firstLink(document, ["a[href*='linkedin.com']"]),
     companyX: structured.companyX || firstLink(document, ["a[href*='x.com']", "a[href*='twitter.com']"]),
-    applyLink: firstApplyLink(document),
   };
 }

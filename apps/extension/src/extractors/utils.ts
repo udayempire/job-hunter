@@ -44,15 +44,6 @@ export function firstLink(document: Document, selectors: string[]): string | und
   return undefined;
 }
 
-export function firstApplyLink(document: Document): string | undefined {
-  return [...document.querySelectorAll<HTMLAnchorElement>("a[href]")]
-    .find((anchor) => {
-      const hint = [anchor.textContent, anchor.getAttribute("aria-label"), anchor.getAttribute("title"), anchor.href]
-        .filter(Boolean).join(" ").toLowerCase();
-      return /\bapply\b/.test(hint) && /^https?:$/.test(new URL(anchor.href).protocol);
-    })?.href;
-}
-
 function stringValue(value: unknown): string | undefined {
   return typeof value === "string" && value.trim() ? normalizeText(value) : undefined;
 }

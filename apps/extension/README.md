@@ -1,6 +1,6 @@
 # Job Hunti Clip
 
-Job Hunti Clip saves the job currently open in a browser to Job Hunti. It reads only the active page needed to identify the company, role, details URL, and an available apply link.
+Job Hunti Clip saves the job currently open in a browser to Job Hunti. It reads only the active page needed to identify the company, role, and details URL. Apply links can be added manually when available.
 
 The extension uses `activeTab` and injects its extractor only after the user opens the extension. It does not request permanent access to every website.
 
@@ -30,8 +30,8 @@ The extension reads the active job page to extract job details when the user ope
 1. Sign in to Job Hunti at `https://jobhunti.space`.
 2. Open a public job page containing a company name or job title.
 3. Open Job Hunti Clip and review the extracted fields.
-4. Confirm that the current page is stored as Job details URL.
-5. If an Apply link is detected, confirm it is stored separately.
+4. Confirm that the current page is stored as Job details URL and that Apply link is blank.
+5. Optionally enter an Apply link manually.
 6. Click Save job and confirm the job appears in Job Hunti.
 7. Repeat the save to verify the duplicate message and Open in Job Hunti link.
 8. Select text on a page and use Use selection for Company or Role.

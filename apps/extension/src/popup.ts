@@ -156,7 +156,7 @@ async function captureActiveTab(): Promise<void> {
     fillForm(captured);
     await restoreDraft(captured.detailsUrl ?? tab.url);
   } catch {
-    fillForm({ applyLink: tab.url, title: tab.title });
+    fillForm({ detailsUrl: tab.url, title: tab.title });
     await restoreDraft(tab.url);
     setMessage("This page needs a quick manual review.");
   }
