@@ -95,11 +95,17 @@ authRouter.post("/logout", async (request, response) => {
 });
 
 function setCookie(response: Response, name: string, value: string, maxAge: number) {
-  response.append("Set-Cookie", `${name}=${value}; Max-Age=${maxAge}; Path=/; HttpOnly; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`);
+  response.append("Set-Cookie", `${name}=${value}; Max-Age=${maxAge}; Path=/; HttpOnly${cookieSiteAttributes()}`);
 }
 
 function clearCookie(response: Response, name: string) {
-  response.append("Set-Cookie", `${name}=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`);
+  response.append("Set-Cookie", `${name}=; Max-Age=0; Path=/; HttpOnly${cookieSiteAttributes()}`);
+}
+
+function cookieSiteAttributes() {
+  return process.env.NODE_ENV === "production" || process.env.COOKIE_CROSS_SITE === "true"
+    ? "; SameSite=None; Secure"
+    : "; SameSite=Lax";
 }
 
 function readCookie(request: Request, name: string) {

@@ -8,14 +8,16 @@ The extension uses `activeTab` and injects its extractor only after the user ope
 
 Build the extension with `bun run build`, then load `apps/extension/dist` from `chrome://extensions` with Developer mode enabled.
 
-The packaged extension defaults to:
+The development build defaults to:
 
-- Website: `https://jobhunti.space`
-- API: `https://api.jobhunti.space/api`
+- Website: `http://localhost:3001`
+- API: `http://localhost:4000/api`
+
+For a production package, switch the defaults in `src/config.ts` to the deployed website and API before running the release build.
 
 To capture text reliably, select text on a page, right-click it, and choose `Use selection as company` or `Use selection as role`. The popup buttons remain available as a fallback.
 
-For local development, override `apiUrl` and `frontendUrl` in the extension's `chrome.storage.local` values, then add the extension origin to the backend `EXTENSION_ORIGINS` allowlist.
+For local development, keep the localhost defaults in `src/config.ts` and add the extension origin to the backend `EXTENSION_ORIGINS` allowlist.
 
 Before publishing, add the Chrome Web Store extension origin to the production backend `EXTENSION_ORIGINS` configuration. The value is `chrome-extension://<store-extension-id>` and is only known after Chrome assigns the published extension ID.
 

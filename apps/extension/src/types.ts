@@ -3,6 +3,10 @@ export type CapturedJob = {
   title?: string;
   applyLink?: string;
   detailsUrl?: string;
+  salary?: string;
+  location?: string;
+  personalNotes?: string;
+  visibility?: "PRIVATE" | "PROFILE";
   source: string;
 };
 

@@ -50,6 +50,7 @@ Update `apps/backend/.env` with values for local development:
 ```dotenv
 DATABASE_URL="postgresql://job_hunter:job_hunter@localhost:5433/job_hunter?schema=public"
 FRONTEND_URL="http://localhost:3001"
+COOKIE_CROSS_SITE="true"
 GOOGLE_CLIENT_ID=""
 GOOGLE_CLIENT_SECRET=""
 GOOGLE_REDIRECT_URI="http://localhost:4000/api/auth/google/callback"

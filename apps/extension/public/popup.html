@@ -16,29 +16,67 @@
         <a id="account-link" class="account-link" target="_blank" rel="noreferrer" hidden></a>
       </header>
 
+      <nav class="tabs" aria-label="Job fields">
+        <button class="tab active" type="button" data-tab="job" aria-selected="true">Capture</button>
+        <button class="tab" type="button" data-tab="more" aria-selected="false">More details</button>
+      </nav>
+
       <form id="job-form">
-        <label>
-          Company
-          <div class="field-with-action">
-            <input id="company" name="company" autocomplete="organization" />
-            <button class="selection-button" data-selection-target="company" type="button">Use selection</button>
+        <section data-panel="job">
+          <label>
+            Company
+            <div class="field-with-action">
+              <input id="company" name="company" autocomplete="organization" />
+              <button class="selection-button" data-selection-target="company" type="button">Use selection</button>
+            </div>
+          </label>
+          <label>
+            Role
+            <div class="field-with-action">
+              <input id="title" name="title" autocomplete="off" />
+              <button class="selection-button" data-selection-target="title" type="button">Use selection</button>
+            </div>
+          </label>
+          <label>
+            Apply link
+            <input id="applyLink" name="applyLink" type="url" />
+          </label>
+          <label>
+            Job details URL
+            <input id="detailsUrl" name="detailsUrl" type="url" />
+          </label>
+        </section>
+
+        <section data-panel="more" hidden>
+          <div class="visibility-row">
+            <div>
+              <p class="field-title">Visibility</p>
+              <p class="field-help">Private jobs are visible only to you.</p>
+            </div>
+            <button id="visibility-toggle" class="visibility-toggle" type="button" aria-pressed="false">Private</button>
           </div>
-        </label>
-        <label>
-          Role
-          <div class="field-with-action">
-            <input id="title" name="title" autocomplete="off" />
-            <button class="selection-button" data-selection-target="title" type="button">Use selection</button>
-          </div>
-        </label>
-        <label>
-          Apply link
-          <input id="applyLink" name="applyLink" type="url" />
-        </label>
-        <label>
-          Job details URL
-          <input id="detailsUrl" name="detailsUrl" type="url" />
-        </label>
+          <label>
+            Salary
+            <div class="field-with-action">
+              <input id="salary" name="salary" autocomplete="off" />
+              <button class="selection-button" data-selection-target="salary" type="button">Use selection</button>
+            </div>
+          </label>
+          <label>
+            Location
+            <div class="field-with-action">
+              <input id="location" name="location" autocomplete="address-level2" />
+              <button class="selection-button" data-selection-target="location" type="button">Use selection</button>
+            </div>
+          </label>
+          <label>
+            Personal Notes
+            <div class="field-with-action">
+              <textarea id="personalNotes" name="personalNotes" rows="4"></textarea>
+              <button class="selection-button" data-selection-target="personalNotes" type="button">Use selection</button>
+            </div>
+          </label>
+        </section>
         <button id="save" type="submit">Save job</button>
         <a id="sign-in" class="sign-in" href="#" target="_blank" rel="noreferrer" hidden>Sign in to Job Hunti</a>
         <a id="open-job" class="open-job" href="#" target="_blank" rel="noreferrer" hidden>Open in Job Hunti</a>
