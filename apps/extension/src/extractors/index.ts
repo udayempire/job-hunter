@@ -44,5 +44,10 @@ export function extractJob(document: Document, hostname: string): ExtractedJob {
     }
   }
 
+  if (hostname.toLowerCase().endsWith("naukri.com")) {
+    extracted.companyLinkedin = undefined;
+    extracted.companyX = undefined;
+  }
+
   return extracted;
 }
