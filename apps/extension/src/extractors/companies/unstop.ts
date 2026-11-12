@@ -1,5 +1,16 @@
 import type { JobExtractor } from "../types";
-import { firstLink, firstText } from "../utils";
+import { firstLink, firstText, normalizeText } from "../utils";
+
+function labeledLocation(document: Document): string | undefined {
+  for (const label of document.querySelectorAll("strong[apptranslate='location'], strong")) {
+    if (normalizeText(label.textContent).toLowerCase() !== "location") continue;
+    const value = label.parentElement?.querySelector("span.dotted-list")
+      || label.parentElement?.querySelector("span");
+    const location = normalizeText(value?.textContent);
+    if (location) return location;
+  }
+  return undefined;
+}
 
 export const extractUnstopJob: JobExtractor = (document) => ({
   company: firstText(document, [
@@ -17,7 +28,7 @@ export const extractUnstopJob: JobExtractor = (document) => ({
     "[class*='stipend']",
     "[class*='compensation']",
   ]),
-  location: firstText(document, [
+  location: labeledLocation(document) || firstText(document, [
     "[class*='location']",
     "[class*='job-location']",
   ]),
