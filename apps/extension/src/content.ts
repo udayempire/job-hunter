@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener(
     const captured = extractJob(document, window.location.hostname);
     sendResponse({
       ...captured,
-      detailsUrl: window.location.href,
+      detailsUrl: captured.detailsUrl ?? window.location.href,
       source: window.location.hostname,
     });
   },

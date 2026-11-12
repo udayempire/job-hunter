@@ -1,4 +1,5 @@
 export type ExtractedJob = {
+  detailsUrl?: string;
   company?: string;
   title?: string;
   salary?: string;

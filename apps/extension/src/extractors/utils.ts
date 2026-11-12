@@ -18,16 +18,21 @@ export function normalizeSalary(value: string | undefined): string | undefined {
   const numbers = normalized.match(/\d+(?:\.\d+)?/g);
   if (!numbers?.length || numbers.length > 2) return normalizeText(value);
   const hasThousandsSuffix = /\d(?:\.\d+)?\s*[Kk]\b/.test(normalized);
+  const lakhNumbers = normalized.match(/\d+(?:\.\d+)?(?=\s*[Ll]\b)/g);
   const rawCurrency = normalized.match(/(?:USD|INR|EUR|GBP|AUD|CAD|SGD|AED|Rs\.?|\$|₹|€|£)/i)?.[0];
   const currencyMap: Record<string, string> = { "$": "USD", "₹": "INR", "€": "EUR", "£": "GBP" };
   const currency = rawCurrency
     ? (currencyMap[rawCurrency] ?? rawCurrency.replace(".", "").toUpperCase())
     : "";
+  if (lakhNumbers?.length && lakhNumbers.length <= 2) {
+    const range = lakhNumbers.map((number) => `${number}L`).join("-");
+    return currency ? `${range} ${currency}` : range;
+  }
   const range = numbers.map((number) => formatSalaryAmount(number, hasThousandsSuffix)).join("-");
   return currency ? `${range} ${currency}` : range;
 }
 
-export function firstText(document: Document, selectors: string[]): string {
+export function firstText(document: ParentNode, selectors: string[]): string {
   for (const selector of selectors) {
     const element = document.querySelector(selector);
     const text = normalizeText(element?.textContent);
