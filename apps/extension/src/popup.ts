@@ -303,7 +303,7 @@ async function saveJob(event: SubmitEvent): Promise<void> {
     const payload = await response.json() as { data?: { id?: string } };
     if (payload.data?.id) showJobLink(DEFAULT_FRONTEND_URL, payload.data.id);
     await clearDraft();
-    setMessage("Job saved to Job Hunti. You can update more details there.", "success");
+    setMessage("Saved to Job Hunti. Add more details anytime.", "success");
   } catch (error) {
     setMessage(error instanceof Error ? error.message : "Unable to save this job right now.", "error");
   } finally {

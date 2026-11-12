@@ -1,6 +1,6 @@
 # Job Hunti
 
-Job Hunti is a job-tracking application for saving, organizing, and reviewing job opportunities. It is a Bun/Turborepo monorepo with a Next.js frontend, an Express API that runs locally and as a Cloudflare Worker in production, and a Prisma/PostgreSQL data layer.
+Job Hunti is a job-tracking application for saving, organizing, and reviewing job opportunities while you browse. It is a Bun/Turborepo monorepo with a Next.js frontend, an Express API that runs locally and as a Cloudflare Worker in production, a Prisma/PostgreSQL data layer, and a Chrome extension for capturing jobs from supported job sites.
 
 ## Repository structure
 
@@ -8,6 +8,7 @@ Job Hunti is a job-tracking application for saving, organizing, and reviewing jo
 apps/
   web/       Next.js frontend
   backend/   Express API locally; Cloudflare Worker in production
+  extension/  Job Hunti Clip Chrome extension
   docs/      Documentation app from the Turborepo starter
 packages/
   db/        Prisma schema and PostgreSQL client
@@ -18,6 +19,21 @@ packages/
 ```
 
 The normal request path is `Next.js web app -> backend API -> Prisma -> PostgreSQL`. In production, the Worker uses Cloudflare Hyperdrive for the database connection.
+
+## Job Hunti Clip
+
+Job Hunti Clip lets you save the job currently open in your browser to your Job Hunti account. Open the extension, review the extracted fields, correct anything needed, and click **Save job**.
+
+The extension supports two popup sections:
+
+- **Capture**: company, role, apply link, and the current job details URL.
+- **More details**: private or public-profile visibility, salary, location, description, company links, and personal notes.
+
+You can also select text on a page and use it for a field, sign in from the popup when needed, and open an existing Job Hunti job when a duplicate is detected. The extension does not submit applications, collect browsing history, inject ads, or sell data.
+
+Site-specific extraction adapters currently cover LinkedIn, Indeed, Greenhouse, Lever, Workday, Y Combinator, Wellfound, Naukri, Unstop, and Glassdoor. A generic DOM/metadata fallback is used on other pages. Extracted values should still be reviewed before saving because page layouts can change.
+
+See the [extension development guide](apps/extension/README.md) for permissions, environment configuration, reviewer instructions, and publishing notes. The [Chrome Web Store listing draft](apps/extension/STORE_LISTING.md) contains the current product and privacy copy.
 
 ## Prerequisites
 
@@ -84,6 +100,18 @@ For Google sign-in, add `http://localhost:4000/api/auth/google/callback` as an a
 
 You can also start all configured development tasks with `bun dev`.
 
+### Build and load the extension locally
+
+From the repository root:
+
+```sh
+bun run --cwd apps/extension build
+```
+
+Then open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select `apps/extension/dist`.
+
+The extension currently defaults to the deployed Job Hunti website and API. For local development, update the defaults in `apps/extension/src/config.ts` to `http://localhost:3001` and `http://localhost:4000/api`, start the web app and backend, and add the extension origin to the backend `EXTENSION_ORIGINS` allowlist. After changing extension source files, rebuild and reload the unpacked extension.
+
 ## Database workflow
 
 The Prisma schema is at [packages/db/prisma/schema.prisma](packages/db/prisma/schema.prisma).
@@ -123,6 +151,8 @@ bun run --cwd apps/web dev
 bun run --cwd apps/web check-types
 bun run --cwd apps/backend check-types
 bun run --cwd apps/backend build
+bun run --cwd apps/extension build
+bun run --cwd apps/extension check-types
 ```
 
 ## Production deployment
