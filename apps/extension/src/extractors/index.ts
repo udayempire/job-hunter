@@ -61,7 +61,7 @@ function removePlatformSocialLinks(job: ExtractedJob): void {
 function siteExtractor(hostname: string): JobExtractor | undefined {
   const host = hostname.toLowerCase();
   if (host === "linkedin.com" || host.endsWith(".linkedin.com")) return extractLinkedInJob;
-  if (host === "indeed.com" || host.endsWith(".indeed.com")) return extractIndeedJob;
+  if (host === "indeed.com" || host.endsWith(".indeed.com") || host === "indeed.co.in" || host.endsWith(".indeed.co.in")) return extractIndeedJob;
   if (host === "greenhouse.io" || host.endsWith(".greenhouse.io")) return extractGreenhouseJob;
   if (host === "lever.co" || host.endsWith(".lever.co")) return extractLeverJob;
   if (host === "myworkdayjobs.com" || host.endsWith(".myworkdayjobs.com")) return extractWorkdayJob;
@@ -76,10 +76,14 @@ function siteExtractor(hostname: string): JobExtractor | undefined {
 export function extractJob(document: Document, hostname: string): ExtractedJob {
   const host = hostname.toLowerCase();
   const isGlassdoor = host === "glassdoor.com" || host.endsWith(".glassdoor.com") || host === "glassdoor.co.in" || host.endsWith(".glassdoor.co.in");
+  const isIndeed = host === "indeed.com" || host.endsWith(".indeed.com") || host === "indeed.co.in" || host.endsWith(".indeed.co.in");
   if (isGlassdoor && !document.querySelector("[data-test='job-details-header']")) return {};
+  if (isIndeed && !document.querySelector("[data-testid='desktop-job-header']")) return {};
 
   const site = siteExtractor(hostname);
-  const extracted = mergeExtractedJobs(extractGenericJob(document), site ? site(document) : {});
+  const extracted = isGlassdoor || isIndeed
+    ? mergeExtractedJobs(site ? site(document) : {})
+    : mergeExtractedJobs(extractGenericJob(document), site ? site(document) : {});
 
   if (hostname.toLowerCase().endsWith("ycombinator.com") && extracted.companyX) {
     try {
