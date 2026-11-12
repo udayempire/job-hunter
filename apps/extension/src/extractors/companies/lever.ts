@@ -1,5 +1,5 @@
-import type { JobExtractor } from "./types";
-import { firstText } from "./utils";
+import type { JobExtractor } from "../types";
+import { firstText } from "../utils";
 
 export const extractLeverJob: JobExtractor = (document) => ({
   company: firstText(document, [".posting-headline .company", ".main-header-logo img"]),

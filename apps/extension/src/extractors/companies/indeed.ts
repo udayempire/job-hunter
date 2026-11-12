@@ -1,5 +1,5 @@
-import type { JobExtractor } from "./types";
-import { firstText, normalizeText } from "./utils";
+import type { JobExtractor } from "../types";
+import { firstText, normalizeText } from "../utils";
 
 function headerText(document: Document, selectors: string[]): string {
   const header = document.querySelector("[data-testid='desktop-job-header']");

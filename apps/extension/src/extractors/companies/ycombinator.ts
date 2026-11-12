@@ -1,5 +1,5 @@
-import type { JobExtractor } from "./types";
-import { firstLink, firstText, normalizeText } from "./utils";
+import type { JobExtractor } from "../types";
+import { firstLink, firstText, normalizeText } from "../utils";
 
 function labeledValue(document: Document, label: string): string {
   for (const row of document.querySelectorAll("div.flex.flex-row.justify-between")) {

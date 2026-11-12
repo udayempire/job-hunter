@@ -1,5 +1,5 @@
-import type { JobExtractor } from "./types";
-import { firstText } from "./utils";
+import type { JobExtractor } from "../types";
+import { firstText } from "../utils";
 
 export const extractWorkdayJob: JobExtractor = (document) => ({
   company: firstText(document, ["[data-automation-id='header-title']", "[data-automation-id='jobPostingCompany']"]),

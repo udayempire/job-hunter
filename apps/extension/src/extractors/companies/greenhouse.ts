@@ -1,5 +1,5 @@
-import type { JobExtractor } from "./types";
-import { firstText } from "./utils";
+import type { JobExtractor } from "../types";
+import { firstText } from "../utils";
 
 export const extractGreenhouseJob: JobExtractor = (document) => ({
   company: firstText(document, ["#header .company-name", ".company-name"]),

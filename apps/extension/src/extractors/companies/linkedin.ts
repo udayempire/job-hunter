@@ -1,5 +1,5 @@
-import type { JobExtractor } from "./types";
-import { firstText, normalizeText } from "./utils";
+import type { JobExtractor } from "../types";
+import { firstText, normalizeText } from "../utils";
 
 function companyFromLinkedInProfile(document: Document): { name?: string; url?: string } {
   const link = document.querySelector<HTMLAnchorElement>("a[href*='linkedin.com/company/']");

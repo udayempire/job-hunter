@@ -1,5 +1,5 @@
-import type { JobExtractor } from "./types";
-import { firstLink, firstText } from "./utils";
+import type { JobExtractor } from "../types";
+import { firstLink, firstText } from "../utils";
 
 function headerText(document: Document, selectors: string[]): string {
   const header = document.querySelector("[data-test='job-details-header']");

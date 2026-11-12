@@ -1,5 +1,5 @@
-import type { JobExtractor } from "./types";
-import { firstLink, firstText } from "./utils";
+import type { JobExtractor } from "../types";
+import { firstLink, firstText } from "../utils";
 
 export const extractUnstopJob: JobExtractor = (document) => ({
   company: firstText(document, [

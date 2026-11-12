@@ -1,5 +1,5 @@
-import type { JobExtractor } from "./types";
-import { firstLink, firstText, normalizeSalary, normalizeText } from "./utils";
+import type { JobExtractor } from "../types";
+import { firstLink, firstText, normalizeSalary, normalizeText } from "../utils";
 
 function websiteFromButton(document: Document): string | undefined {
   const button = document.querySelector<HTMLButtonElement>("button[class*='websiteLink']");

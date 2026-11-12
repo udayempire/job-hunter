@@ -1,15 +1,15 @@
 import { extractGenericJob } from "./generic";
-import { extractGreenhouseJob } from "./greenhouse";
-import { extractGlassdoorJob } from "./glassdoor";
-import { extractIndeedJob } from "./indeed";
-import { extractLeverJob } from "./lever";
-import { extractLinkedInJob } from "./linkedin";
-import { extractNaukriJob } from "./naukri";
+import { extractGreenhouseJob } from "./companies/greenhouse";
+import { extractGlassdoorJob } from "./companies/glassdoor";
+import { extractIndeedJob } from "./companies/indeed";
+import { extractLeverJob } from "./companies/lever";
+import { extractLinkedInJob } from "./companies/linkedin";
+import { extractNaukriJob } from "./companies/naukri";
 import type { ExtractedJob, JobExtractor } from "./types";
-import { extractWorkdayJob } from "./workday";
-import { extractWellfoundJob } from "./wellfound";
-import { extractYCombinatorJob } from "./ycombinator";
-import { extractUnstopJob } from "./unstop";
+import { extractWorkdayJob } from "./companies/workday";
+import { extractWellfoundJob } from "./companies/wellfound";
+import { extractYCombinatorJob } from "./companies/ycombinator";
+import { extractUnstopJob } from "./companies/unstop";
 import { mergeExtractedJobs } from "./utils";
 
 const platformLinkedInSlugs = new Set([
