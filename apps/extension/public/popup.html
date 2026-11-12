@@ -9,16 +9,49 @@
   <body>
     <main class="popup">
       <header>
-        <p class="eyebrow">Job Hunti</p>
+        <div class="header-row">
+          <div class="brand">
+            <img class="brand-logo" src="icons/icon-32.png" alt="" />
+            <span>Job Hunti</span>
+          </div>
+          <div class="account-meta">
+            <p id="account" class="account" aria-live="polite">
+              Checking account…
+            </p>
+            <a
+              id="account-sign-in"
+              class="account account-sign-in"
+              target="_blank"
+              rel="noreferrer"
+              hidden
+            >Signed out · Sign in</a>
+            <a
+              id="account-link"
+              class="account-link"
+              target="_blank"
+              rel="noreferrer"
+              hidden
+            ></a>
+          </div>
+        </div>
         <h1>Save this job</h1>
-        <p class="subtitle">Review the details before adding it to your tracker.</p>
-        <p id="account" class="account" aria-live="polite">Checking account…</p>
-        <a id="account-link" class="account-link" target="_blank" rel="noreferrer" hidden></a>
+        <p class="subtitle">
+          Review the details before adding it to your tracker.
+        </p>
       </header>
 
       <nav class="tabs" aria-label="Job fields">
-        <button class="tab active" type="button" data-tab="job" aria-selected="true">Capture</button>
-        <button class="tab" type="button" data-tab="more" aria-selected="false">More details</button>
+        <button
+          class="tab active"
+          type="button"
+          data-tab="job"
+          aria-selected="true"
+        >
+          Capture
+        </button>
+        <button class="tab" type="button" data-tab="more" aria-selected="false">
+          More details
+        </button>
       </nav>
 
       <form id="job-form">
@@ -27,14 +60,26 @@
             Company
             <div class="field-with-action">
               <input id="company" name="company" autocomplete="organization" />
-              <button class="selection-button" data-selection-target="company" type="button">Use selection</button>
+              <button
+                class="selection-button"
+                data-selection-target="company"
+                type="button"
+              >
+                Use selection
+              </button>
             </div>
           </label>
           <label>
             Role
             <div class="field-with-action">
               <input id="title" name="title" autocomplete="off" />
-              <button class="selection-button" data-selection-target="title" type="button">Use selection</button>
+              <button
+                class="selection-button"
+                data-selection-target="title"
+                type="button"
+              >
+                Use selection
+              </button>
             </div>
           </label>
           <label>
@@ -53,27 +98,56 @@
               <p class="field-title">Visibility</p>
               <p class="field-help">Private jobs are visible only to you.</p>
             </div>
-            <button id="visibility-toggle" class="visibility-toggle" type="button" aria-pressed="false">Private</button>
+            <button
+              id="visibility-toggle"
+              class="visibility-toggle"
+              type="button"
+              aria-pressed="false"
+            >
+              Private
+            </button>
           </div>
           <label>
             Salary
             <div class="field-with-action">
               <input id="salary" name="salary" autocomplete="off" />
-              <button class="selection-button" data-selection-target="salary" type="button">Use selection</button>
+              <button
+                class="selection-button"
+                data-selection-target="salary"
+                type="button"
+              >
+                Use selection
+              </button>
             </div>
           </label>
           <label>
             Location
             <div class="field-with-action">
-              <input id="location" name="location" autocomplete="address-level2" />
-              <button class="selection-button" data-selection-target="location" type="button">Use selection</button>
+              <input
+                id="location"
+                name="location"
+                autocomplete="address-level2"
+              />
+              <button
+                class="selection-button"
+                data-selection-target="location"
+                type="button"
+              >
+                Use selection
+              </button>
             </div>
           </label>
           <label>
             Description
             <div class="field-with-action">
               <textarea id="description" name="description" rows="5"></textarea>
-              <button class="selection-button" data-selection-target="description" type="button">Use selection</button>
+              <button
+                class="selection-button"
+                data-selection-target="description"
+                type="button"
+              >
+                Use selection
+              </button>
             </div>
           </label>
           <label>
@@ -91,14 +165,40 @@
           <label>
             Personal Notes
             <div class="field-with-action">
-              <textarea id="personalNotes" name="personalNotes" rows="4"></textarea>
-              <button class="selection-button" data-selection-target="personalNotes" type="button">Use selection</button>
+              <textarea
+                id="personalNotes"
+                name="personalNotes"
+                rows="4"
+              ></textarea>
+              <button
+                class="selection-button"
+                data-selection-target="personalNotes"
+                type="button"
+              >
+                Use selection
+              </button>
             </div>
           </label>
         </section>
         <button id="save" type="submit">Save job</button>
-        <a id="sign-in" class="sign-in" href="#" target="_blank" rel="noreferrer" hidden>Sign in to Job Hunti</a>
-        <a id="open-job" class="open-job" href="#" target="_blank" rel="noreferrer" hidden>Open in Job Hunti</a>
+        <a
+          id="sign-in"
+          class="sign-in"
+          href="#"
+          target="_blank"
+          rel="noreferrer"
+          hidden
+          >Sign in to Job Hunti</a
+        >
+        <a
+          id="open-job"
+          class="open-job"
+          href="#"
+          target="_blank"
+          rel="noreferrer"
+          hidden
+          >Open in Job Hunti</a
+        >
         <p id="message" class="message" role="status" aria-live="polite"></p>
       </form>
     </main>

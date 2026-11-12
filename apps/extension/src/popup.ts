@@ -16,6 +16,7 @@ const visibilityToggle = document.querySelector<HTMLButtonElement>("#visibility-
 const form = document.querySelector<HTMLFormElement>("#job-form");
 const saveButton = document.querySelector<HTMLButtonElement>("#save");
 const signInLink = document.querySelector<HTMLAnchorElement>("#sign-in");
+const accountSignInLink = document.querySelector<HTMLAnchorElement>("#account-sign-in");
 const openJobLink = document.querySelector<HTMLAnchorElement>("#open-job");
 const message = document.querySelector<HTMLParagraphElement>("#message");
 const accountLabel = document.querySelector<HTMLParagraphElement>("#account");
@@ -100,9 +101,16 @@ async function sendContentMessage<T>(tabId: number, message: { type: string }): 
 }
 
 function showSignInLink(frontendUrl: string): void {
-  if (!signInLink) return;
-  signInLink.href = `${frontendUrl}/login?returnTo=%2Fhome`;
-  signInLink.hidden = false;
+  const href = `${frontendUrl}/login?returnTo=%2Fhome`;
+  if (signInLink) {
+    signInLink.href = href;
+    signInLink.hidden = false;
+  }
+  if (accountSignInLink) {
+    accountSignInLink.href = href;
+    accountSignInLink.hidden = false;
+  }
+  if (accountLabel) accountLabel.hidden = true;
 }
 
 function showJobLink(frontendUrl: string, jobId: string): void {
@@ -125,7 +133,11 @@ async function loadAccount(): Promise<void> {
       }
     }
     if (!response.ok) {
-      if (accountLabel) accountLabel.textContent = "Not signed in";
+      if (accountLabel) {
+        accountLabel.textContent = "Not signed in";
+        accountLabel.hidden = false;
+      }
+      if (accountLink) accountLink.hidden = true;
       showSignInLink(frontendUrl);
       return;
     }
@@ -133,17 +145,28 @@ async function loadAccount(): Promise<void> {
     const payload = await response.json() as { data?: { profile?: { handle?: string | null } | null } };
     const handle = payload.data?.profile?.handle;
     if (!handle) {
-      if (accountLabel) accountLabel.textContent = "Signed in · public username unavailable";
+      if (accountLabel) {
+        accountLabel.textContent = "Username unavailable";
+        accountLabel.hidden = false;
+      }
+      if (accountLink) accountLink.hidden = true;
       return;
     }
-    if (accountLabel) accountLabel.textContent = "Signed in as";
+    if (accountLabel) {
+      accountLabel.textContent = "";
+      accountLabel.hidden = true;
+    }
     if (accountLink) {
       accountLink.textContent = `@${handle}`;
       accountLink.href = `${frontendUrl}/profile/${encodeURIComponent(handle)}`;
       accountLink.hidden = false;
     }
   } catch {
-    if (accountLabel) accountLabel.textContent = "Account unavailable";
+    if (accountLabel) {
+      accountLabel.textContent = "Account unavailable";
+      accountLabel.hidden = false;
+    }
+    if (accountLink) accountLink.hidden = true;
   }
 }
 

@@ -19,13 +19,30 @@ body {
   padding: 22px;
 }
 
-.eyebrow {
-  margin: 0 0 8px;
-  color: #8dbf9b;
-  font-size: 11px;
+.header-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: #d8b45a;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: .12em;
   text-transform: uppercase;
+}
+
+.brand-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
 
 h1 {
@@ -35,23 +52,41 @@ h1 {
 }
 
 .subtitle {
-  margin: 8px 0 22px;
-  color: #969696;
+  margin: 6px 0 10px;
+  color: #e07a7a;
   font-size: 13px;
   line-height: 1.45;
 }
 
+.account-meta {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4px;
+  transform: translateY(-7px);
+
+}
+
 .account {
-  margin: -10px 0 5px;
+  margin: 0;
   color: #8f8f8f;
-  font-size: 11px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  white-space: nowrap;
 }
 
 .account-link {
   display: inline-block;
-  margin: -2px 0 18px;
-  color: #b9d7c0;
-  font-size: 12px;
+  margin: 0;
+  overflow: hidden;
+  color: #d0d0d0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   text-decoration: none;
 }
 
@@ -59,11 +94,22 @@ h1 {
   text-decoration: underline;
 }
 
+.account-sign-in {
+  color: #d8b45a;
+  text-decoration: none;
+  text-decoration: underline;
+}
+
+.account-sign-in:hover {
+  color: #e5c66e;
+  text-decoration: underline;
+}
+
 .tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4px;
-  margin: 0 0 16px;
+  margin: 0 0 10px;
   border-bottom: 1px solid #363636;
 }
 
@@ -197,6 +243,15 @@ button {
   font-weight: 700;
 }
 
+#save {
+  background: #d8b45a;
+  color: #17130a;
+}
+
+#save:hover {
+  background: #e5c66e;
+}
+
 button:disabled {
   cursor: wait;
   opacity: .65;
@@ -221,7 +276,7 @@ button:disabled {
   padding-right: 92px;
 }
 
-.field-with-action textarea + .selection-button {
+.field-with-action textarea+.selection-button {
   top: 7px;
   transform: none;
 }
@@ -232,14 +287,14 @@ button:disabled {
 }
 
 .sign-in {
-  color: #b9d7c0;
-  font-size: 12px;
+  color: #5ac674;
+  font-size: 14px;
   text-align: center;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 .sign-in:hover {
-  text-decoration: underline;
+  color: #b9d7c0;
 }
 
 .open-job {
