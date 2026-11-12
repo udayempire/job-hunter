@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Job Hunti Clip",
   "description": "Save a job to Job Hunti while you browse.",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "action": {
     "default_title": "Save to Job Hunti",
     "default_popup": "popup.html",
