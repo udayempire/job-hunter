@@ -200,12 +200,12 @@ export function AddJobDialog({
       </button>
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#211b1b]/30 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-[#211b1b]/30 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-labelledby="add-job-title"
         >
-          <div className="relative z-10 max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-[var(--border)] bg-[var(--paper)] p-6 shadow-2xl sm:p-7">
+          <div className="relative z-10 max-h-[calc(100dvh-2rem)] w-full max-w-2xl overflow-y-auto overscroll-contain rounded-3xl border border-[var(--border)] bg-[var(--paper)] p-4 shadow-2xl sm:p-7">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">

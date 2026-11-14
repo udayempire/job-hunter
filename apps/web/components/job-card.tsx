@@ -107,7 +107,7 @@ export function JobCard({
 
   return (
     <article
-      className="group flex h-full cursor-pointer flex-col border border-[var(--border)] bg-[var(--paper)] p-5 transition hover:-translate-y-0.5 hover:border-[var(--gold-border)]"
+      className="group flex h-full cursor-pointer flex-col border border-[var(--border)] bg-[var(--paper)] p-3 transition hover:-translate-y-0.5 hover:border-[var(--gold-border)] sm:p-5"
       role="link"
       tabIndex={0}
       onClick={openDetails}
@@ -119,9 +119,9 @@ export function JobCard({
       }}
       aria-label={`View details for ${job.title} at ${job.company}`}
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-2 sm:gap-4">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-[var(--gold-surface)] text-sm font-semibold text-[var(--gold-ink)]">
+          <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-[var(--gold-surface)] text-xs font-semibold text-[var(--gold-ink)] sm:size-11 sm:text-sm">
             {job.company.slice(0, 2).toUpperCase()}
           </div>
           <div className="min-w-0">
@@ -136,7 +136,7 @@ export function JobCard({
             )} */}
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {!profileMode && <EditJobDialog job={job} onSaved={onJobUpdated} />}
           {!profileMode && onJobDeleted && (
             <DeleteJobButton
@@ -168,8 +168,8 @@ export function JobCard({
           )}
         </div>
       </div>
-      <div className="mt-5 grid grid-cols-2 divide-x divide-[var(--border)] border border-[var(--border)] bg-[var(--control)] text-sm">
-        <div className="min-w-0 p-3">
+      <div className="mt-3 grid grid-cols-2 divide-x divide-[var(--border)] border border-[var(--border)] bg-[var(--control)] text-xs sm:mt-5 sm:text-sm">
+        <div className="min-w-0 p-2 sm:p-3">
           <p className="text-xs uppercase tracking-[0.12em] text-[var(--muted)]">
             Location
           </p>
@@ -179,7 +179,7 @@ export function JobCard({
               : job.location}
           </p>
         </div>
-        <div className="min-w-0 p-3">
+        <div className="min-w-0 p-2 sm:p-3">
           <p className="text-xs uppercase tracking-[0.12em] text-[var(--muted)]">
             Salary
           </p>
@@ -188,11 +188,11 @@ export function JobCard({
           </p>
         </div>
       </div>
-      <p className="mt-4 min-h-[3rem] text-sm leading-6 text-[var(--copy)]">
+      <p className="mt-4 hidden min-h-[3rem] text-sm leading-6 text-[var(--copy)] sm:block">
         {job.summary}
       </p>
       {(job.companyWebsite || job.companyLinkedin || job.companyX) && (
-        <div className="mt-4 flex items-center gap-3 py-3 border-[var(--divider)] ">
+        <div className="mt-4 hidden items-center gap-3 border-[var(--divider)] py-3 sm:flex">
           {/* <span className="text-xs font-medium text-[var(--muted)]">
             Company
           </span> */}
@@ -215,11 +215,11 @@ export function JobCard({
           </div>
         </div>
       )}
-      <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-[var(--divider)] pt-4">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-[var(--divider)] pt-3 sm:mt-auto sm:gap-3 sm:pt-4">
         <span className="inline-flex items-center gap-1.5 text-xs text-[var(--muted)]">
           <Icon name="calendar" size={14} /> Added {job.age || "recently"}
         </span>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {showShare && (
             <ShareJobButton jobId={job.id} job={job} variant="icon" />
           )}

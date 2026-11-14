@@ -98,22 +98,22 @@ export function Dashboard() {
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
       <AppBar />
-      <div className="mx-auto max-w-[1600px] px-5 pb-12 pt-10 sm:px-8 lg:px-[3.7rem] lg:pt-11">
-        <section className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+      <div className="mx-auto max-w-[1600px] px-4 pb-8 pt-5 sm:px-8 sm:pb-12 sm:pt-10 lg:px-[3.7rem] lg:pt-11">
+        <section className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h1 className="mt-3.5 text-3xl font-semibold tracking-[-0.055em] text-[var(--ink)] sm:text-[2.65rem]">
+            <h1 className="text-2xl font-semibold tracking-[-0.055em] text-[var(--ink)] sm:mt-3.5 sm:text-[2.65rem]">
               Jobs worth your attention
             </h1>
-            <p className="mt-2 text-base text-[var(--copy)]">
+            <p className="mt-1 text-sm text-[var(--copy)] sm:mt-2 sm:text-base">
               Track, manage, and move forward on your job applications.
             </p>
           </div>
-          <div className="shrink-0">
+          <div className="w-full shrink-0 sm:w-auto">
             {user ? (
               <AddJobDialog
                 onAdd={handleAdd}
                 trigger={
-                  <span className="inline-flex items-center gap-2.5 rounded-lg bg-[var(--gold)] px-6 py-3 text-base font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]">
+                  <span className="inline-flex w-full items-center justify-center gap-2.5 rounded-lg bg-[var(--gold)] px-6 py-3 text-base font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)] sm:w-auto">
                     <Icon name="plus" size={19} /> Add Job
                   </span>
                 }
@@ -121,7 +121,7 @@ export function Dashboard() {
             ) : (
               <a
                 href="/login"
-                className="inline-flex items-center rounded-lg bg-[var(--gold)] px-6 py-3 text-base font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]"
+                className="inline-flex w-full items-center justify-center rounded-lg bg-[var(--gold)] px-6 py-3 text-base font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)] sm:w-auto"
               >
                 Sign in to add a job
               </a>

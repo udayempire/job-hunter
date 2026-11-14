@@ -43,7 +43,7 @@ export function AuthStatus() {
     );
 
   return (
-    <div className="relative flex items-center gap-4">
+    <div className="relative flex items-center gap-2 sm:gap-4">
       <div className="hidden border-l border-[var(--border)] pl-6 text-left sm:block">
         <p className="max-w-40 truncate text-base font-semibold tracking-[-0.04em] text-[var(--ink)]">
           {user.name ?? user.email}
@@ -90,6 +90,7 @@ export function AuthStatus() {
         </div>
       <button
         type="button"
+        aria-label={signingOut ? "Signing out" : "Sign out"}
         disabled={signingOut}
         onClick={() => {
           setSigningOut(true);
@@ -113,7 +114,7 @@ export function AuthStatus() {
           "Signing out…"
         ) : (
           <div className="flex items-center justify-center gap-2">
-            <span className="ml-2">Sign out</span>
+            <span className="hidden sm:inline">Sign out</span>
             <Icon name="logout" size={17} />{" "}
           </div>
         )}

@@ -13,7 +13,7 @@ export function EditJobDialog({
 }: {
   job: Job;
   onSaved: (job: JobDetails) => void;
-  variant?: "icon" | "action";
+  variant?: "icon" | "action" | "menu";
 }) {
   return (
     <AddJobDialog
@@ -25,13 +25,15 @@ export function EditJobDialog({
       trigger={
         <span
           className={
-            variant === "action"
+            variant === "menu"
+              ? "flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-[var(--ink)] hover:bg-[var(--control)]"
+              : variant === "action"
               ? "inline-flex items-center gap-1.5 border border-[var(--gold-border)] bg-[var(--control)] px-3 py-2 text-sm font-medium text-[var(--gold-ink)] transition hover:bg-[var(--gold-surface)]"
               : "inline-grid size-8 place-items-center rounded-lg border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:bg-zinc-800"
           }
         >
-          <Icon name="edit" size={variant === "action" ? 16 : 14} />
-          {variant === "action" && "Edit"}
+          <Icon name="edit" size={variant === "icon" ? 14 : 18} />
+          {variant !== "icon" && (variant === "menu" ? "Edit job" : "Edit")}
         </span>
       }
     />

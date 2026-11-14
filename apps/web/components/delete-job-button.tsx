@@ -14,7 +14,7 @@ export function DeleteJobButton({
   jobId: string;
   jobTitle: string;
   onDeleted: () => void;
-  variant?: "icon" | "text";
+  variant?: "icon" | "text" | "menu";
 }) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -55,22 +55,24 @@ export function DeleteJobButton({
         disabled={deleting}
         aria-label={`Delete ${jobTitle}`}
         title="Delete"
-        className={variant === "icon"
+        className={variant === "menu"
+          ? "flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-[var(--error)] hover:bg-[var(--control)] disabled:cursor-wait"
+          : variant === "icon"
           ? "inline-grid size-8 place-items-center rounded-lg border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:border-[var(--error)] hover:text-[var(--error)] disabled:cursor-wait disabled:opacity-50"
           : "inline-flex items-center gap-1.5 border border-[var(--error)]/40 bg-[var(--control)] px-3 py-2 text-sm font-medium text-[var(--error)] transition hover:bg-[var(--error)]/10 disabled:cursor-wait disabled:opacity-50"}
       >
         <Icon name="trash" size={variant === "icon" ? 14 : 16} />
-        {variant === "text" && (deleting ? "Deleting…" : "Delete")}
+        {variant !== "icon" && (deleting ? "Deleting…" : variant === "menu" ? "Delete job" : "Delete")}
       </button>
       {open && (
         <div
-          className="fixed inset-0 z-[110] grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[130] grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-labelledby={`delete-job-title-${jobId}`}
           aria-describedby={`delete-job-description-${jobId}`}
         >
-          <div className="w-full max-w-md border border-[var(--border)] bg-[var(--paper)] p-6 shadow-2xl">
+          <div className="max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto border border-[var(--border)] bg-[var(--paper)] p-4 shadow-2xl sm:p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--error)]">
               Delete job
             </p>

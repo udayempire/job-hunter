@@ -96,7 +96,7 @@ export default function SharedJobPage() {
       job={job}
       shared
       headerAction={
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-end gap-3">
           <AuthStatus />
           {saveAction}
         </div>

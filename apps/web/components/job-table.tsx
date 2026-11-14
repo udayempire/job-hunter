@@ -82,7 +82,7 @@ export function JobTable({
   }
 
   return (
-    <div className="mt-7 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--paper)] shadow-[0_8px_20px_rgba(0,0,0,.18)]">
+    <div className="mt-7 max-w-full overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--paper)] shadow-[0_8px_20px_rgba(0,0,0,.18)]">
       <Table className="min-w-[980px] table-fixed">
         <TableHeader>
           <TableRow className="hover:bg-transparent">

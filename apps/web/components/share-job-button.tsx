@@ -18,7 +18,7 @@ export function ShareJobButton({
 }: {
   jobId: string;
   job?: JobShareDetails;
-  variant?: "default" | "light" | "icon" | "action";
+  variant?: "default" | "light" | "icon" | "action" | "menu";
 }) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -93,12 +93,12 @@ export function ShareJobButton({
       : "bg-[var(--control)] text-[var(--ink)] hover:bg-zinc-800";
   const dialog = open && (
     <div
-      className="fixed inset-0 z-[100] grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[120] grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="share-job-title"
     >
-      <div className="w-full max-w-md border border-[var(--border)] bg-[var(--paper)] p-6 shadow-2xl">
+      <div className="max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto border border-[var(--border)] bg-[var(--paper)] p-4 shadow-2xl sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
@@ -130,7 +130,7 @@ export function ShareJobButton({
           <p className="mt-6 text-sm text-red-700">{error}</p>
         ) : (
           <>
-            <div className="mt-6 flex gap-2">
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row">
               <input
                 readOnly
                 value={url}
@@ -204,6 +204,8 @@ export function ShareJobButton({
         className={
           variant === "icon"
             ? "inline-grid size-8 place-items-center rounded-lg border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:bg-zinc-800"
+            : variant === "menu"
+              ? "flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-[var(--ink)] hover:bg-[var(--control)]"
             : variant === "action"
               ? `inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition ${buttonClass}`
               : `inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition ${buttonClass}`

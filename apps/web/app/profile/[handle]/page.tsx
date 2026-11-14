@@ -240,12 +240,12 @@ export default function PublicProfilePage() {
                 alt={`${profile.displayName || profile.handle}'s profile`}
                 className="grid size-12 shrink-0 place-items-center overflow-hidden bg-[var(--gold-surface)] text-lg font-semibold text-[var(--gold-ink)]"
               />
-              <div className="w-full">
-                <div className="flex w-full items-center justify-between gap-4">
-                  <h1 className="mt-1 text-2xl font-semibold tracking-[-0.05em] sm:text-3xl">
+              <div className="min-w-0 flex-1">
+                <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:gap-4">
+                  <h1 className="min-w-0 break-words text-2xl font-semibold tracking-[-0.05em] sm:text-3xl">
                     {profile.displayName || profile.handle}
                   </h1>
-                  <p className="whitespace-nowrap text-sm font-semibold ]">
+                  <p className="whitespace-nowrap text-xs font-semibold text-[var(--muted)] sm:text-sm">
                     Joined {timeSince(profile.joinedAt)}
                   </p>
                 </div>

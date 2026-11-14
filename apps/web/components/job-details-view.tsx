@@ -163,15 +163,15 @@ export function JobDetailsView({
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
       <AppBar right={headerAction} showAccount={!shared && !headerAction} />
       <div className="mx-auto max-w-5xl px-5 py-6 sm:px-8 lg:py-8">
-        <section className="mt-5 border border-[var(--border)] bg-[var(--paper)] p-7 text-[var(--ink)] sm:p-10">
+        <section className="mt-5 border border-[var(--border)] bg-[var(--paper)] p-5 text-[var(--ink)] sm:p-10">
           <div className="flex flex-col justify-between gap-7 sm:flex-row sm:items-start">
-            <div className="flex items-start gap-4">
+            <div className="flex min-w-0 items-start gap-4">
               <div className="grid size-14 shrink-0 place-items-center bg-[var(--gold-surface)] text-lg font-semibold text-[var(--gold-ink)]">
                 {job.company.slice(0, 2).toUpperCase()}
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm text-[var(--gold-ink)]">{job.company}</p>
-                <h1 className="mt-2 text-xl font-semibold tracking-[-0.06em] sm:text-xl">
+                <h1 className="mt-2 break-words text-xl font-semibold tracking-[-0.06em]">
                   {job.title}
                 </h1>
                 {/* <div className="mt-4 flex flex-wrap gap-2 text-sm text-[var(--copy)]">
