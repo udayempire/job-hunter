@@ -7,6 +7,17 @@ import { Dashboard } from "../components/dashboard";
 import { useAuth } from "../components/auth-provider";
 
 const extensionUrl = process.env.NEXT_PUBLIC_EXTENSION_URL?.trim();
+
+// Add the public URLs here when they are ready.
+const footerUrls = {
+  githubRepository: "https://github.com/udayempire/job-hunter",
+  contribute: "https://github.com/udayempire/job-hunter/blob/main/README.md",
+  sponsor: "https://github.com/sponsors/udayempire",
+  reportIssue: "https://github.com/udayempire/job-hunter/issues/new",
+  requestFeature: "https://github.com/udayempire/job-hunter/issues/new",
+  contact: "https://x.com/udayempire_",
+};
+
 const container =
   "mx-auto w-[calc(100%-32px)] max-w-[1200px] sm:w-[calc(100%-40px)]";
 const primaryButton =
@@ -21,6 +32,35 @@ const checkItem =
   "flex items-center gap-2.5 text-sm text-zinc-800 [&_svg]:shrink-0 [&_svg]:text-[#9b6800]";
 const extensionBadgeClass =
   "block h-12 w-[170px] transition hover:-translate-y-0.5 hover:drop-shadow-[0_10px_18px_rgba(17,24,39,.16)] motion-reduce:transition-none motion-reduce:hover:translate-y-0";
+
+function FooterExternalLink({
+  href,
+  children,
+}: {
+  href: string | undefined;
+  children: React.ReactNode;
+}) {
+  const className = "text-sm text-[#5f5b52] transition hover:text-[#956000]";
+
+  if (!href) {
+    return (
+      <span className={className + " cursor-default"} title="Link coming soon">
+        {children}
+      </span>
+    );
+  }
+
+  return (
+    <a
+      className={className}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {children}
+    </a>
+  );
+}
 
 function ExtensionButton() {
   if (!extensionUrl)
@@ -347,15 +387,115 @@ function Landing() {
           </Link>
         </div>
       </section>
-      <footer className="relative border-t border-[#e5e7eb] bg-[#fffdf6] py-[29px] text-xs text-[#70747d]">
+      <footer className="relative border-t border-[#e3d8b8] bg-[#fffaf0]">
         <div
-          className={container + " flex flex-wrap justify-between gap-[15px]"}
+          className={
+            container +
+            " grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.55fr_1fr_1fr_1fr]"
+          }
         >
-          <span className="font-bold text-[#111827]">Job Hunti.</span>
-          <span>Made for a more organized job search.</span>
-          <a href="/privacy" className="hover:text-[#956000]">
-            Privacy
-          </a>
+          <div className="max-w-[360px]">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2.5 text-xl font-bold tracking-[-.04em] text-[#111827]"
+            >
+              <Image
+                src="/jobhunti-logo.png"
+                width={34}
+                height={34}
+                alt=""
+                className="size-[34px]"
+              />
+              <span>
+                Job <em className="not-italic text-[#b77900]">Hunti.</em>
+              </span>
+            </Link>
+            <p className="mt-5 text-sm leading-6 text-[#5f5b52]">
+              A focused workspace to capture opportunities, track applications,
+              and share selected jobs.
+            </p>
+            <div className="mt-6">
+              <ExtensionButton />
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold text-[#111827]">Product</h3>
+            <div className="mt-5 flex flex-col items-start gap-3">
+              <a
+                href="#how-it-works"
+                className="text-sm text-[#5f5b52] transition hover:text-[#956000]"
+              >
+                Job tracker
+              </a>
+              <a
+                href="#extension"
+                className="text-sm text-[#5f5b52] transition hover:text-[#956000]"
+              >
+                Job Hunti Clip
+              </a>
+              <a
+                href="#sharing"
+                className="text-sm text-[#5f5b52] transition hover:text-[#956000]"
+              >
+                Public profiles
+              </a>
+              <Link
+                href="/login"
+                className="text-sm text-[#5f5b52] transition hover:text-[#956000]"
+              >
+                Get started
+              </Link>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold text-[#111827]">Community</h3>
+            <div className="mt-5 flex flex-col items-start gap-3">
+              <FooterExternalLink href={footerUrls.githubRepository}>
+                GitHub repository
+              </FooterExternalLink>
+              <FooterExternalLink href={footerUrls.contribute}>
+                Contribute
+              </FooterExternalLink>
+              <FooterExternalLink href={footerUrls.sponsor}>
+                Sponsor Job Hunti
+              </FooterExternalLink>
+              <FooterExternalLink href={footerUrls.reportIssue}>
+                Report an issue
+              </FooterExternalLink>
+              <FooterExternalLink href={footerUrls.requestFeature}>
+                Request a feature
+              </FooterExternalLink>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold text-[#111827]">Connect</h3>
+            <div className="mt-5 flex flex-col items-start gap-3">
+              <FooterExternalLink href={footerUrls.contact}>
+                Contact
+              </FooterExternalLink>
+              <Link
+                href="/privacy"
+                className="text-sm text-[#5f5b52] transition hover:text-[#956000]"
+              >
+                Privacy
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-[#e3d8b8]">
+          <div
+            className={
+              container +
+              " flex flex-col gap-2 py-5 text-xs text-[#777167] sm:flex-row sm:items-center sm:justify-between"
+            }
+          >
+            <span>© 2026 Job Hunti. All rights reserved.</span>
+            <span>Built in public by Uday Kumar.</span>
+          </div>
         </div>
       </footer>
     </main>
