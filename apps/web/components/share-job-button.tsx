@@ -9,6 +9,7 @@ import {
   type JobShareDetails,
 } from "../lib/job-share";
 import { Icon } from "./icon";
+import { useToast } from "./ui/toast";
 
 export function ShareJobButton({
   jobId,
@@ -19,6 +20,7 @@ export function ShareJobButton({
   job?: JobShareDetails;
   variant?: "default" | "light" | "icon" | "action";
 }) {
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
   const [copied, setCopied] = useState(false);
@@ -37,8 +39,17 @@ export function ShareJobButton({
     try {
       const shareUrl = await createJobShareLink(jobId);
       setUrl(shareUrl);
+      toast({
+        title: "Share link created",
+        description: "Anyone with the link can view this opportunity.",
+      });
     } catch {
       setError("Could not create the share link. Try again.");
+      toast({
+        title: "Could not create share link",
+        description: "Please try again.",
+        variant: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -46,8 +57,17 @@ export function ShareJobButton({
 
   async function copyLink() {
     if (!url) return;
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      toast({ title: "Link copied", description: "The job link is ready to share." });
+    } catch {
+      toast({
+        title: "Could not copy link",
+        description: "Copy the link from the field instead.",
+        variant: "error",
+      });
+    }
   }
 
   async function shareWithDevice() {

@@ -12,11 +12,13 @@ import {
   getSharedJob,
 } from "../../../../lib/jobs-api";
 import type { Job } from "../../../../components/types";
+import { useToast } from "../../../../components/ui/toast";
 
 export default function SharedJobPage() {
   const params = useParams<{ token: string }>();
   const router = useRouter();
   const { user } = useAuth();
+  const { toast } = useToast();
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const queryClient = useQueryClient();
@@ -38,9 +40,18 @@ export default function SharedJobPage() {
         cloned,
         ...current,
       ]);
+      toast({
+        title: "Job saved",
+        description: "The opportunity was added to your board.",
+      });
       router.push(`/jobs/${cloned.id}`);
     } catch {
       setError("Unable to save this job right now.");
+      toast({
+        title: "Could not save job",
+        description: "Please try again.",
+        variant: "error",
+      });
     } finally {
       setSaving(false);
     }

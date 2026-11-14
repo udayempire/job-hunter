@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ShareJobButton } from "./share-job-button";
+import { useToast } from "./ui/toast";
 import { AppBar } from "./app-bar";
 import { Icon } from "./icon";
 import type { JobDetails } from "../lib/jobs-api";
@@ -135,12 +136,27 @@ export function JobDetailsView({
   editAction?: React.ReactNode;
   deleteAction?: React.ReactNode;
 }) {
+  const { toast } = useToast();
   const [status, setStatus] = useState(job.status);
   const [applyNoticeOpen, setApplyNoticeOpen] = useState(false);
 
   async function changeStatus(nextStatus: JobStatus) {
+    const previousStatus = status;
     setStatus(nextStatus);
-    await onStatusChange?.(nextStatus);
+    try {
+      await onStatusChange?.(nextStatus);
+      toast({
+        title: "Status updated",
+        description: `Job moved to ${nextStatus}.`,
+      });
+    } catch {
+      setStatus(previousStatus);
+      toast({
+        title: "Could not update status",
+        description: "The previous status was restored.",
+        variant: "error",
+      });
+    }
   }
 
   return (

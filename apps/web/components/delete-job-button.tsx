@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { deleteJob } from "../lib/jobs-api";
 import { Icon } from "./icon";
+import { useToast } from "./ui/toast";
 
 export function DeleteJobButton({
   jobId,
@@ -15,6 +16,7 @@ export function DeleteJobButton({
   onDeleted: () => void;
   variant?: "icon" | "text";
 }) {
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
@@ -30,9 +32,18 @@ export function DeleteJobButton({
     try {
       await deleteJob(jobId);
       onDeleted();
+      toast({
+        title: "Job deleted",
+        description: `“${jobTitle}” was removed from your board.`,
+      });
     } catch {
       setError("Unable to delete this job. Please try again.");
       setDeleting(false);
+      toast({
+        title: "Could not delete job",
+        description: "Your job is still on the board. Please try again.",
+        variant: "error",
+      });
     }
   }
 

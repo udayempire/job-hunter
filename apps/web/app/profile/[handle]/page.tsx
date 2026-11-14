@@ -17,6 +17,7 @@ import {
 import { AppBar } from "../../../components/app-bar";
 import { Icon } from "../../../components/icon";
 import type { Job, JobStatus } from "../../../components/types";
+import { useToast } from "../../../components/ui/toast";
 
 function timeSince(date: string | null) {
   if (!date) return "Recently";
@@ -33,6 +34,7 @@ function timeSince(date: string | null) {
 export default function PublicProfilePage() {
   const params = useParams<{ handle: string }>();
   const { user, loading } = useAuth();
+  const { toast } = useToast();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [votePending, setVotePending] = useState(false);
@@ -104,6 +106,14 @@ export default function PublicProfilePage() {
             ? { ...current, profile: { ...current.profile, ...result } }
             : current,
       );
+      toast({
+        title: nextVote ? "Vote updated" : "Vote removed",
+        description: nextVote === "UPVOTE"
+          ? "You upvoted this profile."
+          : nextVote === "DOWNVOTE"
+            ? "You downvoted this profile."
+            : "Your profile vote was removed.",
+      });
     } catch (error) {
       queryClient.setQueryData<{ profile: PublicProfile; jobs: Job[] }>(
         ["public-profile", params.handle],
@@ -115,12 +125,21 @@ export default function PublicProfilePage() {
       setVoteError(
         error instanceof Error ? error.message : "Unable to update vote",
       );
+      toast({
+        title: "Could not update vote",
+        description: error instanceof Error ? error.message : "Please try again.",
+        variant: "error",
+      });
     } finally {
       setVotePending(false);
     }
   }
 
   async function handleStatusChange(id: string, status: JobStatus) {
+    const previous = queryClient.getQueryData<{
+      profile: PublicProfile;
+      jobs: Job[];
+    }>(["public-profile", params.handle]);
     queryClient.setQueryData<{ profile: PublicProfile; jobs: Job[] }>(
       ["public-profile", params.handle],
       (current) =>
@@ -147,8 +166,19 @@ export default function PublicProfilePage() {
               }
             : current,
       );
+      toast({
+        title: "Status updated",
+        description: `Job moved to ${status}.`,
+      });
     } catch {
-      // Preserve the existing profile view if the API is unavailable.
+      if (previous) {
+        queryClient.setQueryData(["public-profile", params.handle], previous);
+      }
+      toast({
+        title: "Could not update status",
+        description: "The previous status was restored.",
+        variant: "error",
+      });
     }
   }
 

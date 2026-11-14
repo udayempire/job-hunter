@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import type { KeyboardEvent, MouseEvent } from "react";
 import { createPublicJobShareLink } from "../lib/profiles-api";
 import { DeleteJobButton } from "./delete-job-button";
+import { useToast } from "./ui/toast";
 
 const statusStyles = {
   Saved: "bg-zinc-800 text-[var(--copy)]",
@@ -80,6 +81,7 @@ export function JobCard({
   useSharedDetails?: boolean;
 }) {
   const router = useRouter();
+  const { toast } = useToast();
 
   async function openDetails(
     event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>,
@@ -87,9 +89,17 @@ export function JobCard({
     const target = event.target as HTMLElement;
     if (target.closest("a, button, select, input, textarea, label")) return;
     if (useSharedDetails && profileHandle) {
-      window.location.assign(
-        await createPublicJobShareLink(profileHandle, job.id),
-      );
+      try {
+        window.location.assign(
+          await createPublicJobShareLink(profileHandle, job.id),
+        );
+      } catch {
+        toast({
+          title: "Could not open job details",
+          description: "Please try again.",
+          variant: "error",
+        });
+      }
       return;
     }
     router.push(`/jobs/${job.id}`);

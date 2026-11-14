@@ -7,6 +7,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../components/auth-provider";
 import { getMyProfile, updateProfile } from "../../lib/profiles-api";
 import { AppBar } from "../../components/app-bar";
+import { useToast } from "../../components/ui/toast";
 
 type ProfileDraft = {
   displayName: string;
@@ -56,6 +57,7 @@ function Field({
 
 export function ProfileSettingsPage() {
   const { user, loading } = useAuth();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const { data: profile, isError: profileError } = useQuery({
     queryKey: ["profile", "me"],
@@ -126,8 +128,17 @@ export function ProfileSettingsPage() {
         queryKey: ["public-profile", draft.handle],
       });
       setSaved(true);
+      toast({
+        title: "Profile updated",
+        description: "Your profile changes have been saved.",
+      });
     } catch {
       // Do not surface persistence failures in the profile UI.
+      toast({
+        title: "Could not update profile",
+        description: "Your changes were not saved. Please try again.",
+        variant: "error",
+      });
     } finally {
       setSaving(false);
     }

@@ -11,6 +11,7 @@ import {
   createProfile,
   type ProfileDraftInput,
 } from "../../lib/profiles-api";
+import { useToast } from "../../components/ui/toast";
 
 type HandleState = "idle" | "invalid" | "checking" | "available" | "taken" | "error";
 
@@ -36,6 +37,7 @@ function safeReturnPath(value: string | null) {
 
 export default function OnboardingPage() {
   const { user, loading } = useAuth();
+  const { toast } = useToast();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState<ProfileDraftInput>({
@@ -118,12 +120,21 @@ export default function OnboardingPage() {
             : current,
       );
       queryClient.setQueryData(["profile", "me"], profile);
+      toast({
+        title: "Profile created",
+        description: `Your permanent username is @${profile.handle}.`,
+      });
       const returnTo = new URLSearchParams(window.location.search).get("returnTo");
       router.replace(safeReturnPath(returnTo));
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : "Unable to create profile";
       setError(message);
       if (message.toLowerCase().includes("taken")) setHandleState("taken");
+      toast({
+        title: "Could not create profile",
+        description: message,
+        variant: "error",
+      });
     } finally {
       setSaving(false);
     }

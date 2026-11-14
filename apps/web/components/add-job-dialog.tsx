@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Icon } from "./icon";
 import type { Job, JobDraft } from "./types";
+import { useToast } from "./ui/toast";
 
 const inputClass =
   "w-full rounded-xl border border-[var(--border)] bg-[var(--control)] px-4 py-3 text-sm text-[var(--ink)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--gold)] focus:ring-4 focus:ring-[var(--gold)]/10";
@@ -110,6 +111,7 @@ export function AddJobDialog({
   initialJob?: Job;
   trigger?: React.ReactNode;
 }) {
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -158,8 +160,19 @@ export function AddJobDialog({
       setRecruiterCount(0);
       setError("");
       setOpen(false);
+      toast({
+        title: initialJob ? "Job updated" : "Job created",
+        description: initialJob
+          ? "Your changes have been saved."
+          : "The opportunity was added to your board.",
+      });
     } catch {
       setError("Unable to save this job. Try again.");
+      toast({
+        title: initialJob ? "Could not update job" : "Could not create job",
+        description: "Please try again.",
+        variant: "error",
+      });
     } finally {
       setSaving(false);
     }

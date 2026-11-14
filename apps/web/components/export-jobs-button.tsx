@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "./icon";
+import { useToast } from "./ui/toast";
 import type { Job, JobStatus } from "./types";
 
 const columns = [
@@ -95,6 +96,7 @@ export function ExportJobsButton({
   jobs: Job[];
   filter: "All" | JobStatus;
 }) {
+  const { toast } = useToast();
   function exportJobs() {
     const blob = new Blob([spreadsheetXml(jobs)], {
       type: "application/vnd.ms-excel;charset=utf-8",
@@ -108,6 +110,10 @@ export function ExportJobsButton({
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    toast({
+      title: "Export created",
+      description: `${jobs.length} ${jobs.length === 1 ? "job" : "jobs"} downloaded as a spreadsheet.`,
+    });
   }
 
   return (

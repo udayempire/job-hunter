@@ -8,6 +8,7 @@ import { Icon } from "./icon";
 import { ShareJobButton } from "./share-job-button";
 import { DeleteJobButton } from "./delete-job-button";
 import type { Job, JobStatus } from "./types";
+import { useToast } from "./ui/toast";
 import {
   Table,
   TableBody,
@@ -55,6 +56,7 @@ export function JobTable({
   useSharedDetails?: boolean;
 }) {
   const router = useRouter();
+  const { toast } = useToast();
 
   async function openDetails(
     event: MouseEvent<HTMLTableRowElement> | KeyboardEvent<HTMLTableRowElement>,
@@ -63,9 +65,17 @@ export function JobTable({
     const target = event.target as HTMLElement;
     if (target.closest("a, button, select, input, textarea, label")) return;
     if (useSharedDetails && profileHandle) {
-      window.location.assign(
-        await createPublicJobShareLink(profileHandle, job.id),
-      );
+      try {
+        window.location.assign(
+          await createPublicJobShareLink(profileHandle, job.id),
+        );
+      } catch {
+        toast({
+          title: "Could not open job details",
+          description: "Please try again.",
+          variant: "error",
+        });
+      }
       return;
     }
     router.push(`/jobs/${job.id}`);

@@ -14,9 +14,11 @@ import {
 } from "../lib/jobs-api";
 import { useAuth } from "./auth-provider";
 import { AppBar } from "./app-bar";
+import { useToast } from "./ui/toast";
 
 export function Dashboard() {
   const { user, loading: authLoading } = useAuth();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const { data: jobs = [] } = useQuery({
     queryKey: ["jobs"],
@@ -33,6 +35,8 @@ export function Dashboard() {
   }
 
   async function handleStatusChange(id: string, status: JobStatus) {
+    const previousJobs = queryClient.getQueryData<Job[]>(["jobs"]);
+    const previousJob = queryClient.getQueryData<JobDetails>(["job", id]);
     queryClient.setQueryData<Job[]>(["jobs"], (current = []) =>
       current.map((job) => (job.id === id ? { ...job, status } : job)),
     );
@@ -45,8 +49,18 @@ export function Dashboard() {
         current.map((job) => (job.id === id ? updatedJob : job)),
       );
       queryClient.setQueryData<JobDetails>(["job", id], updatedJob);
+      toast({
+        title: "Status updated",
+        description: `Job moved to ${status}.`,
+      });
     } catch {
-      /* Mock jobs remain usable while the API is offline. */
+      if (previousJobs) queryClient.setQueryData(["jobs"], previousJobs);
+      if (previousJob) queryClient.setQueryData(["job", id], previousJob);
+      toast({
+        title: "Could not update status",
+        description: "Please try again.",
+        variant: "error",
+      });
     }
   }
 

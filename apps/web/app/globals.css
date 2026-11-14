@@ -29,6 +29,43 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer base {
+  button {
+    @apply cursor-pointer;
+  }
+
+  button:disabled {
+    @apply cursor-not-allowed;
+  }
+}
+
+.toast-item-enter {
+  animation: toast-in 280ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.toast-item-exit {
+  animation: toast-out 260ms ease-in both;
+}
+
+.toast-progress {
+  animation: toast-progress 5.5s linear forwards;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(24px) scale(.98); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes toast-out {
+  from { opacity: 1; transform: translateX(0) scale(1); }
+  to { opacity: 0; transform: translateX(32px) scale(.98); }
+}
+
+@keyframes toast-progress {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
 .vote-feedback-button {
   position: relative;
   isolation: isolate;
@@ -64,7 +101,10 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .vote-icon-pop,
-  .vote-feedback-float {
+  .vote-feedback-float,
+  .toast-item-enter,
+  .toast-item-exit,
+  .toast-progress {
     animation-duration: 1ms;
   }
 }

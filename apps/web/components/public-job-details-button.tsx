@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createPublicJobShareLink } from "../lib/profiles-api";
 import { Icon } from "./icon";
+import { useToast } from "./ui/toast";
 
 export function PublicJobDetailsButton({
   handle,
@@ -11,12 +12,19 @@ export function PublicJobDetailsButton({
   handle: string;
   jobId: string;
 }) {
+  const { toast } = useToast();
   const [opening, setOpening] = useState(false);
 
   async function openDetails() {
     setOpening(true);
     try {
       window.location.assign(await createPublicJobShareLink(handle, jobId));
+    } catch {
+      toast({
+        title: "Could not open job details",
+        description: "Please try again.",
+        variant: "error",
+      });
     } finally {
       setOpening(false);
     }

@@ -6,9 +6,11 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "./auth-provider";
 import { Avatar } from "./avatar";
 import { Icon } from "./icon";
+import { useToast } from "./ui/toast";
 
 export function AuthStatus() {
   const { user, loading, logout } = useAuth();
+  const { toast } = useToast();
   const router = useRouter();
   const [signingOut, setSigningOut] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -92,8 +94,18 @@ export function AuthStatus() {
         onClick={() => {
           setSigningOut(true);
           logout()
-            .then(() => router.replace("/"))
-            .catch(() => setSigningOut(false));
+            .then(() => {
+              toast({ title: "Signed out", description: "Your session has ended." });
+              router.replace("/");
+            })
+            .catch(() => {
+              setSigningOut(false);
+              toast({
+                title: "Could not sign out",
+                description: "Please try again.",
+                variant: "error",
+              });
+            });
         }}
         className="inline-flex border-l bg-red-800 p-2 text-center text-white border-[var(--border)]  text-sm font-medium  transition hover:text-[var(--gold-ink)] disabled:opacity-50"
       >
