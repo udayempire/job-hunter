@@ -4,15 +4,16 @@ import type { Job } from "../components/types";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
 
-export type ProfileDraftInput = {
+export type ProfileDetailsInput = {
   displayName: string;
-  handle: string;
   headline: string;
   bio: string;
   location: string;
   website: string;
   isPublic: boolean;
 };
+
+export type ProfileDraftInput = ProfileDetailsInput & { handle: string };
 
 export type StoredProfile = Omit<ProfileDraftInput, "displayName" | "headline" | "bio" | "location" | "website"> & {
   displayName: string | null;
@@ -46,7 +47,33 @@ export async function getMyProfile(): Promise<StoredProfile> {
   return payload.data;
 }
 
-export async function updateProfile(input: ProfileDraftInput): Promise<StoredProfile> {
+export async function checkHandleAvailability(handle: string): Promise<boolean> {
+  const response = await fetch(`${apiUrl}/profiles/handles/${encodeURIComponent(handle)}/availability`, {
+    credentials: "include",
+    cache: "no-store",
+  });
+  if (response.status === 400) return false;
+  if (!response.ok) throw new Error("Unable to check username");
+  const payload = (await response.json()) as { data: { available: boolean } };
+  return payload.data.available;
+}
+
+export async function createProfile(input: ProfileDraftInput): Promise<StoredProfile> {
+  const response = await fetch(`${apiUrl}/profiles/me`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(input),
+  });
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null) as { error?: string } | null;
+    throw new Error(payload?.error ?? "Unable to create profile");
+  }
+  const payload = (await response.json()) as { data: StoredProfile };
+  return payload.data;
+}
+
+export async function updateProfile(input: ProfileDetailsInput): Promise<StoredProfile> {
   const response = await fetch(`${apiUrl}/profiles/me`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },

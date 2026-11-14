@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../components/auth-provider";
-import { Avatar } from "../../components/avatar";
 import { getMyProfile, updateProfile } from "../../lib/profiles-api";
 import { AppBar } from "../../components/app-bar";
 
@@ -114,7 +113,14 @@ export function ProfileSettingsPage() {
     setSaving(true);
     setSaved(false);
     try {
-      const savedProfile = await updateProfile(draft);
+      const savedProfile = await updateProfile({
+        displayName: draft.displayName,
+        headline: draft.headline,
+        bio: draft.bio,
+        location: draft.location,
+        website: draft.website,
+        isPublic: draft.isPublic,
+      });
       queryClient.setQueryData(["profile", "me"], savedProfile);
       queryClient.invalidateQueries({
         queryKey: ["public-profile", draft.handle],
@@ -153,14 +159,14 @@ export function ProfileSettingsPage() {
   return (
     <main className="min-h-screen bg-[var(--canvas)] text-[var(--ink)]">
       <AppBar />
-      <div className="mx-auto max-w-5xl px-5 py-6 sm:px-8 lg:py-8">
+      <div className="mx-auto max-w-3xl px-5 py-6 sm:px-8 lg:py-8">
         {/* <Link
           href="/"
           className="mt-10 inline-flex text-sm font-medium text-[var(--muted)] hover:text-[var(--gold-ink)]"
         >
           ← Back to your pipeline
         </Link> */}
-        <div className="mt-5 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="mt-5">
           <section className="border border-[var(--border)] bg-[var(--paper)] p-6 sm:p-8">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
@@ -175,27 +181,27 @@ export function ProfileSettingsPage() {
               </p>
             </div>
             <form onSubmit={saveProfile} className="mt-8 space-y-5">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field
-                  label="Display name"
-                  name="displayName"
-                  value={draft.displayName}
-                  onChange={(value) => update("displayName", value)}
-                  placeholder="Your name"
+              <label className="block">
+                <span className="mb-1.5 block text-xs font-medium text-[var(--copy)]">
+                  Profile username
+                </span>
+                <input
+                  value={`@${draft.handle}`}
+                  readOnly
+                  aria-readonly="true"
+                  className={`${inputClass} cursor-default text-[var(--muted)]`}
                 />
-                <Field
-                  label="Profile handle"
-                  name="handle"
-                  value={draft.handle}
-                  onChange={(value) =>
-                    update(
-                      "handle",
-                      value.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
-                    )
-                  }
-                  placeholder="uday"
-                />
-              </div>
+                <span className="mt-1.5 block text-xs text-[var(--muted)]">
+                  Your profile username is permanent and cannot be edited.
+                </span>
+              </label>
+              <Field
+                label="Display name"
+                name="displayName"
+                value={draft.displayName}
+                onChange={(value) => update("displayName", value)}
+                placeholder="Your name"
+              />
               <Field
                 label="Headline"
                 name="headline"
@@ -265,38 +271,6 @@ export function ProfileSettingsPage() {
               </div>
             </form>
           </section>
-          <aside className="h-fit border border-[var(--border)] bg-[var(--paper)] p-6 text-[var(--ink)] sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--gold-ink)]">
-              Profile preview
-            </p>
-            <Avatar
-              src={user.image}
-              name={draft.displayName}
-              fallback={user.email}
-              alt=""
-              className="mt-8 grid size-16 place-items-center overflow-hidden bg-[var(--gold-surface)] text-xl font-semibold text-[var(--gold-ink)]"
-            />
-            <h2 className="mt-5 text-2xl font-semibold tracking-[-0.05em]">
-              {draft.displayName || "Your name"}
-            </h2>
-            <p className="mt-2 text-sm text-[var(--gold-ink)]">
-              @{draft.handle || "your-handle"}
-            </p>
-            <p className="mt-5 text-sm leading-6 text-[var(--copy)]">
-              {draft.headline || "Your headline will appear here."}
-            </p>
-            {draft.location && (
-              <p className="mt-5 text-xs text-[var(--muted)]">
-                {draft.location}
-              </p>
-            )}
-            <div className="mt-8 border-t border-[var(--divider)] pt-5">
-              <p className="text-xs text-[var(--muted)]">Profile visibility</p>
-              <p className="mt-1 text-sm font-medium">
-                {draft.isPublic ? "Public" : "Private"}
-              </p>
-            </div>
-          </aside>
         </div>
       </div>
     </main>

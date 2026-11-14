@@ -146,10 +146,14 @@ async function loadAccount(): Promise<void> {
     const handle = payload.data?.profile?.handle;
     if (!handle) {
       if (accountLabel) {
-        accountLabel.textContent = "Username unavailable";
-        accountLabel.hidden = false;
+        accountLabel.textContent = "";
+        accountLabel.hidden = true;
       }
-      if (accountLink) accountLink.hidden = true;
+      if (accountLink) {
+        accountLink.textContent = "Finish profile setup";
+        accountLink.href = `${frontendUrl}/onboarding`;
+        accountLink.hidden = false;
+      }
       return;
     }
     if (accountLabel) {

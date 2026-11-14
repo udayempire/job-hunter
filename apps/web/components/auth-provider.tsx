@@ -1,7 +1,8 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContext, useCallback, useContext, useMemo } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
 import {
   getCurrentUser,
   logout as logoutAccount,
@@ -18,6 +19,8 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
+  const pathname = usePathname();
+  const router = useRouter();
   const { data: user = null, isPending: loading } = useQuery({
     queryKey: ["auth", "current-user"],
     queryFn: getCurrentUser,
@@ -41,7 +44,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [loading, logout, user],
   );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const needsOnboarding = !loading && Boolean(user && !user.profile);
+  const shouldLeaveOnboarding = !loading && Boolean(user?.profile) && pathname === "/onboarding";
+
+  useEffect(() => {
+    if (needsOnboarding && pathname !== "/onboarding") {
+      const returnTo = pathname.startsWith("/share/jobs/")
+        ? `?returnTo=${encodeURIComponent(pathname)}`
+        : "";
+      router.replace(`/onboarding${returnTo}`);
+    } else if (shouldLeaveOnboarding) {
+      router.replace("/");
+    }
+  }, [needsOnboarding, pathname, router, shouldLeaveOnboarding]);
+
+  const redirecting =
+    (needsOnboarding && pathname !== "/onboarding") || shouldLeaveOnboarding;
+
+  return (
+    <AuthContext.Provider value={value}>
+      {redirecting ? (
+        <main className="min-h-screen bg-[var(--canvas)] p-8">
+          <div className="mx-auto h-48 max-w-5xl animate-pulse bg-zinc-800" />
+        </main>
+      ) : children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

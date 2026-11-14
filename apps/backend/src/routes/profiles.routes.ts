@@ -13,6 +13,13 @@ function nullableString(value: unknown): string | null | undefined {
   return typeof value === "string" ? value.trim() || null : undefined;
 }
 
+function profileHandle(value: unknown): string | undefined {
+  const handle = stringValue(value)?.toLowerCase();
+  return handle && /^[a-z0-9](?:[a-z0-9-]{1,28}[a-z0-9])$/.test(handle)
+    ? handle
+    : undefined;
+}
+
 function voteTypeValue(value: unknown): ProfileVoteType | null | undefined {
   if (value === null) return null;
   const vote = stringValue(value)?.toUpperCase();
@@ -31,25 +38,74 @@ profileRouter.get("/me", requireAuth, async (request: Request, response: Respons
   response.json({ data: profile });
 });
 
+profileRouter.get("/handles/:handle/availability", requireAuth, async (request: Request, response: Response) => {
+  const handle = profileHandle(request.params.handle);
+  if (!handle) {
+    response.status(400).json({ error: "Handle must be 3-30 characters using lowercase letters, numbers, and hyphens" });
+    return;
+  }
+
+  const existing = await db.profile.findUnique({ where: { handle }, select: { id: true } });
+  response.json({ data: { handle, available: !existing } });
+});
+
+profileRouter.post("/me", requireAuth, async (request: Request, response: Response) => {
+  const userId = (request as AuthenticatedRequest).userId;
+  const handle = profileHandle(request.body.handle);
+  if (!handle) {
+    response.status(400).json({ error: "Choose a profile handle before continuing" });
+    return;
+  }
+  if ("isPublic" in request.body && typeof request.body.isPublic !== "boolean") {
+    response.status(400).json({ error: "isPublic must be a boolean" });
+    return;
+  }
+
+  const existingProfile = await db.profile.findUnique({ where: { userId }, select: { id: true } });
+  if (existingProfile) {
+    response.status(409).json({ error: "Your profile is already set up" });
+    return;
+  }
+
+  try {
+    const profile = await db.profile.create({
+      data: {
+        userId,
+        handle,
+        displayName: nullableString(request.body.displayName),
+        headline: nullableString(request.body.headline),
+        bio: nullableString(request.body.bio),
+        location: nullableString(request.body.location),
+        website: nullableString(request.body.website),
+        isPublic: request.body.isPublic ?? true,
+      },
+    });
+    response.status(201).json({ data: profile });
+  } catch (error) {
+    if (isPrismaError(error, "P2002")) {
+      response.status(409).json({ error: "That profile handle is already taken" });
+      return;
+    }
+    console.error("Unable to create profile", error);
+    response.status(500).json({ error: "Unable to create profile" });
+  }
+});
+
 profileRouter.patch("/me", requireAuth, async (request: Request, response: Response) => {
   const userId = (request as AuthenticatedRequest).userId;
   const data: Prisma.ProfileUpdateInput = {};
   const textFields = ["displayName", "headline", "bio", "location", "website"] as const;
+
+  if ("handle" in request.body) {
+    response.status(400).json({ error: "Profile handles cannot be changed after onboarding" });
+    return;
+  }
 
   for (const field of textFields) {
     if (field in request.body) {
       const value = nullableString(request.body[field]);
       if (value !== undefined) data[field] = value;
     }
-  }
-
-  if ("handle" in request.body) {
-    const handle = stringValue(request.body.handle)?.toLowerCase();
-    if (!handle || !/^[a-z0-9-]+$/.test(handle)) {
-      response.status(400).json({ error: "Handle can only use lowercase letters, numbers, and hyphens" });
-      return;
-    }
-    data.handle = handle;
   }
 
   if ("isPublic" in request.body) {

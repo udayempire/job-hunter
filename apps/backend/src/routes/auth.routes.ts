@@ -30,23 +30,21 @@ authRouter.get("/google/callback", async (request, response) => {
         data: {
           ...googleUser,
           emailVerified: true,
-          profile: { create: { handle: await uniqueHandle(googleUser.name ?? googleUser.email.split("@")[0] ?? "user"), isPublic: true } },
         },
       });
 
-    if (!existing) {
-      // The profile is created with the first account insert above.
-    } else if (!(await db.profile.findUnique({ where: { userId: user.id }, select: { id: true } }))) {
-      await db.profile.create({ data: { userId: user.id, handle: await uniqueHandle(googleUser.name ?? googleUser.email.split("@")[0] ?? "user"), isPublic: true } });
-    }
     await claimLegacyJobs(user.id);
+    const profile = await db.profile.findUnique({ where: { userId: user.id }, select: { id: true } });
     const accessToken = await createAccessToken(user.id);
     const refreshToken = createRefreshToken();
     await db.authSession.create({ data: { userId: user.id, refreshTokenHash: hashRefreshToken(refreshToken), expiresAt: refreshTokenExpiry() } });
     setCookie(response, "access_token", accessToken, persistentCookieLifetimeSeconds);
     setCookie(response, "refresh_token", refreshToken, 30 * 24 * 60 * 60);
     const returnTo = sharedJobReturnPath(request.query.state);
-    return response.redirect(`${frontendUrl()}${returnTo ?? "/"}`);
+    const destination = profile
+      ? returnTo ?? "/"
+      : `/onboarding${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`;
+    return response.redirect(`${frontendUrl()}${destination}`);
   } catch (error) {
     console.error("Google sign-in failed", error);
     return response.redirect(`${frontendUrl()}/login?error=google_signin_failed`);
@@ -128,14 +126,6 @@ function sharedJobReturnPath(value: unknown) {
   } catch {
     return null;
   }
-}
-
-async function uniqueHandle(seed: string) {
-  const base = seed.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 24) || "user";
-  let handle = base;
-  let suffix = 1;
-  while (await db.profile.findUnique({ where: { handle } })) handle = `${base}-${suffix++}`;
-  return handle;
 }
 
 async function claimLegacyJobs(userId: string) {
