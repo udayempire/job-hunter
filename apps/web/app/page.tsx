@@ -16,9 +16,9 @@ const secondaryButton =
 const eyebrow = "text-[18px] font-bold tracking-[.16em] text-[#a66d06]";
 const heading =
   "mt-[15px] text-[clamp(34px,4vw,48px)] font-bold leading-[1.13] tracking-[-.045em]";
-const featureCopy = "mt-5 max-w-[520px] text-base leading-[1.7] text-[#4b5563]";
+const featureCopy = "mt-5 max-w-[520px] text-base leading-[1.7] text-zinc-800";
 const checkItem =
-  "flex items-center gap-2.5 text-sm text-[#4b5563] [&_svg]:shrink-0 [&_svg]:text-[#9b6800]";
+  "flex items-center gap-2.5 text-sm text-zinc-800 [&_svg]:shrink-0 [&_svg]:text-[#9b6800]";
 const extensionBadgeClass =
   "block h-12 w-[170px] transition hover:-translate-y-0.5 hover:drop-shadow-[0_10px_18px_rgba(17,24,39,.16)] motion-reduce:transition-none motion-reduce:hover:translate-y-0";
 
@@ -209,7 +209,7 @@ function Landing() {
 
       <section
         id="extension"
-        className="relative bg-[#fff8e8] py-[73px] scroll-mt-[30px] sm:py-[100px]"
+        className="relative bg-[linear-gradient(90deg,#FBD07C,#F7F779)] py-[73px] scroll-mt-[30px] sm:py-[100px]"
       >
         <div
           className={
