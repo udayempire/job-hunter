@@ -2,6 +2,7 @@ import "@repo/ui/styles.css";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import { AuthProvider } from "../components/auth-provider";
 import { QueryProvider } from "../components/query-provider";
 import { ToastProvider } from "../components/ui/toast";
@@ -71,6 +72,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <Script id="google-tag-manager-data-layer" strategy="beforeInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());`}
+        </Script>
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtm.js?id=GTM-NQ2WZ83Q"
+          strategy="afterInteractive"
+        />
+      </head>
       <body className={`${inter.className} ${inter.variable}`}>
         <QueryProvider>
           <ToastProvider>
