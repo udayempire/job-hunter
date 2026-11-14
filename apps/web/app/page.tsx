@@ -1,365 +1,362 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
+import { ArrowDown, ArrowRight, Check, LockKeyhole } from "lucide-react";
 import { Dashboard } from "../components/dashboard";
 import { useAuth } from "../components/auth-provider";
 
-const examples = [
-  {
-    company: "Northstar",
-    role: "Product Engineer",
-    location: "Remote",
-    status: "Review",
-  },
-  {
-    company: "Forma",
-    role: "Frontend Developer",
-    location: "Bengaluru",
-    status: "Applied",
-  },
-  {
-    company: "Fieldwork",
-    role: "Software Engineer",
-    location: "Hybrid",
-    status: "Saved",
-  },
-];
+const extensionUrl = process.env.NEXT_PUBLIC_EXTENSION_URL?.trim();
+const container =
+  "mx-auto w-[calc(100%-32px)] max-w-[1200px] sm:w-[calc(100%-40px)]";
+const primaryButton =
+  "inline-flex min-h-12 items-center justify-center gap-2.5 bg-zinc-900 text-white whitespace-nowrap bg-[#f5c53d] px-[19px] py-[11px] text-[15px] font-semibold  shadow-[0_1px_0_#cf9e16,0_8px_16px_#533c0914,0_22px_35px_#533c090d] transition hover:-translate-y-0.5 hover:bg-zinc-800 motion-reduce:transition-none motion-reduce:hover:translate-y-0";
+const secondaryButton =
+  "inline-flex min-h-12 items-center justify-center gap-2.5 whitespace-nowrap border border-[#d7d9de] bg-[#fffdf8] px-[19px] py-[11px] text-[15px] font-semibold text-[#111827] shadow-[0_2px_4px_#1118270a,0_12px_26px_#1118270b] transition hover:-translate-y-0.5 hover:bg-[#fffcf2] motion-reduce:transition-none motion-reduce:hover:translate-y-0";
+const eyebrow = "text-[18px] font-bold tracking-[.16em] text-[#a66d06]";
+const heading =
+  "mt-[15px] text-[clamp(34px,4vw,48px)] font-bold leading-[1.13] tracking-[-.045em]";
+const featureCopy = "mt-5 max-w-[520px] text-base leading-[1.7] text-[#4b5563]";
+const checkItem =
+  "flex items-center gap-2.5 text-sm text-[#4b5563] [&_svg]:shrink-0 [&_svg]:text-[#9b6800]";
+const extensionBadgeClass =
+  "block h-12 w-[170px] transition hover:-translate-y-0.5 hover:drop-shadow-[0_10px_18px_rgba(17,24,39,.16)] motion-reduce:transition-none motion-reduce:hover:translate-y-0";
 
-function WorkspacePreview() {
+function ExtensionButton() {
+  if (!extensionUrl)
+    return (
+      <span className="inline-flex flex-col items-center gap-[5px]">
+        <button
+          className="cursor-not-allowed border-0 bg-transparent p-0 opacity-70"
+          type="button"
+          disabled
+          title="Store link coming soon"
+        >
+          <Image
+            src="/landing/chromewebstore.png"
+            width={170}
+            height={48}
+            alt="Available in the Chrome Web Store"
+            className="block h-12 w-[170px]"
+          />
+        </button>
+        <small className="text-[11px] text-[#6b7280]">
+          Store link coming soon
+        </small>
+      </span>
+    );
   return (
-    <div className="overflow-hidden border border-[#504b3c] bg-[#20201e] text-left shadow-[0_30px_80px_rgba(0,0,0,.3)]">
-      <div className="flex items-center justify-between border-b border-[#3a3934] px-5 py-4">
-        <span className="text-sm font-semibold text-[#f4f1e8]">
-          Your workspace
-        </span>
-        <span className="text-xs text-[#aaa69b]">Example view</span>
-      </div>
-      <div className="px-5 pb-5 pt-6">
-        <p className="font-serif text-xl text-[#f4f1e8]">
-          Jobs worth your attention
-        </p>
-        <p className="mt-1 text-xs text-[#aaa69b]">
-          Your opportunities, all in one place.
-        </p>
-        <div className="mt-5 overflow-x-auto border border-[#3a3934]">
-          <table className="w-full min-w-[460px] text-left text-xs">
-            <thead className="bg-[#292925] text-[#aaa69b]">
-              <tr>
-                {["Company", "Role", "Location", "Status"].map((heading) => (
-                  <th className="px-4 py-3 font-medium" key={heading}>
-                    {heading}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {examples.map((job) => (
-                <tr
-                  key={job.company}
-                  className="border-t border-[#3a3934] text-[#d3d0c7]"
-                >
-                  <td className="px-4 py-4 font-semibold text-[#f4f1e8]">
-                    {job.company}
-                  </td>
-                  <td className="px-4 py-4">{job.role}</td>
-                  <td className="px-4 py-4">{job.location}</td>
-                  <td className="px-4 py-4">
-                    <span
-                      className={
-                        job.status === "Applied"
-                          ? "bg-[#342f1b] px-2 py-1 text-[#e7c75f]"
-                          : "bg-[#30302c] px-2 py-1"
-                      }
-                    >
-                      {job.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="mt-4 flex items-center justify-between text-xs text-[#aaa69b]">
-          <span>Everything you need to pick up where you left off.</span>
-          <span className="text-[#e7c75f]">View details ↗</span>
-        </div>
-      </div>
-    </div>
+    <a
+      className="inline-flex"
+      href={extensionUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Get Job Hunti from the Chrome Web Store"
+    >
+      <Image
+        src="/landing/chromewebstore.png"
+        width={170}
+        height={48}
+        alt="Available in the Chrome Web Store"
+        className={extensionBadgeClass}
+      />
+    </a>
   );
 }
 
 function Landing() {
   return (
-    <main className="landing-page min-h-screen bg-[#171715] text-[#f4f1e8]">
-      <header className="mx-auto flex max-w-7xl items-center justify-between border-b border-[#3a3934] px-5 py-6 sm:px-8">
-        <Link href="/" className="flex items-center gap-3 text-xl font-semibold tracking-tight">
-          <img src="/jobhunti-logo.png" alt="" width={40} height={40} className="size-10" />
-          <span>Job <span className="text-[#e0b63d]">Hunti.</span></span>
-        </Link>
-        <nav className="hidden items-center gap-8 text-sm text-[#c0bdb3] sm:flex">
-          <a href="#how-it-works" className="hover:text-white">
-            How it works
-          </a>
-          <a href="#sharing" className="hover:text-white">
-            Sharing
-          </a>
-        </nav>
-        <Link
-          href="/login"
-          className="border border-[#70602b] px-4 py-2 text-sm font-semibold text-[#e7c75f] hover:bg-[#342f1b]"
+    <main className="relative isolate overflow-hidden bg-[#fffdf6] text-[#111827]">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[828px] bg-[radial-gradient(ellipse_49%_49%_at_50%_33%,#fffdf6_3%,#fff4cf_58%,transparent_100%),radial-gradient(ellipse_64%_75%_at_89%_83%,#e6ad23_0%,transparent_72%),radial-gradient(ellipse_63%_77%_at_5%_85%,#f4c64b_0%,transparent_76%),linear-gradient(110deg,#fff9e7,#f5d56d_45%,#df9e16_100%)]"
+      />
+      <header className="relative z-10 h-[62px] border-b border-[#aa7c1838] sm:h-[68px]">
+        <div
+          className={
+            container + " flex h-full items-center justify-between gap-6"
+          }
         >
-          Sign in ↗
-        </Link>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-[9px] whitespace-nowrap text-lg font-bold tracking-[-.04em] sm:text-xl"
+          >
+            <Image
+              src="/jobhunti-logo.png"
+              width={34}
+              height={34}
+              alt=""
+              className="size-[29px] sm:size-[34px]"
+            />
+            <span>
+              Job <em className="not-italic text-[#b77900]">Hunti.</em>
+            </span>
+          </Link>
+          <nav
+            aria-label="Main navigation"
+            className="hidden gap-8 text-sm font-medium text-zinc-800 sm:flex [&_a:hover]:text-[#956000]"
+          >
+            <a href="#how-it-works">How it works</a>
+            <a href="#extension">Extension</a>
+            <a href="#sharing">Sharing</a>
+          </nav>
+          <Link
+            href="/login"
+            className={
+              primaryButton +
+              " bg-zinc-800 text-white min-h-10 px-[15px] py-2 text-sm"
+            }
+          >
+            Get started <ArrowRight size={16} />
+          </Link>
+        </div>
       </header>
-      <section className="mx-auto grid max-w-7xl items-center gap-12 px-5 pb-20 pt-20 sm:px-8 lg:grid-cols-[1fr_1.08fr] lg:gap-16 lg:pb-28 lg:pt-28">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#e7c75f]">
-            A calmer job search
-          </p>
-          <h1 className="mt-6 max-w-2xl font-serif text-5xl leading-[1.08] tracking-[-0.045em] sm:text-6xl">
-            Keep the opportunities{" "}
-            <span className="text-[#e0b63d]">worth pursuing</span> in one place.
+
+      <section className="relative z-10">
+        <div className={container + " pt-[46px] text-center sm:pt-[66px]"}>
+          <a
+            href="#extension"
+            className="inline-flex items-center gap-1.5 rounded-[9999px]! border border-[#e5d9b5] bg-[#fffdf8] px-[15px] py-2 text-[11px] font-semibold sm:gap-[13px] sm:text-[13px]"
+          >
+            NEW · Job Hunti Clip{" "}
+            <span className="inline-flex items-center gap-[5px] border-l border-[#e5e7eb] pl-[7px] font-medium text-[#98640d] sm:pl-[13px]">
+              Save from your browser <ArrowRight size={14} />
+            </span>
+          </a>
+          <h1 className="mx-auto mt-[27px] max-w-[900px] text-[clamp(44px,6vw,76px)] font-bold leading-[1.05] tracking-[-.055em]">
+            Every opportunity.
+            <br />
+            <span className="text-[#a46c00]">One clear place.</span>
           </h1>
-          <p className="mt-6 max-w-xl text-base leading-7 text-[#c0bdb3] sm:text-lg">
-            Save roles, keep company and recruiter details close, and track
-            where each application stands. Share your search only when you
-            choose.
+          <p className="mx-auto mt-[21px] max-w-[650px] text-[clamp(16px,1.7vw,19px)] leading-[1.55] text-[#4b5563]">
+            Capture jobs as you browse, keep every detail together, and know
+            exactly where each application stands.
           </p>
-          <div className="mt-9 flex flex-wrap items-center gap-6">
+          <div className="mt-[29px] flex flex-col items-center justify-center gap-[13px] sm:flex-row sm:items-start">
             <Link
               href="/login"
-              className="bg-[#e0b63d] px-6 py-3.5 text-sm font-semibold text-[#171715] transition hover:bg-[#cfa62d]"
+              className={primaryButton + " w-full max-w-[320px] sm:w-auto"}
             >
-              Start your workspace ↗
+              Start tracking free <ArrowRight size={18} />
             </Link>
-            <a
-              href="#how-it-works"
-              className="text-sm font-medium text-[#d6d2c6] hover:text-white"
-            >
-              See how it works ↓
-            </a>
+            <ExtensionButton />
+          </div>
+          <p className="mx-auto mt-4 text-xs text-zinc-800 font-semibold">
+            Your workspace for the whole search. A browser companion for the
+            moment you find a role.
+          </p>
+          <div className="relative mx-auto -mt-2 max-w-[1000px] text-left sm:-mt-8">
+            <Image
+              src="/landing/dashboard.png"
+              alt="Job Hunti dashboard showing saved jobs and application statuses"
+              width={1448}
+              height={1086}
+              priority
+              sizes="(max-width: 800px) 100vw, 1000px"
+              className="block h-auto w-full"
+            />
           </div>
         </div>
-        <WorkspacePreview />
       </section>
-      <div className="border-y border-[#3a3934] bg-[#20201e]">
-        <div className="mx-auto grid max-w-7xl gap-4 px-5 py-6 text-sm text-[#c0bdb3] sm:grid-cols-3 sm:px-8">
-          <span>
-            <span className="mr-3 text-[#e0b63d]">✳</span>Private by default
-          </span>
-          <span>
-            <span className="mr-3 text-[#e0b63d]">✳</span>Made for intentional
-            applications
-          </span>
-          <span>
-            <span className="mr-3 text-[#e0b63d]">✳</span>Share what you choose
-          </span>
-        </div>
-      </div>
       <section
         id="how-it-works"
-        className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-28"
+        className="relative bg-[#fffdf6] py-[73px] scroll-mt-[15px] sm:py-[80px] bottom-20"
       >
-        <div className="grid gap-6 md:grid-cols-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#e7c75f]">
-            How it works
-          </p>
-          <h2 className="max-w-xl font-serif text-4xl leading-tight tracking-tight sm:text-5xl">
-            From a promising link to a clear next step.
-          </h2>
-        </div>
-        <div className="mt-14 grid border-t border-[#3a3934] md:grid-cols-3">
-          {[
-            [
-              "01",
-              "Save the role",
-              "Add the company, role and application link as soon as you find an opportunity worth considering.",
-            ],
-            [
-              "02",
-              "Keep the context",
-              "Bring the job description, company links, recruiter contacts and your own notes together.",
-            ],
-            [
-              "03",
-              "Move it forward",
-              "See where each opportunity stands, return to the details and take the next step when you’re ready.",
-            ],
-          ].map(([number, title, body]) => (
-            <div
-              key={number}
-              className="border-b border-[#3a3934] py-8 pr-8 md:border-b-0 md:border-r md:pl-8 first:pl-0 last:border-r-0"
-            >
-              <span className="text-sm text-[#e0b63d]">{number}</span>
-              <h3 className="mt-8 text-xl font-semibold">{title}</h3>
-              <p className="mt-3 max-w-sm text-sm leading-7 text-[#aaa69b]">
-                {body}
-              </p>
-            </div>
-          ))}
+        <div className={container}>
+          <div className="mx-auto mb-[49px] max-w-[730px] text-center">
+            <span className={eyebrow}>A BETTER FLOW</span>
+            <h2 className={heading}>From promising link to next step.</h2>
+            <p className="mt-4 text-[17px] text-zinc-800">
+              Keep the search moving without losing the details along the way.
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {[
+              [
+                "01",
+                "Save the role",
+                "Add a job yourself or capture the page with Job Hunti Clip.",
+              ],
+              [
+                "02",
+                "Keep the context",
+                "Store company links, recruiter details, descriptions and notes together.",
+              ],
+              [
+                "03",
+                "Move it forward",
+                "Track its status and return to the right details when you need them.",
+              ],
+            ].map(([number, title, copy]) => (
+              <div
+                key={number}
+                className="rounded-[16px]! border border-[#e5e7eb] bg-[#fffdf8] p-[30px] shadow-[0_12px_30px_#11182708]"
+              >
+                <span className="grid size-9 place-items-center rounded-[9px]! bg-[#fff2c4] text-[13px] font-bold text-[#8c5e00]">
+                  {number}
+                </span>
+                <h3 className="mt-7 text-[21px] font-bold tracking-[-.02em]">
+                  {title}
+                </h3>
+                <p className="mt-2.5 text-[15px] leading-[1.6] text-[#4b5563]">
+                  {copy}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
-      <section className="border-y border-[#3a3934] bg-[#20201e]">
-        <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 lg:grid-cols-2 lg:items-center lg:py-24">
+
+      <section
+        id="extension"
+        className="relative bg-[#fff8e8] py-[73px] scroll-mt-[30px] sm:py-[100px]"
+      >
+        <div
+          className={
+            container +
+            " grid items-center gap-[38px] md:grid-cols-2 md:gap-[9%]"
+          }
+        >
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#e7c75f]">
-              The details matter
-            </p>
-            <h2 className="mt-5 max-w-xl font-serif text-4xl leading-tight sm:text-5xl">
-              More than a link you saved and forgot.
+            <span className={eyebrow}>JOB HUNTI CLIP</span>
+            <h2 className={heading}>
+              Found a role? Save it while it’s in front of you.
             </h2>
-            <p className="mt-6 max-w-lg leading-7 text-[#c0bdb3]">
-              Keep the details that make an opportunity useful: the role,
-              company, recruiter contacts and your own notes. When you come
-              back, the context is there with you.
+            <p className={featureCopy}>
+              Open the extension on a job page, check the detected details, and
+              save the opportunity to your workspace. The page stays linked to
+              the job for later.
             </p>
-            <p className="mt-5 text-sm text-[#e7c75f]">
-              Your personal notes stay private.
-            </p>
+            <div className="my-[26px] grid gap-3">
+              <span className={checkItem}>
+                <Check size={15} /> Review and edit before saving
+              </span>
+              <span className={checkItem}>
+                <Check size={15} /> Capture the current page as the details URL
+              </span>
+              <span className={checkItem}>
+                <Check size={15} /> Add an apply link when you have one
+              </span>
+            </div>
+            <ExtensionButton />
           </div>
-          <div className="border border-[#3a3934] bg-[#171715] p-7">
-            <p className="text-xs uppercase tracking-[0.17em] text-[#e7c75f]">
-              Opportunity details
-            </p>
-            <div className="mt-6 border-b border-[#3a3934] pb-5">
-              <p className="text-sm text-[#aaa69b]">Company</p>
-              <p className="mt-1 text-xl font-semibold">Northstar</p>
-              <p className="mt-1 text-sm text-[#c0bdb3]">Product Engineer</p>
-            </div>
-            <div className="grid grid-cols-2 gap-6 border-b border-[#3a3934] py-5 text-sm">
-              <div>
-                <span className="text-[#aaa69b]">Status</span>
-                <p className="mt-2 text-[#e7c75f]">In review</p>
-              </div>
-              <div>
-                <span className="text-[#aaa69b]">Contact</span>
-                <p className="mt-2">Recruiter profile ↗</p>
-              </div>
-            </div>
-            {/* <p className="mt-5 text-xs text-[#aaa69b]">Illustrative example</p> */}
+          <div>
+            <Image
+              src="/landing/jobclip-extension.png"
+              alt="Job Hunti Clip open over a job listing"
+              width={1447}
+              height={1087}
+              sizes="(max-width: 800px) 100vw, 520px"
+              className="block h-auto w-full"
+            />
           </div>
         </div>
       </section>
+
       <section
         id="sharing"
-        className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-28"
+        className="relative bg-[#fffdf6] py-[73px] scroll-mt-[30px] sm:py-[100px]"
       >
-        <div className="grid gap-10 lg:grid-cols-2">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#e7c75f]">
-              Share opportunities
-            </p>
-            <h2 className="mt-5 max-w-lg font-serif text-4xl leading-tight sm:text-5xl">
-              One profile for the opportunities you share.
-            </h2>
-          </div>
-          <div className="lg:pt-10">
-            <p className="max-w-lg text-lg leading-8 text-[#c0bdb3]">
-              If you regularly share openings from different companies on social
-              media, bring them together on your public profile. Share one
-              profile link so others can explore the opportunities you’ve chosen
-              to show.
-            </p>
-            <p className="mt-5 max-w-lg text-sm leading-7 text-[#aaa69b]">
-              You can also share an individual job. Your private jobs and
-              personal notes stay out of public views.
-            </p>
-          </div>
-        </div>
-        <div className="mt-12 overflow-hidden border border-[#3a3934] bg-[#20201e] shadow-[0_24px_70px_rgba(0,0,0,.2)]">
-          <div className="flex items-start gap-4 border-b border-[#3a3934] p-6 sm:p-8">
-            <div className="grid size-12 shrink-0 place-items-center bg-[#342f1b] text-lg font-semibold text-[#e7c75f]">
-              AM
-            </div>
-            <div>
-              <p className="text-lg font-semibold text-[#f4f1e8]">
-                Alex Morgan
-              </p>
-              <p className="mt-1 text-sm text-[#c0bdb3]">
-                Sharing opportunities for people building their careers
-              </p>
-              <p className="mt-3 text-sm text-[#aaa69b]">
-                A collection of roles from teams worth discovering.
-              </p>
-            </div>
-          </div>
-          <div className="p-6 sm:p-8">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#e7c75f]">
-                  Public board
-                </p>
-                <p className="mt-2 text-lg font-semibold">Jobs worth sharing</p>
+        <div
+          className={
+            container +
+            " grid items-center gap-[38px] md:grid-cols-2 md:gap-[9%]"
+          }
+        >
+          <div className="order-2 grid min-h-[410px] place-items-center rounded-[23px]! border border-[#ece9df] bg-[#fff3d9] p-[35px] md:order-1">
+            <div className="w-full max-w-[380px] rounded-[15px]! border border-[#e5e7eb] bg-[#fffdf8] p-[27px] shadow-[0_20px_50px_#5943131a]">
+              <div className="flex items-center gap-3">
+                <span className="grid size-[45px] place-items-center rounded-[12px]! bg-[#f8e8b5] font-bold text-[#755000]">
+                  AM
+                </span>
+                <div className="flex flex-col">
+                  <strong className="text-[15px]">Alex Morgan</strong>
+                  <small className="text-[#737782]">@alexmorgan</small>
+                </div>
               </div>
-              {/* <span className="text-xs text-[#aaa69b]">
-                Illustrative example
-              </span> */}
+              <p className="my-[18px] text-[13px] leading-normal text-[#4b5563]">
+                Opportunities worth sharing with people building their careers.
+              </p>
+              <div className="flex items-center justify-between border-t border-[#e5e7eb] py-[13px] text-xs font-semibold">
+                <span className="flex flex-col gap-1">
+                  Product Engineer{" "}
+                  <small className="font-normal text-[#737782]">
+                    Northstar · Remote
+                  </small>
+                </span>
+                <ArrowRight size={16} className="text-[#a66d06]" />
+              </div>
+              <div className="flex items-center justify-between border-t border-[#e5e7eb] py-[13px] text-xs font-semibold">
+                <span className="flex flex-col gap-1">
+                  Frontend Developer{" "}
+                  <small className="font-normal text-[#737782]">
+                    Forma · Bengaluru
+                  </small>
+                </span>
+                <ArrowRight size={16} className="text-[#a66d06]" />
+              </div>
             </div>
-            <div className="mt-5 overflow-x-auto border border-[#3a3934]">
-              <table className="w-full min-w-[520px] text-left text-sm">
-                <thead className="bg-[#292925] text-xs uppercase tracking-[0.1em] text-[#aaa69b]">
-                  <tr>
-                    {["Company", "Role", "Location", "Action"].map(
-                      (heading) => (
-                        <th key={heading} className="px-4 py-3 font-medium">
-                          {heading}
-                        </th>
-                      ),
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    ["Northstar", "Product Engineer", "Remote"],
-                    ["Forma", "Frontend Developer", "Bengaluru"],
-                    ["Fieldwork", "Software Engineer", "Hybrid"],
-                  ].map(([company, role, location]) => (
-                    <tr
-                      key={company}
-                      className="border-t border-[#3a3934] text-[#c0bdb3]"
-                    >
-                      <td className="px-4 py-4 font-semibold text-[#f4f1e8]">
-                        {company}
-                      </td>
-                      <td className="px-4 py-4">{role}</td>
-                      <td className="px-4 py-4">{location}</td>
-                      <td className="px-4 py-4">
-                        <span className="inline-block border border-[#32634b] bg-[#1f4d3a] px-3 py-1.5 text-xs font-semibold text-[#e9f5eb]">
-                          Apply ↗
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          </div>
+          <div className="order-1 md:order-2">
+            <span className={eyebrow}>SHARE ON YOUR TERMS</span>
+            <h2 className={heading}>
+              One home for the jobs you choose to share.
+            </h2>
+            <p className={featureCopy}>
+              Share a single opportunity or bring selected openings together on
+              your public profile. Your private jobs and personal notes stay
+              yours.
+            </p>
+            <div className="mt-[26px] grid gap-3">
+              <span className={checkItem}>
+                <Check size={15} /> Share individual jobs
+              </span>
+              <span className={checkItem}>
+                <Check size={15} /> Build a public collection
+              </span>
+              <span className={checkItem}>
+                <LockKeyhole size={15} /> Keep private details private
+              </span>
             </div>
           </div>
         </div>
-        <p className="mt-6 text-sm text-[#aaa69b]">
-          Need a copy? Export your visible jobs to an Excel-compatible file.
-        </p>
       </section>
-      <section className="border-t border-[#3a3934] bg-[#29271d]">
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 px-5 py-16 sm:px-8 md:flex-row md:items-end">
+
+      <section className="relative bg-[linear-gradient(110deg,#fff5d9,#edbf43)] py-[72px]">
+        <div
+          className={
+            container +
+            " flex flex-col items-start justify-between gap-[30px] md:flex-row md:items-center"
+          }
+        >
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#e7c75f]">
-              Make space for what matters
-            </p>
-            <h2 className="mt-4 font-serif text-4xl sm:text-5xl">
-              A better home for your job search.
+            <span className={eyebrow}>MAKE YOUR NEXT MOVE CLEARER</span>
+            <h2 className={heading + " max-w-[610px]"}>
+              Give your job search a better home.
             </h2>
+            <p className="mt-[13px] text-[#4b5563]">
+              All your opportunities, context and next steps in one focused
+              workspace.
+            </p>
           </div>
           <Link
             href="/login"
-            className="shrink-0 bg-[#e0b63d] px-6 py-3.5 text-sm font-semibold text-[#171715] hover:bg-[#cfa62d]"
+            className="inline-flex min-h-12 items-center justify-center gap-2.5 whitespace-nowrap bg-[#111827] px-[19px] py-[11px] text-[15px] font-semibold text-white shadow-[0_12px_24px_#11182723] transition hover:-translate-y-0.5 hover:bg-[#303949] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
           >
-            Start your workspace ↗
+            Start tracking free <ArrowRight size={18} />
           </Link>
         </div>
       </section>
-      <footer className="mx-auto flex max-w-7xl flex-wrap justify-between gap-4 px-5 py-8 text-sm text-[#aaa69b] sm:px-8">
-        <span>Job Hunti.</span>
-        <span>A little more clarity for the road ahead.</span>
+      <footer className="relative border-t border-[#e5e7eb] bg-[#fffdf6] py-[29px] text-xs text-[#70747d]">
+        <div
+          className={container + " flex flex-wrap justify-between gap-[15px]"}
+        >
+          <span className="font-bold text-[#111827]">Job Hunti.</span>
+          <span>Made for a more organized job search.</span>
+          <a href="/privacy" className="hover:text-[#956000]">
+            Privacy
+          </a>
+        </div>
       </footer>
     </main>
   );
