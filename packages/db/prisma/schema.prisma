@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
 
@@ -14,6 +14,7 @@ enum JobStatus {
   APPLIED
   REJECTED
   ARCHIVED
+  ACCEPTED
 }
 
 enum ApplicationStatus {
@@ -40,18 +41,18 @@ enum ShareLinkType {
 }
 
 model User {
-  id           String      @id @default(cuid())
-  email        String      @unique
-  googleId     String?     @unique
-  emailVerified Boolean    @default(false)
-  name         String?
-  image        String?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  profile      Profile?
-  jobs         Job[]
-  shareLinks   ShareLink[]
-  authSessions AuthSession[]
+  id            String        @id @default(cuid())
+  email         String        @unique
+  googleId      String?       @unique
+  emailVerified Boolean       @default(false)
+  name          String?
+  image         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  profile       Profile?
+  jobs          Job[]
+  shareLinks    ShareLink[]
+  authSessions  AuthSession[]
 }
 
 model AuthSession {
@@ -80,6 +81,8 @@ model Profile {
   isPublic    Boolean     @default(true)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  upvote      Int         @default(0)
+  downvote    Int         @default(0)
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   shareLinks  ShareLink[]
 
@@ -87,33 +90,33 @@ model Profile {
 }
 
 model Job {
-  id            String        @id @default(cuid())
-  company       String
-  title         String?
-  applyLink     String?
-  url           String?
-  source        String?
-  location      String?
-  salary        String?
-  companyWebsite String?
+  id              String             @id @default(cuid())
+  company         String
+  title           String?
+  applyLink       String?
+  url             String?
+  source          String?
+  location        String?
+  salary          String?
+  companyWebsite  String?
   companyLinkedin String?
-  companyX      String?
-  description   String?       @db.Text
-  personalNotes String?       @db.Text
-  requirements  Json?
-  fitScore      Int?
-  matchReason   String?       @db.Text
-  missingSkills Json?
-  resumeVersion String?
-  status        JobStatus     @default(SAVED)
-  visibility    JobVisibility @default(PRIVATE)
-  ownerId       String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  applications  Application[]
-  recruiters    RecruiterContact[]
-  owner         User?         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  shareLinks    ShareLink[]
+  companyX        String?
+  description     String?            @db.Text
+  personalNotes   String?            @db.Text
+  requirements    Json?
+  fitScore        Int?
+  matchReason     String?            @db.Text
+  missingSkills   Json?
+  resumeVersion   String?
+  status          JobStatus          @default(SAVED)
+  visibility      JobVisibility      @default(PRIVATE)
+  ownerId         String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  applications    Application[]
+  recruiters      RecruiterContact[]
+  owner           User?              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  shareLinks      ShareLink[]
 
   @@unique([ownerId, url])
   @@index([ownerId])
