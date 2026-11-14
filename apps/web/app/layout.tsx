@@ -1,9 +1,15 @@
 import "@repo/ui/styles.css";
 import "./globals.css";
 import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
+import { Inter } from "next/font/google";
 import { AuthProvider } from "../components/auth-provider";
 import { QueryProvider } from "../components/query-provider";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -64,7 +70,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={GeistSans.className}>
+      <body className={`${inter.className} ${inter.variable}`}>
         <QueryProvider>
           <AuthProvider>{children}</AuthProvider>
         </QueryProvider>

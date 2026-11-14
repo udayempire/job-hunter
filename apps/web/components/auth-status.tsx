@@ -66,7 +66,7 @@ export function AuthStatus() {
         {menuOpen && (
           <div className="absolute right-0 top-12 z-30 w-48 border border-[var(--border)] bg-[var(--paper)] p-1.5 shadow-[0_16px_40px_rgba(0,0,0,.25)]">
             <Link
-              href="/profile"
+              href="/profile/settings"
               onClick={() => setMenuOpen(false)}
               className="block px-3 py-2.5 text-sm text-[var(--copy)] transition hover:bg-zinc-800 hover:text-[var(--ink)]"
             >
@@ -76,7 +76,7 @@ export function AuthStatus() {
               href={
                 user.profile?.handle
                   ? `/profile/${user.profile.handle}`
-                  : "/profile"
+                  : "/profile/settings"
               }
               onClick={() => setMenuOpen(false)}
               className="block px-3 py-2.5 text-sm text-[var(--copy)] transition hover:bg-zinc-800 hover:text-[var(--ink)]"

@@ -71,7 +71,7 @@ export function Dashboard() {
       <div className="mx-auto max-w-[1600px] px-5 pb-12 pt-10 sm:px-8 lg:px-[3.7rem] lg:pt-11">
         <section className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h1 className="mt-3.5 text-3xl font-semibold tracking-[-0.055em] text-[var(--ink)] [font-family:Georgia,serif] sm:text-[2.65rem]">
+            <h1 className="mt-3.5 text-3xl font-semibold tracking-[-0.055em] text-[var(--ink)] sm:text-[2.65rem]">
               Jobs worth your attention
             </h1>
             <p className="mt-2 text-base text-[var(--copy)]">

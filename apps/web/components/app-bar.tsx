@@ -16,7 +16,7 @@ export function AppBar({
       <div className="mx-auto flex max-w-[1600px] items-center justify-between">
         <Link href="/" className="flex items-center gap-3.5">
           <img src="/jobhunti-logo.png" alt="" width={44} height={44} className="size-11" />
-          <span className="text-xl font-semibold tracking-[-0.05em] text-[var(--ink)] [font-family:Georgia,serif]">
+          <span className="text-xl font-semibold tracking-[-0.05em] text-[var(--ink)]">
             Job Hunti
           </span>
         </Link>

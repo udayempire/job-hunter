@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../components/auth-provider";
@@ -54,7 +55,7 @@ function Field({
   );
 }
 
-export default function ProfilePage() {
+export function ProfileSettingsPage() {
   const { user, loading } = useAuth();
   const queryClient = useQueryClient();
   const { data: profile, isError: profileError } = useQuery({
@@ -63,6 +64,7 @@ export default function ProfilePage() {
     enabled: Boolean(user),
   });
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [draft, setDraft] = useState<ProfileDraft>({
     displayName: "",
     handle: "",
@@ -107,13 +109,21 @@ export default function ProfilePage() {
 
   async function saveProfile(event: React.FormEvent) {
     event.preventDefault();
+    if (saving) return;
+
+    setSaving(true);
+    setSaved(false);
     try {
       const savedProfile = await updateProfile(draft);
       queryClient.setQueryData(["profile", "me"], savedProfile);
-      queryClient.invalidateQueries({ queryKey: ["public-profile", draft.handle] });
+      queryClient.invalidateQueries({
+        queryKey: ["public-profile", draft.handle],
+      });
       setSaved(true);
     } catch {
       // Do not surface persistence failures in the profile UI.
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -243,15 +253,14 @@ export default function ProfilePage() {
                   />
                 </button>
               </div>
-              <div className="flex items-center justify-end gap-4">
-                <span className="text-sm text-[var(--gold-ink)]">
-                  {saved ? "Saved" : ""}
-                </span>
+              <div className="flex items-center justify-end">
                 <button
                   type="submit"
-                  className="bg-[var(--gold)] px-5 py-3 text-sm font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]"
+                  disabled={saving}
+                  aria-live="polite"
+                  className="min-w-32 bg-[var(--gold)] cursor-pointer px-5 py-3 text-sm font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)] disabled:cursor-wait disabled:opacity-75"
                 >
-                  Save changes
+                  {saving ? "Saving…" : saved ? "Saved" : "Save changes"}
                 </button>
               </div>
             </form>
@@ -290,6 +299,20 @@ export default function ProfilePage() {
           </aside>
         </div>
       </div>
+    </main>
+  );
+}
+
+export default function ProfileRedirectPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/profile/settings");
+  }, [router]);
+
+  return (
+    <main className="min-h-screen bg-[var(--canvas)] p-8">
+      <div className="mx-auto h-48 max-w-5xl animate-pulse bg-zinc-800" />
     </main>
   );
 }
