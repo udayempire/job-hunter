@@ -26,6 +26,46 @@ body {
   color: var(--ink);
 }
 
+.vote-feedback-button {
+  position: relative;
+  isolation: isolate;
+}
+
+.vote-icon-pop {
+  display: inline-flex;
+  animation: vote-icon-pop 420ms cubic-bezier(.2, .9, .25, 1.35);
+}
+
+.vote-feedback-float {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  z-index: 2;
+  display: inline-flex;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 8px rgb(0 0 0 / 35%));
+  animation: vote-feedback-float 700ms ease-out forwards;
+}
+
+@keyframes vote-icon-pop {
+  0% { transform: scale(.7) rotate(-8deg); }
+  55% { transform: scale(1.45) rotate(5deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes vote-feedback-float {
+  0% { opacity: 0; transform: translate(-50%, 2px) scale(.65); }
+  25% { opacity: 1; transform: translate(-50%, -10px) scale(1.15); }
+  100% { opacity: 0; transform: translate(-50%, -34px) scale(.9); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vote-icon-pop,
+  .vote-feedback-float {
+    animation-duration: 1ms;
+  }
+}
+
 *,
 *::before,
 *::after {

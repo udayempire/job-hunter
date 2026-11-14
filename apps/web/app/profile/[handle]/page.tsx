@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../../components/auth-provider";
 import { Avatar } from "../../../components/avatar";
 import { JobList } from "../../../components/job-list";
@@ -37,6 +37,10 @@ export default function PublicProfilePage() {
   const queryClient = useQueryClient();
   const [votePending, setVotePending] = useState(false);
   const [voteError, setVoteError] = useState("");
+  const [voteAnimation, setVoteAnimation] = useState<{
+    type: ProfileVote;
+    id: number;
+  } | null>(null);
   const { data, isPending: profileLoading } = useQuery({
     queryKey: ["public-profile", params.handle],
     queryFn: () => getPublicProfile(params.handle),
@@ -44,6 +48,12 @@ export default function PublicProfilePage() {
   });
   const profile = data?.profile ?? null;
   const jobs = data?.jobs ?? [];
+
+  useEffect(() => {
+    if (!voteAnimation) return;
+    const timeout = window.setTimeout(() => setVoteAnimation(null), 700);
+    return () => window.clearTimeout(timeout);
+  }, [voteAnimation]);
 
   const isOwner =
     user?.profile?.handle?.toLowerCase() === params.handle.toLowerCase();
@@ -54,13 +64,39 @@ export default function PublicProfilePage() {
     }
     if (!profile || votePending) return;
 
+    const previousVote = {
+      upvote: profile.upvote,
+      downvote: profile.downvote,
+      viewerVote: profile.viewerVote,
+    };
+    const nextVote = profile.viewerVote === vote ? null : vote;
+    let upvote = profile.upvote;
+    let downvote = profile.downvote;
+    if (profile.viewerVote === "UPVOTE") upvote = Math.max(0, upvote - 1);
+    if (profile.viewerVote === "DOWNVOTE") downvote = Math.max(0, downvote - 1);
+    if (nextVote === "UPVOTE") upvote += 1;
+    if (nextVote === "DOWNVOTE") downvote += 1;
+
+    setVoteAnimation({ type: vote, id: Date.now() });
     setVotePending(true);
     setVoteError("");
+    queryClient.setQueryData<{ profile: PublicProfile; jobs: Job[] }>(
+      ["public-profile", params.handle],
+      (current) =>
+        current
+          ? {
+              ...current,
+              profile: {
+                ...current.profile,
+                upvote,
+                downvote,
+                viewerVote: nextVote,
+              },
+            }
+          : current,
+    );
     try {
-      const result = await updatePublicProfileVote(
-        params.handle,
-        profile.viewerVote === vote ? null : vote,
-      );
+      const result = await updatePublicProfileVote(params.handle, nextVote);
       queryClient.setQueryData<{ profile: PublicProfile; jobs: Job[] }>(
         ["public-profile", params.handle],
         (current) =>
@@ -69,6 +105,13 @@ export default function PublicProfilePage() {
             : current,
       );
     } catch (error) {
+      queryClient.setQueryData<{ profile: PublicProfile; jobs: Job[] }>(
+        ["public-profile", params.handle],
+        (current) =>
+          current
+            ? { ...current, profile: { ...current.profile, ...previousVote } }
+            : current,
+      );
       setVoteError(
         error instanceof Error ? error.message : "Unable to update vote",
       );
@@ -177,7 +220,7 @@ export default function PublicProfilePage() {
                   </p>
                 </div>
                 <p className="mt-2 max-w-xl text-sm leading-5 text-[var(--copy)]">
-                  {profile.headline || "Building the next chapter."}
+                  {profile.headline || ""}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <button
@@ -187,10 +230,30 @@ export default function PublicProfilePage() {
                     title="Upvote this profile"
                     disabled={votePending}
                     onClick={() => void handleVote("UPVOTE")}
-                    className={`inline-flex cursor-pointer items-center gap-1.5 border px-2.5 py-1.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${profile.viewerVote === "UPVOTE" ? "border-[#32634b] bg-[#1f4d3a] text-[#b9e7cb]" : "border-[var(--border)] bg-[var(--control)] text-[var(--copy)] hover:border-[#32634b]"}`}
+                    className={`vote-feedback-button inline-flex cursor-pointer items-center gap-1.5 border px-2.5 py-1.5 text-xs font-semibold transition disabled:cursor-wait ${profile.viewerVote === "UPVOTE" ? "border-[#32634b] bg-[#1f4d3a] text-[#b9e7cb]" : "border-[var(--border)] bg-[var(--control)] text-[var(--copy)] hover:border-[#32634b]"}`}
                   >
-                    <Icon name="thumb-up" size={15} />
+                    <span
+                      key={
+                        voteAnimation?.type === "UPVOTE"
+                          ? `upvote-icon-${voteAnimation.id}`
+                          : "upvote-icon"
+                      }
+                      className={
+                        voteAnimation?.type === "UPVOTE" ? "vote-icon-pop" : ""
+                      }
+                    >
+                      <Icon name="thumb-up" size={15} />
+                    </span>
                     {profile.upvote}
+                    {voteAnimation?.type === "UPVOTE" && (
+                      <span
+                        key={`upvote-float-${voteAnimation.id}`}
+                        className="vote-feedback-float text-[#b9e7cb]"
+                        aria-hidden="true"
+                      >
+                        <Icon name="thumb-up" size={21} />
+                      </span>
+                    )}
                   </button>
                   <button
                     type="button"
@@ -199,10 +262,32 @@ export default function PublicProfilePage() {
                     title="Downvote this profile"
                     disabled={votePending}
                     onClick={() => void handleVote("DOWNVOTE")}
-                    className={`inline-flex cursor-pointer items-center gap-1.5 border px-2.5 py-1.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${profile.viewerVote === "DOWNVOTE" ? "border-[#70403a] bg-[#3a2421] text-[var(--error)]" : "border-[var(--border)] bg-[var(--control)] text-[var(--copy)] hover:border-[#70403a]"}`}
+                    className={`vote-feedback-button inline-flex cursor-pointer items-center gap-1.5 border px-2.5 py-1.5 text-xs font-semibold transition disabled:cursor-wait ${profile.viewerVote === "DOWNVOTE" ? "border-[#70403a] bg-[#3a2421] text-[var(--error)]" : "border-[var(--border)] bg-[var(--control)] text-[var(--copy)] hover:border-[#70403a]"}`}
                   >
-                    <Icon name="thumb-down" size={15} />
+                    <span
+                      key={
+                        voteAnimation?.type === "DOWNVOTE"
+                          ? `downvote-icon-${voteAnimation.id}`
+                          : "downvote-icon"
+                      }
+                      className={
+                        voteAnimation?.type === "DOWNVOTE"
+                          ? "vote-icon-pop"
+                          : ""
+                      }
+                    >
+                      <Icon name="thumb-down" size={15} />
+                    </span>
                     {profile.downvote}
+                    {voteAnimation?.type === "DOWNVOTE" && (
+                      <span
+                        key={`downvote-float-${voteAnimation.id}`}
+                        className="vote-feedback-float text-[var(--error)]"
+                        aria-hidden="true"
+                      >
+                        <Icon name="thumb-down" size={21} />
+                      </span>
+                    )}
                   </button>
                 </div>
                 {voteError && (

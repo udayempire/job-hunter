@@ -4,6 +4,13 @@
   "main": "src/worker.ts",
   "compatibility_date": "2026-11-09",
   "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "COOKIE_CROSS_SITE": "true",
+    "EXTENSION_ORIGINS": "chrome-extension://igjomiklldkcenldapmemokmnjddeggk",
+  },
+  "observability": {
+    "enabled": true,
+  },
   "routes": [
     {
       "pattern": "api.jobhunti.space",
