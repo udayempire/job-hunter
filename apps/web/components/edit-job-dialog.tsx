@@ -5,6 +5,7 @@ import type { JobDetails } from "../lib/jobs-api";
 import type { Job } from "./types";
 import { AddJobDialog } from "./add-job-dialog";
 import { Icon } from "./icon";
+import { actionButtonClass } from "./ui/action-button";
 
 export function EditJobDialog({
   job,
@@ -18,6 +19,7 @@ export function EditJobDialog({
   return (
     <AddJobDialog
       initialJob={job}
+      triggerClassName={variant === "icon" ? "inline-grid size-8 place-items-center align-middle" : variant === "menu" ? "block w-full text-left" : "inline-flex align-middle"}
       onAdd={async (draft) => {
         const updated = await updateJob(job.id, draft);
         onSaved(updated);
@@ -29,7 +31,7 @@ export function EditJobDialog({
               ? "flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-[var(--ink)] hover:bg-[var(--control)]"
               : variant === "action"
               ? "inline-flex items-center gap-1.5 border border-[var(--gold-border)] bg-[var(--control)] px-3 py-2 text-sm font-medium text-[var(--gold-ink)] transition hover:bg-[var(--gold-surface)]"
-              : "inline-grid size-8 place-items-center rounded-lg border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:bg-zinc-800"
+              : actionButtonClass()
           }
         >
           <Icon name="edit" size={variant === "icon" ? 14 : 18} />

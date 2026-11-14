@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "./button";
 import {
   createContext,
   useCallback,
@@ -90,14 +91,14 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                   </p>
                 )}
               </div>
-              <button
+              <Button variant="unstyled"
                 type="button"
                 onClick={() => dismiss(item.id)}
                 className="-mr-1 -mt-1 grid size-8 shrink-0 place-items-center text-lg text-[var(--muted)] transition hover:bg-[var(--control)] hover:text-[var(--ink)]"
                 aria-label="Dismiss notification"
               >
                 ×
-              </button>
+              </Button>
             </div>
             <span
               className={`toast-progress absolute inset-x-0 bottom-0 h-0.5 origin-left ${item.variant === "error" ? "bg-[var(--error)]" : item.variant === "info" ? "bg-[var(--muted)]" : "bg-[var(--gold)]"}`}

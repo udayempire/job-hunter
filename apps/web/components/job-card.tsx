@@ -1,3 +1,4 @@
+import { Button } from "./ui/button";
 import { Icon } from "./icon";
 import type { Job, JobStatus } from "./types";
 import { ShareJobButton } from "./share-job-button";
@@ -238,13 +239,13 @@ export function JobCard({
           {useSharedDetails && profileHandle ? (
             <PublicJobDetailsButton handle={profileHandle} jobId={job.id} />
           ) : (
-            <button
+            <Button variant="unstyled"
               type="button"
               onClick={() => router.push(`/jobs/${job.id}`)}
               className="inline-flex items-center gap-1.5 border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-1.5 text-xs font-semibold text-[var(--gold-ink)] transition hover:bg-[#483d1d]"
             >
               Details <Icon name="arrow" size={13} />
-            </button>
+            </Button>
           )}
         </div>
       </div>

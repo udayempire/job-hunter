@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "./ui/button";
 import { useState } from "react";
 import { ShareJobButton } from "./share-job-button";
 import { useToast } from "./ui/toast";
@@ -207,14 +208,14 @@ export function JobDetailsView({
               {job.applyLink ? (
                 <ExternalLink href={job.applyLink} label="Apply now" />
               ) : (
-                <button
+                <Button variant="unstyled"
                   type="button"
                   onClick={() => setApplyNoticeOpen(true)}
                   className="inline-flex items-center gap-1.5 border border-[#514b42] bg-[#39352f] px-3 py-2 text-sm font-medium text-[#c9c1b5] transition hover:bg-[#454038]"
                 >
                   <Icon name="external" size={18} />
                   Apply now
-                </button>
+                </Button>
               )}
               <ExternalLink href={job.detailsUrl} label="Job details" />
             </div>
@@ -249,13 +250,13 @@ export function JobDetailsView({
                 still open the job details page to look for one.
               </p>
               <div className="mt-6 flex justify-end gap-2">
-                <button
+                <Button variant="unstyled"
                   type="button"
                   onClick={() => setApplyNoticeOpen(false)}
                   className="border border-[var(--border)] bg-[var(--control)] px-4 py-2.5 text-sm font-semibold text-[var(--copy)] transition hover:bg-zinc-800"
                 >
                   Close
-                </button>
+                </Button>
                 {job.detailsUrl && (
                   <a
                     href={job.detailsUrl}

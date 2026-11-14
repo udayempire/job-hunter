@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "../../../../components/ui/button";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -82,14 +83,14 @@ export default function SharedJobPage() {
       </main>
     );
   const saveAction = (
-    <button
+    <Button variant="unstyled"
       type="button"
       onClick={saveToBoard}
       disabled={saving}
       className="rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-[#6d4d3a] transition hover:bg-[#f4ece5] disabled:opacity-60"
     >
       {saving ? "Saving…" : user ? "Save to my board" : "Sign in to save"}
-    </button>
+    </Button>
   );
   return (
     <JobDetailsView

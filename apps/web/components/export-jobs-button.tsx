@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "./ui/button";
 import { Icon } from "./icon";
 import { useToast } from "./ui/toast";
 import type { Job, JobStatus } from "./types";
@@ -117,14 +118,14 @@ export function ExportJobsButton({
   }
 
   return (
-    <button
+    <Button variant="secondary"
       type="button"
       onClick={exportJobs}
       disabled={!jobs.length}
-      className="inline-flex shrink-0 items-center gap-2 border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-2.5 text-sm font-semibold text-[var(--gold-ink)] transition hover:bg-[#483d1d] disabled:cursor-not-allowed disabled:opacity-50"
+      className="inline-flex shrink-0 items-center"
     >
       <Icon name="download" size={16} />
       Export
-    </button>
+    </Button>
   );
 }

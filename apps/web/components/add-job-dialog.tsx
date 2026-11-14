@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "./ui/button";
 import { useRef, useState } from "react";
 import { Icon } from "./icon";
 import type { Job, JobDraft } from "./types";
@@ -106,10 +107,12 @@ export function AddJobDialog({
   onAdd,
   initialJob,
   trigger,
+  triggerClassName,
 }: {
   onAdd: (job: JobDraft) => Promise<void> | void;
   initialJob?: Job;
   trigger?: React.ReactNode;
+  triggerClassName?: string;
 }) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -180,7 +183,7 @@ export function AddJobDialog({
 
   return (
     <>
-      <button
+      <Button variant={trigger ? "unstyled" : "primary"}
         type="button"
         onClick={() => {
           setRecruiterCount(initialJob?.recruiters?.length ?? 0);
@@ -188,8 +191,8 @@ export function AddJobDialog({
         }}
         className={
           trigger
-            ? "cursor-pointer border-0 bg-transparent p-0"
-            : "inline-flex cursor-pointer items-center gap-2 rounded-full bg-[var(--gold)] px-4 py-2.5 text-sm font-medium text-[var(--canvas)] transition hover:bg-[var(--gold-strong)]"
+            ? `cursor-pointer border-0 bg-transparent p-0 ${triggerClassName ?? ""}`
+            : "inline-flex items-center"
         }
       >
         {trigger ?? (
@@ -197,7 +200,7 @@ export function AddJobDialog({
             <Icon name="plus" size={16} /> Add Job
           </>
         )}
-      </button>
+      </Button>
       {open && (
         <div
           className="fixed inset-0 z-[120] flex items-center justify-center bg-[#211b1b]/30 p-4 backdrop-blur-sm"
@@ -222,14 +225,14 @@ export function AddJobDialog({
                   decide later.
                 </p>
               </div>
-              <button
+              <Button variant="ghost" size="icon"
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-full px-2 py-1 text-xl text-[var(--muted)] hover:bg-zinc-800"
+                className="text-xl"
                 aria-label="Close"
               >
                 ×
-              </button>
+              </Button>
             </div>
             <form ref={formRef} onSubmit={addJob} className="mt-6">
               <div className="grid gap-3 sm:grid-cols-2">
@@ -385,13 +388,13 @@ export function AddJobDialog({
                       Add a role, email, or link for each recruiter.
                     </p>
                   </div>
-                  <button
+                  <Button variant="secondary" size="sm"
                     type="button"
                     onClick={() => setRecruiterCount((count) => count + 1)}
-                    className="shrink-0 rounded-full bg-[var(--gold-surface)] px-3 py-2 text-xs font-semibold text-[var(--gold-ink)] transition hover:bg-[#483d1d]"
+                    className="shrink-0"
                   >
                     + Add contact
-                  </button>
+                  </Button>
                 </div>
                 {recruiterCount > 0 && (
                   <div className="mt-4 space-y-3">
@@ -404,7 +407,7 @@ export function AddJobDialog({
                           <span className="text-xs font-medium text-[var(--muted)]">
                             Recruiter {index + 1}
                           </span>
-                          <button
+                          <Button variant="unstyled"
                             type="button"
                             onClick={() =>
                               setRecruiterCount((count) => count - 1)
@@ -412,7 +415,7 @@ export function AddJobDialog({
                             className="text-xs text-[var(--error)] hover:underline"
                           >
                             Remove
-                          </button>
+                          </Button>
                         </div>
                         <div className="grid gap-2 sm:grid-cols-3">
                           <input
@@ -450,20 +453,19 @@ export function AddJobDialog({
                 </p>
               )}
               <div className="mt-6 flex justify-end gap-3">
-                <button
+                <Button variant="ghost"
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded-full px-4 py-2.5 text-sm font-medium text-[#6e6561] hover:bg-black/5"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button variant="success"
                   type="submit"
                   disabled={saving}
-                  className="rounded-full bg-[#1f4d3a] px-5 py-2.5 text-sm font-medium text-[#e9f5eb] transition hover:bg-[#173b2e] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="px-5"
                 >
                   {saving ? "Saving…" : "Save job"}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

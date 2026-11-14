@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "../../../components/ui/button";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -253,7 +254,7 @@ export default function PublicProfilePage() {
                   {profile.headline || ""}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <button
+                  <Button variant="unstyled"
                     type="button"
                     aria-label={`Upvote ${profile.displayName || profile.handle}`}
                     aria-pressed={profile.viewerVote === "UPVOTE"}
@@ -284,8 +285,8 @@ export default function PublicProfilePage() {
                         <Icon name="thumb-up" size={21} />
                       </span>
                     )}
-                  </button>
-                  <button
+                  </Button>
+                  <Button variant="unstyled"
                     type="button"
                     aria-label={`Downvote ${profile.displayName || profile.handle}`}
                     aria-pressed={profile.viewerVote === "DOWNVOTE"}
@@ -318,7 +319,7 @@ export default function PublicProfilePage() {
                         <Icon name="thumb-down" size={21} />
                       </span>
                     )}
-                  </button>
+                  </Button>
                 </div>
                 {voteError && (
                   <p className="mt-2 text-xs text-[var(--error)]" role="status">

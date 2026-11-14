@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "../../components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -258,7 +259,7 @@ export function ProfileSettingsPage() {
                     profile and jobs marked public.
                   </p>
                 </div>
-                <button
+                <Button variant="unstyled"
                   type="button"
                   role="switch"
                   aria-checked={draft.isPublic}
@@ -268,17 +269,17 @@ export function ProfileSettingsPage() {
                   <span
                     className={`absolute top-1 size-5 bg-[var(--paper)] transition ${draft.isPublic ? "left-6" : "left-1"}`}
                   />
-                </button>
+                </Button>
               </div>
               <div className="flex items-center justify-end">
-                <button
+                <Button variant="primary"
                   type="submit"
                   disabled={saving}
                   aria-live="polite"
-                  className="min-w-32 bg-[var(--gold)] cursor-pointer px-5 py-3 text-sm font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)] disabled:cursor-wait disabled:opacity-75"
+                  className="min-w-32 disabled:cursor-wait"
                 >
                   {saving ? "Saving…" : saved ? "Saved" : "Save changes"}
-                </button>
+                </Button>
               </div>
             </form>
           </section>

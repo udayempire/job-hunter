@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "./ui/button";
 import { useState } from "react";
 import { createPublicJobShareLink } from "../lib/profiles-api";
 import { Icon } from "./icon";
@@ -31,13 +32,13 @@ export function PublicJobDetailsButton({
   }
 
   return (
-    <button
+    <Button variant="secondary" size="sm"
       type="button"
       onClick={openDetails}
       disabled={opening}
-      className="inline-flex items-center gap-1.5 border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-1.5 text-xs font-semibold text-[var(--gold-ink)] transition hover:bg-[#483d1d] disabled:opacity-60"
+      className="inline-flex items-center"
     >
       {opening ? "Opening…" : <>Details <Icon name="arrow" size={13} /></>}
-    </button>
+    </Button>
   );
 }

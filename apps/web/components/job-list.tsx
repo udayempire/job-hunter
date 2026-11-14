@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "./ui/button";
 import { useEffect, useMemo, useState } from "react";
 import { JobCard } from "./job-card";
 import { MobileJobCard } from "./mobile-job-card";
@@ -82,40 +83,53 @@ export function JobList({
     <section className="mt-5 sm:mt-9">
       <div className="flex flex-col justify-between gap-3 xl:flex-row xl:items-center">
         {showFilters && (
-            <div className="order-2 hidden w-full gap-0.5 rounded-xl border border-[var(--border)] bg-[var(--control)] p-1 xl:order-1 xl:flex xl:w-auto">
-              {filters.map((filter) => (
-                <button
-                  key={filter}
-                  type="button"
-                  onClick={() => setActive(filter)}
-                  className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm transition xl:px-5 ${active === filter ? "bg-[var(--gold-surface)] font-semibold text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}
-                >
-                  {filter}{filterCounts[filter] > 0 ? ` (${filterCounts[filter]})` : ""}
-                </button>
-              ))}
-            </div>
+          <div className="order-2 hidden w-full gap-0.5 rounded-xl border border-[var(--border)] bg-[var(--control)] p-1 xl:order-1 xl:flex xl:w-auto">
+            {filters.map((filter) => (
+              <Button
+                variant="unstyled"
+                key={filter}
+                type="button"
+                onClick={() => setActive(filter)}
+                className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm transition xl:px-5 ${active === filter ? "bg-[var(--gold-surface)] font-semibold text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}
+              >
+                {filter}
+                {filterCounts[filter] > 0 ? ` (${filterCounts[filter]})` : ""}
+              </Button>
+            ))}
+          </div>
         )}
         <div className="order-2 flex w-full flex-wrap items-center gap-2 xl:w-auto">
           {showFilters && (
             <div className="order-1 min-w-0 flex-1 xl:hidden">
-              <label className="sr-only" htmlFor="job-filter">Filter jobs by status</label>
+              <label className="sr-only" htmlFor="job-filter">
+                Filter jobs by status
+              </label>
               <select
                 id="job-filter"
                 value={active}
-                onChange={(event) => setActive(event.target.value as (typeof filters)[number])}
+                onChange={(event) =>
+                  setActive(event.target.value as (typeof filters)[number])
+                }
                 className="h-10 w-full border border-[var(--border)] bg-[var(--control)] px-3 text-sm font-medium text-[var(--gold-ink)] outline-none focus:border-[var(--gold)]"
               >
                 {filters.map((filter) => (
-                  <option key={filter} value={filter}>{filter}{filterCounts[filter] > 0 ? ` (${filterCounts[filter]})` : ""}</option>
+                  <option key={filter} value={filter}>
+                    {filter}
+                    {filterCounts[filter] > 0
+                      ? ` (${filterCounts[filter]})`
+                      : ""}
+                  </option>
                 ))}
               </select>
             </div>
           )}
-          <div className="relative order-4 min-w-0 flex-1 basis-full sm:order-1 sm:basis-48 lg:w-52 lg:flex-none xl:w-72">
+          <div className="relative order-4 min-w-0 flex-1 basis-full sm:order-3 sm:basis-48 lg:w-52 lg:flex-none xl:w-72">
             <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)]">
               <Icon name="search" size={17} />
             </span>
-            <label className="sr-only" htmlFor="job-search">Search jobs</label>
+            <label className="sr-only" htmlFor="job-search">
+              Search jobs
+            </label>
             <input
               id="job-search"
               value={query}
@@ -125,13 +139,15 @@ export function JobList({
             />
           </div>
           {onRefresh && (
-            <button
+            <Button
+              variant="icon"
+              size="icon"
               type="button"
               onClick={() => void onRefresh()}
               disabled={refreshing}
               aria-label={refreshing ? "Refreshing jobs" : "Refresh jobs"}
               title={refreshing ? "Refreshing jobs" : "Refresh jobs"}
-              className="order-2 inline-grid size-10 shrink-0 place-items-center border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:border-[var(--gold-border)] hover:bg-[var(--gold-surface)] hover:text-[var(--gold-ink)] disabled:cursor-wait disabled:opacity-60"
+              className="order-2 shrink-0 disabled:cursor-wait"
             >
               <RefreshCw
                 size={17}
@@ -139,14 +155,17 @@ export function JobList({
                 className={refreshing ? "animate-spin" : ""}
                 aria-hidden="true"
               />
-            </button>
+            </Button>
           )}
-          <div className="order-3"><ExportJobsButton jobs={visibleJobs} filter={active} /></div>
+          <div className="order-3 sm:order-4">
+            <ExportJobsButton jobs={visibleJobs} filter={active} />
+          </div>
           <div
-            className="order-5 ml-auto hidden shrink-0 border border-[var(--border)] bg-[var(--control)] p-1 md:flex lg:order-4 lg:ml-0"
+            className="order-5 ml-auto hidden shrink-0 border border-[var(--border)] bg-[var(--control)] p-1 md:flex lg:ml-0"
             aria-label="Job view"
           >
-            <button
+            <Button
+              variant="unstyled"
               type="button"
               onClick={() => changeView("list")}
               aria-label="Details view"
@@ -154,8 +173,9 @@ export function JobList({
               className={`grid size-9 place-items-center rounded-lg transition ${view === "list" ? "bg-[var(--gold-surface)] text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}
             >
               <Icon name="list" size={17} />
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="unstyled"
               type="button"
               onClick={() => changeView("grid")}
               aria-label="Grid view"
@@ -163,7 +183,7 @@ export function JobList({
               className={`grid size-9 place-items-center rounded-lg transition ${view === "grid" ? "bg-[var(--gold-surface)] text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}
             >
               <Icon name="grid" size={17} />
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -171,17 +191,49 @@ export function JobList({
         <>
           <div className="mt-3 grid gap-3 md:hidden">
             {visibleJobs.map((job) => (
-              <MobileJobCard key={job.id} job={job} onStatusChange={onStatusChange} onJobUpdated={onJobUpdated} onJobDeleted={onJobDeleted} showStatus={showStatus} profileMode={profileMode} profileHandle={profileHandle} showShare={showShare} useSharedDetails={useSharedDetails} />
+              <MobileJobCard
+                key={job.id}
+                job={job}
+                onStatusChange={onStatusChange}
+                onJobUpdated={onJobUpdated}
+                onJobDeleted={onJobDeleted}
+                showStatus={showStatus}
+                profileMode={profileMode}
+                profileHandle={profileHandle}
+                showShare={showShare}
+                useSharedDetails={useSharedDetails}
+              />
             ))}
           </div>
           {view === "list" ? (
             <div className="hidden md:block">
-              <JobTable jobs={visibleJobs} onStatusChange={onStatusChange} onJobUpdated={onJobUpdated} onJobDeleted={onJobDeleted} showStatus={showStatus} profileMode={profileMode} profileHandle={profileHandle} showShare={showShare} useSharedDetails={useSharedDetails} />
+              <JobTable
+                jobs={visibleJobs}
+                onStatusChange={onStatusChange}
+                onJobUpdated={onJobUpdated}
+                onJobDeleted={onJobDeleted}
+                showStatus={showStatus}
+                profileMode={profileMode}
+                profileHandle={profileHandle}
+                showShare={showShare}
+                useSharedDetails={useSharedDetails}
+              />
             </div>
           ) : (
             <div className="mt-4 hidden gap-4 md:grid lg:grid-cols-2">
               {visibleJobs.map((job) => (
-                <JobCard key={job.id} job={job} onStatusChange={onStatusChange} onJobUpdated={onJobUpdated} onJobDeleted={onJobDeleted} showStatus={showStatus} profileMode={profileMode} profileHandle={profileHandle} showShare={showShare} useSharedDetails={useSharedDetails} />
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  onStatusChange={onStatusChange}
+                  onJobUpdated={onJobUpdated}
+                  onJobDeleted={onJobDeleted}
+                  showStatus={showStatus}
+                  profileMode={profileMode}
+                  profileHandle={profileHandle}
+                  showShare={showShare}
+                  useSharedDetails={useSharedDetails}
+                />
               ))}
             </div>
           )}

@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { MoreVertical, X } from "lucide-react";
@@ -60,19 +61,19 @@ export function MobileJobCard({
   return (
     <article className="border border-[var(--border)] bg-[var(--paper)] p-4 text-[var(--ink)]">
       <div className="flex items-start justify-between gap-3">
-        <button type="button" onClick={() => void openDetails()} className="min-w-0 flex-1 text-left">
+        <Button variant="unstyled" type="button" onClick={() => void openDetails()} className="min-w-0 flex-1 text-left">
           <h3 className="truncate text-base font-semibold">{job.company}</h3>
           <p className="mt-0.5 truncate text-sm text-[var(--copy)]">{job.title}</p>
-        </button>
-        <button
+        </Button>
+        <Button variant="ghost" size="icon"
           type="button"
           onClick={() => setMenuOpen(true)}
           aria-label={`More actions for ${job.title} at ${job.company}`}
           aria-haspopup="dialog"
-          className="-mr-1 -mt-1 grid size-9 shrink-0 place-items-center text-[var(--copy)] hover:bg-[var(--control)] hover:text-[var(--gold-ink)]"
+          className="-mr-1 -mt-1 shrink-0"
         >
           <MoreVertical size={20} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
       <div className="mt-3 grid gap-1.5 text-xs text-[var(--copy)]">
         <p className="flex min-w-0 items-center gap-2"><Icon name="pin" size={14} /><span className="truncate">{job.location === "Location not specified" ? "-" : job.location || "-"}</span></p>
@@ -104,17 +105,17 @@ export function MobileJobCard({
             <div className="mx-auto mt-2 h-1 w-10 bg-[var(--muted)]/60" aria-hidden="true" />
             <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-2">
               <p className="min-w-0 truncate text-sm font-semibold">{job.company} · {job.title}</p>
-              <button type="button" onClick={() => setMenuOpen(false)} aria-label="Close job actions" className="grid size-9 shrink-0 place-items-center text-[var(--copy)]"><X size={18} /></button>
+              <Button variant="ghost" size="icon" type="button" onClick={() => setMenuOpen(false)} aria-label="Close job actions" className="shrink-0"><X size={18} /></Button>
             </div>
             {!profileMode && <div className="[&>button]:w-full"><EditJobDialog job={job} variant="menu" onSaved={(updated) => { onJobUpdated(updated); setMenuOpen(false); }} /></div>}
             {!profileMode && onJobDeleted && <DeleteJobButton jobId={job.id} jobTitle={job.title} variant="menu" onDeleted={() => { onJobDeleted(job.id); setMenuOpen(false); }} />}
             {jobLink && <a href={jobLink} target="_blank" rel="noreferrer" className="flex items-center gap-3 px-4 py-3 text-sm text-[var(--ink)] hover:bg-[var(--control)]"><Icon name="external" size={18} />Open job link</a>}
             {showShare && <ShareJobButton jobId={job.id} job={job} variant="menu" />}
-            <button type="button" onClick={() => void openDetails()} className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-[var(--ink)] hover:bg-[var(--control)]"><Icon name="arrow" size={18} />View details</button>
+            <Button variant="menu" type="button" onClick={() => void openDetails()}><Icon name="arrow" size={18} />View details</Button>
             {showStatus && (
               <div className="mt-1 border-t border-[var(--border)] pt-1">
                 {(["Applied", "Accepted", "Rejected"] as const).map((status) => (
-                  <button key={status} type="button" onClick={() => { onStatusChange(job.id, status); setMenuOpen(false); }} className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-[var(--ink)] hover:bg-[var(--control)]"><Icon name={status === "Accepted" ? "check" : "arrow"} size={18} />{status === "Applied" ? "Move to Applied" : `Mark as ${status}`}</button>
+                  <Button variant="menu" key={status} type="button" onClick={() => { onStatusChange(job.id, status); setMenuOpen(false); }}><Icon name={status === "Accepted" ? "check" : "arrow"} size={18} />{status === "Applied" ? "Move to Applied" : `Mark as ${status}`}</Button>
                 ))}
               </div>
             )}

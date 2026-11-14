@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "./ui/button";
+import { ActionButton } from "./ui/action-button";
 import { useState } from "react";
 import { deleteJob } from "../lib/jobs-api";
 import { Icon } from "./icon";
@@ -49,21 +51,22 @@ export function DeleteJobButton({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={openDialog}
-        disabled={deleting}
-        aria-label={`Delete ${jobTitle}`}
-        title="Delete"
-        className={variant === "menu"
-          ? "flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-[var(--error)] hover:bg-[var(--control)] disabled:cursor-wait"
-          : variant === "icon"
-          ? "inline-grid size-8 place-items-center rounded-lg border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:border-[var(--error)] hover:text-[var(--error)] disabled:cursor-wait disabled:opacity-50"
-          : "inline-flex items-center gap-1.5 border border-[var(--error)]/40 bg-[var(--control)] px-3 py-2 text-sm font-medium text-[var(--error)] transition hover:bg-[var(--error)]/10 disabled:cursor-wait disabled:opacity-50"}
-      >
-        <Icon name="trash" size={variant === "icon" ? 14 : 16} />
-        {variant !== "icon" && (deleting ? "Deleting…" : variant === "menu" ? "Delete job" : "Delete")}
-      </button>
+      {variant === "icon" ? (
+        <ActionButton tone="destructive" onClick={openDialog} disabled={deleting} aria-label={`Delete ${jobTitle}`} title="Delete" className="disabled:cursor-wait">
+          <Icon name="trash" size={14} />
+        </ActionButton>
+      ) : (
+        <Button variant={variant === "menu" ? "unstyled" : "destructive"}
+          onClick={openDialog}
+          disabled={deleting}
+          aria-label={`Delete ${jobTitle}`}
+          title="Delete"
+          className={variant === "menu" ? "flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-[var(--error)] hover:bg-[var(--control)] disabled:cursor-wait" : "inline-flex items-center disabled:cursor-wait"}
+        >
+          <Icon name="trash" size={16} />
+          {deleting ? "Deleting…" : variant === "menu" ? "Delete job" : "Delete"}
+        </Button>
+      )}
       {open && (
         <div
           className="fixed inset-0 z-[130] grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
@@ -91,22 +94,22 @@ export function DeleteJobButton({
             </p>
             {error && <p className="mt-4 text-sm text-[var(--error)]">{error}</p>}
             <div className="mt-6 flex justify-end gap-2">
-              <button
+              <Button variant="outline"
                 type="button"
                 onClick={() => setOpen(false)}
                 disabled={deleting}
-                className="border border-[var(--border)] bg-[var(--control)] px-4 py-2.5 text-sm font-semibold text-[var(--copy)] transition hover:bg-zinc-800 disabled:cursor-wait disabled:opacity-50"
+                className="disabled:cursor-wait"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button variant="destructive"
                 type="button"
                 onClick={() => void handleDelete()}
                 disabled={deleting}
-                className="border border-[var(--error)] bg-[var(--error)] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-wait disabled:opacity-50"
+                className="disabled:cursor-wait"
               >
                 {deleting ? "Deleting…" : "Delete job"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

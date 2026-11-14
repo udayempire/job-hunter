@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "../../components/ui/button";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -229,7 +230,7 @@ export default function OnboardingPage() {
                   Let people see your profile and jobs you mark as public.
                 </p>
               </div>
-              <button
+              <Button variant="unstyled"
                 type="button"
                 role="switch"
                 aria-checked={draft.isPublic}
@@ -237,18 +238,18 @@ export default function OnboardingPage() {
                 className={`relative h-7 w-12 cursor-pointer transition ${draft.isPublic ? "bg-[var(--gold)]" : "bg-zinc-700"}`}
               >
                 <span className={`absolute top-1 size-5 bg-[var(--paper)] transition ${draft.isPublic ? "left-6" : "left-1"}`} />
-              </button>
+              </Button>
             </div>
 
             {error && <p className="text-sm text-[var(--error)]" role="alert">{error}</p>}
             <div className="flex justify-end">
-              <button
+              <Button variant="primary"
                 type="submit"
                 disabled={saving || handleState !== "available"}
-                className="min-w-44 bg-[var(--gold)] px-5 py-3 text-sm font-semibold text-[var(--canvas)] transition hover:bg-[var(--gold-strong)] disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-w-44"
               >
                 {saving ? "Creating profile…" : "Continue to Job Hunti"}
-              </button>
+              </Button>
             </div>
           </form>
         </section>

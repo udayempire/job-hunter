@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "./ui/button";
+import { ActionButton } from "./ui/action-button";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { createJobShareLink } from "../lib/jobs-api";
@@ -111,14 +113,14 @@ export function ShareJobButton({
               Send this job to someone
             </h2>
           </div>
-          <button
+          <Button variant="ghost" size="icon"
             type="button"
             onClick={() => setOpen(false)}
-            className="px-2 py-1 text-xl text-[var(--muted)] hover:bg-[var(--control)] hover:text-[var(--ink)]"
+            className="text-xl"
             aria-label="Close"
           >
             ×
-          </button>
+          </Button>
         </div>
         <p className="mt-3 text-sm leading-6 text-[var(--copy)]">
           Anyone with this link can view the job. Your personal notes are never
@@ -137,14 +139,14 @@ export function ShareJobButton({
                 className="min-w-0 flex-1 border border-[var(--border)] bg-[var(--canvas)] px-3 py-3 text-xs text-[var(--copy)] outline-none"
                 aria-label="Share link"
               />
-              <button
+              <Button variant="success"
                 type="button"
                 onClick={copyLink}
-                className="inline-flex shrink-0 items-center gap-2 border border-[#32634b] bg-[#1f4d3a] px-3 py-3 text-sm font-semibold text-[#e9f5eb] transition hover:bg-[#173b2e]"
+                className="inline-flex shrink-0 items-center"
               >
                 <Icon name="copy" size={16} />
                 {copied ? "Copied" : "Copy"}
-              </button>
+              </Button>
             </div>
             {destinations && (
               <div className="mt-4">
@@ -171,49 +173,47 @@ export function ShareJobButton({
                     <img src="/social-icons/whatsapp.png" alt="" className="size-[34px] object-contain" />
                   </a>
                   {typeof navigator !== "undefined" && "share" in navigator && (
-                    <button
+                    <Button variant="outline"
                       type="button"
                       onClick={() => void shareWithDevice()}
-                      className="border border-[var(--border)] bg-[var(--control)] px-3 py-2.5 text-sm font-semibold text-[var(--ink)] transition hover:bg-zinc-800"
                     >
                       More
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
             )}
           </>
         )}
-        <button
+        <Button variant="ghost"
           type="button"
           onClick={() => setOpen(false)}
-          className="mt-5 w-full px-4 py-2.5 text-sm font-medium text-[var(--muted)] hover:bg-[var(--control)] hover:text-[var(--ink)]"
+          className="mt-5 w-full"
         >
           Done
-        </button>
+        </Button>
       </div>
     </div>
   );
   return (
     <>
-      <button
-        type="button"
-        onClick={openShareDialog}
-        aria-label="Share job"
-        title="Share job"
-        className={
-          variant === "icon"
-            ? "inline-grid size-8 place-items-center rounded-lg border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:bg-zinc-800"
-            : variant === "menu"
-              ? "flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-[var(--ink)] hover:bg-[var(--control)]"
-            : variant === "action"
-              ? `inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition ${buttonClass}`
-              : `inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition ${buttonClass}`
-        }
-      >
-        <Icon name="share" size={16} />
-        {variant !== "icon" && (variant === "action" ? "Share" : "Share job")}
-      </button>
+      {variant === "icon" ? (
+        <ActionButton onClick={openShareDialog} aria-label="Share job" title="Share job">
+          <Icon name="share" size={16} />
+        </ActionButton>
+      ) : (
+        <Button variant={variant === "menu" ? "menu" : "unstyled"}
+          onClick={openShareDialog}
+          aria-label="Share job"
+          title="Share job"
+          className={variant === "menu" ? "" : variant === "action"
+            ? `inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium ${buttonClass}`
+            : `inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold ${buttonClass}`}
+        >
+          <Icon name="share" size={16} />
+          {variant === "action" ? "Share" : "Share job"}
+        </Button>
+      )}
       {mounted && open && createPortal(dialog, document.body)}
     </>
   );

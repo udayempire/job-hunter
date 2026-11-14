@@ -9,6 +9,7 @@ import { ShareJobButton } from "./share-job-button";
 import { DeleteJobButton } from "./delete-job-button";
 import type { Job, JobStatus } from "./types";
 import { useToast } from "./ui/toast";
+import { actionButtonClass } from "./ui/action-button";
 import {
   Table,
   TableBody,
@@ -239,7 +240,7 @@ export function JobTable({
                       className={
                         profileMode
                           ? "inline-flex items-center gap-1.5 border border-[#32634b] bg-[#1f4d3a] px-3 py-1.5 text-xs font-semibold text-[#e9f5eb] transition hover:bg-[#173b2e]"
-                          : "inline-grid size-8 place-items-center rounded-lg border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:bg-zinc-800"
+                          : actionButtonClass()
                       }
                     >
                       {profileMode ? (
@@ -259,7 +260,8 @@ export function JobTable({
                   ) : (
                     <Link
                       href={`/jobs/${job.id}`}
-                      className="inline-flex items-center gap-1.5 border border-[var(--gold-border)] bg-[var(--gold-surface)] px-3 py-1.5 text-xs font-semibold text-[var(--gold-ink)] hover:bg-[#483d1d]"
+                      aria-label={`View details for ${job.title} at ${job.company}`}
+                      className={actionButtonClass("gold")}
                     >
                       <Icon name="arrow" size={13} />
                     </Link>

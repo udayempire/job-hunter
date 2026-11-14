@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "./ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -50,7 +51,7 @@ export function AuthStatus() {
         </p>
       </div>
       <div ref={menuRef} className="relative">
-        <button
+        <Button variant="unstyled"
           type="button"
           onClick={() => setMenuOpen((open) => !open)}
           aria-label="Open profile menu"
@@ -64,7 +65,7 @@ export function AuthStatus() {
             alt=""
             className="grid size-10 place-items-center overflow-hidden border border-[var(--border)] bg-[var(--gold-surface)] text-sm font-semibold text-[var(--gold-ink)]"
           />
-        </button>
+        </Button>
         {menuOpen && (
           <div className="absolute right-0 top-12 z-30 w-48 border border-[var(--border)] bg-[var(--paper)] p-1.5 shadow-[0_16px_40px_rgba(0,0,0,.25)]">
             <Link
@@ -88,7 +89,7 @@ export function AuthStatus() {
           </div>
         )}
         </div>
-      <button
+      <Button variant="unstyled"
         type="button"
         aria-label={signingOut ? "Signing out" : "Sign out"}
         disabled={signingOut}
@@ -118,7 +119,7 @@ export function AuthStatus() {
             <Icon name="logout" size={17} />{" "}
           </div>
         )}
-      </button>
+      </Button>
     </div>
   );
 }
