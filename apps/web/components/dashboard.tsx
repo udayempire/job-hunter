@@ -20,11 +20,27 @@ export function Dashboard() {
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { data: jobs = [] } = useQuery({
+  const { data: jobs = [], isRefetching, refetch } = useQuery({
     queryKey: ["jobs"],
     queryFn: getJobs,
     enabled: !authLoading && Boolean(user),
   });
+
+  async function handleRefresh() {
+    const result = await refetch();
+    if (result.isError) {
+      toast({
+        title: "Could not refresh jobs",
+        description: "The current table is unchanged. Please try again.",
+        variant: "error",
+      });
+      return;
+    }
+    toast({
+      title: "Jobs refreshed",
+      description: "Your table is up to date.",
+    });
+  }
 
   async function handleAdd(draft: JobDraft) {
     const createdJob = await createJob(draft);
@@ -114,6 +130,8 @@ export function Dashboard() {
         </section>
         <JobList
           jobs={jobs}
+          onRefresh={handleRefresh}
+          refreshing={isRefetching}
           onStatusChange={handleStatusChange}
           onJobUpdated={handleJobUpdated}
           onJobDeleted={handleJobDeleted}

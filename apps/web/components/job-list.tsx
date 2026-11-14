@@ -6,6 +6,7 @@ import type { Job, JobStatus } from "./types";
 import { Icon } from "./icon";
 import { ExportJobsButton } from "./export-jobs-button";
 import { JobTable } from "./job-table";
+import { RefreshCw } from "lucide-react";
 
 const filters: Array<"All" | JobStatus> = [
   "All",
@@ -27,6 +28,8 @@ export function JobList({
   profileHandle,
   showShare = true,
   useSharedDetails = false,
+  onRefresh,
+  refreshing = false,
 }: {
   jobs: Job[];
   onStatusChange: (id: string, status: JobStatus) => void;
@@ -38,6 +41,8 @@ export function JobList({
   profileHandle?: string;
   showShare?: boolean;
   useSharedDetails?: boolean;
+  onRefresh?: () => Promise<void> | void;
+  refreshing?: boolean;
 }) {
   const [active, setActive] = useState<(typeof filters)[number]>("All");
   const [query, setQuery] = useState("");
@@ -83,12 +88,30 @@ export function JobList({
                 onClick={() => setActive(filter)}
                 className={`whitespace-nowrap rounded-lg px-5 py-2 text-sm transition ${active === filter ? "bg-[var(--gold-surface)] font-semibold text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}
               >
-                {filter}{filterCounts[filter] > 0 ? ` (${filterCounts[filter]})` : ""}
+                {filter}
+                {filterCounts[filter] > 0 ? ` (${filterCounts[filter]})` : ""}
               </button>
             ))}
           </div>
         )}
         <div className="order-1 flex w-full items-center gap-4 lg:order-2 lg:w-auto">
+          {onRefresh && (
+            <button
+              type="button"
+              onClick={() => void onRefresh()}
+              disabled={refreshing}
+              aria-label={refreshing ? "Refreshing jobs" : "Refresh jobs"}
+              title={refreshing ? "Refreshing jobs" : "Refresh jobs"}
+              className="inline-grid size-10 shrink-0 place-items-center border border-[var(--border)] bg-[var(--control)] text-[var(--copy)] transition hover:border-[var(--gold-border)] hover:bg-[var(--gold-surface)] hover:text-[var(--gold-ink)] disabled:cursor-wait disabled:opacity-60"
+            >
+              <RefreshCw
+                size={17}
+                strokeWidth={1.8}
+                className={refreshing ? "animate-spin" : ""}
+                aria-hidden="true"
+              />
+            </button>
+          )}
           <ExportJobsButton jobs={visibleJobs} filter={active} />
           <div className="relative w-full sm:w-80">
             <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted)]">
@@ -105,11 +128,26 @@ export function JobList({
               className="w-full rounded-xl border border-[var(--border)] bg-[var(--control)] py-2.5 pl-11 pr-4 text-sm text-[var(--ink)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--gold)]"
             />
           </div>
-          <div className="flex shrink-0 rounded-xl border border-[var(--border)] bg-[var(--control)] p-1" aria-label="Job view">
-            <button type="button" onClick={() => changeView("list")} aria-label="Details view" aria-pressed={view === "list"} className={`grid size-9 place-items-center rounded-lg transition ${view === "list" ? "bg-[var(--gold-surface)] text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}>
+          <div
+            className="flex shrink-0 rounded-xl border border-[var(--border)] bg-[var(--control)] p-1"
+            aria-label="Job view"
+          >
+            <button
+              type="button"
+              onClick={() => changeView("list")}
+              aria-label="Details view"
+              aria-pressed={view === "list"}
+              className={`grid size-9 place-items-center rounded-lg transition ${view === "list" ? "bg-[var(--gold-surface)] text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}
+            >
               <Icon name="list" size={17} />
             </button>
-            <button type="button" onClick={() => changeView("grid")} aria-label="Grid view" aria-pressed={view === "grid"} className={`grid size-9 place-items-center rounded-lg transition ${view === "grid" ? "bg-[var(--gold-surface)] text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}>
+            <button
+              type="button"
+              onClick={() => changeView("grid")}
+              aria-label="Grid view"
+              aria-pressed={view === "grid"}
+              className={`grid size-9 place-items-center rounded-lg transition ${view === "grid" ? "bg-[var(--gold-surface)] text-[var(--gold-ink)]" : "text-[var(--copy)] hover:bg-zinc-800"}`}
+            >
               <Icon name="grid" size={17} />
             </button>
           </div>
@@ -117,11 +155,32 @@ export function JobList({
       </div>
       {visibleJobs.length ? (
         view === "list" ? (
-          <JobTable jobs={visibleJobs} onStatusChange={onStatusChange} onJobUpdated={onJobUpdated} onJobDeleted={onJobDeleted} showStatus={showStatus} profileMode={profileMode} profileHandle={profileHandle} showShare={showShare} useSharedDetails={useSharedDetails} />
+          <JobTable
+            jobs={visibleJobs}
+            onStatusChange={onStatusChange}
+            onJobUpdated={onJobUpdated}
+            onJobDeleted={onJobDeleted}
+            showStatus={showStatus}
+            profileMode={profileMode}
+            profileHandle={profileHandle}
+            showShare={showShare}
+            useSharedDetails={useSharedDetails}
+          />
         ) : (
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             {visibleJobs.map((job) => (
-              <JobCard key={job.id} job={job} onStatusChange={onStatusChange} onJobUpdated={onJobUpdated} onJobDeleted={onJobDeleted} showStatus={showStatus} profileMode={profileMode} profileHandle={profileHandle} showShare={showShare} useSharedDetails={useSharedDetails} />
+              <JobCard
+                key={job.id}
+                job={job}
+                onStatusChange={onStatusChange}
+                onJobUpdated={onJobUpdated}
+                onJobDeleted={onJobDeleted}
+                showStatus={showStatus}
+                profileMode={profileMode}
+                profileHandle={profileHandle}
+                showShare={showShare}
+                useSharedDetails={useSharedDetails}
+              />
             ))}
           </div>
         )
