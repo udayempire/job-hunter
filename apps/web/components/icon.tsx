@@ -17,7 +17,9 @@ type IconName =
   | "browser"
   | "logout"
   | "download"
-  | "trash";
+  | "trash"
+  | "thumb-up"
+  | "thumb-down";
 
 export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   const common = {
@@ -131,6 +133,18 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
     trash: (
       <>
         <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+      </>
+    ),
+    "thumb-up": (
+      <>
+        <path d="M7 10v10H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h3Z" />
+        <path d="M7 19h9.5a2 2 0 0 0 2-1.6l1.2-6A2 2 0 0 0 17.7 9H14l.7-3.3A2.2 2.2 0 0 0 12.5 3L7 10v9Z" />
+      </>
+    ),
+    "thumb-down": (
+      <>
+        <path d="M7 14V4H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h3Z" />
+        <path d="M7 5h9.5a2 2 0 0 1 2 1.6l1.2 6a2 2 0 0 1-2 2.4H14l.7 3.3a2.2 2.2 0 0 1-2.2 2.7L7 14V5Z" />
       </>
     ),
     spark: (

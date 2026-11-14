@@ -1,4 +1,4 @@
-export type JobStatus = "Saved" | "Review" | "Applied" | "Rejected";
+export type JobStatus = "Saved" | "Review" | "Applied" | "Rejected" | "Accepted";
 export type JobVisibility = "PRIVATE" | "PROFILE";
 
 export type RecruiterContact = {

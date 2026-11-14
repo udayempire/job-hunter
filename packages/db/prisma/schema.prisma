@@ -40,6 +40,11 @@ enum ShareLinkType {
   JOB
 }
 
+enum ProfileVoteType {
+  UPVOTE
+  DOWNVOTE
+}
+
 model User {
   id            String        @id @default(cuid())
   email         String        @unique
@@ -53,6 +58,7 @@ model User {
   jobs          Job[]
   shareLinks    ShareLink[]
   authSessions  AuthSession[]
+  profileVotes  ProfileVote[]
 }
 
 model AuthSession {
@@ -70,23 +76,38 @@ model AuthSession {
 }
 
 model Profile {
-  id          String      @id @default(cuid())
-  userId      String      @unique
-  handle      String      @unique
+  id          String        @id @default(cuid())
+  userId      String        @unique
+  handle      String        @unique
   displayName String?
   headline    String?
-  bio         String?     @db.Text
+  bio         String?       @db.Text
   location    String?
   website     String?
-  isPublic    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  upvote      Int         @default(0)
-  downvote    Int         @default(0)
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPublic    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  upvote      Int           @default(0)
+  downvote    Int           @default(0)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   shareLinks  ShareLink[]
+  votes       ProfileVote[]
 
   @@index([isPublic])
+}
+
+model ProfileVote {
+  id        String          @id @default(cuid())
+  voterId   String
+  profileId String
+  type      ProfileVoteType
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  voter     User            @relation(fields: [voterId], references: [id], onDelete: Cascade)
+  profile   Profile         @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([voterId, profileId])
+  @@index([profileId])
 }
 
 model Job {

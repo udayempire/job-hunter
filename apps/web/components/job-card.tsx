@@ -13,6 +13,7 @@ const statusStyles = {
   Review: "bg-zinc-800 text-[var(--copy)]",
   Applied: "bg-[var(--gold-surface)] text-[var(--gold-ink)]",
   Rejected: "bg-[#3a2421] text-[var(--error)]",
+  Accepted: "bg-[#1f4d3a] text-[#b9e7cb]",
 };
 
 type CompanyLinkKind = "website" | "linkedin" | "x";
@@ -151,6 +152,7 @@ export function JobCard({
                 <option>Review</option>
                 <option>Applied</option>
                 <option>Rejected</option>
+                <option>Accepted</option>
               </select>
             </>
           )}

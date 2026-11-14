@@ -13,6 +13,7 @@ const filters: Array<"All" | JobStatus> = [
   "Review",
   "Applied",
   "Rejected",
+  "Accepted",
 ];
 
 export function JobList({
@@ -67,6 +68,7 @@ export function JobList({
       Review: jobs.filter((job) => job.status === "Review").length,
       Applied: jobs.filter((job) => job.status === "Applied").length,
       Rejected: jobs.filter((job) => job.status === "Rejected").length,
+      Accepted: jobs.filter((job) => job.status === "Accepted").length,
     }),
     [jobs],
   );

@@ -32,7 +32,12 @@ export type PublicProfile = {
   isPublic: boolean;
   image: string | null;
   joinedAt: string;
+  upvote: number;
+  downvote: number;
+  viewerVote: ProfileVote | null;
 };
+
+export type ProfileVote = "UPVOTE" | "DOWNVOTE";
 
 export async function getMyProfile(): Promise<StoredProfile> {
   const response = await fetch(`${apiUrl}/profiles/me`, { credentials: "include", cache: "no-store" });
@@ -58,6 +63,26 @@ export async function getPublicProfile(handle: string): Promise<{ profile: Publi
   if (!response.ok) throw new Error(response.status === 404 ? "Profile not found" : "Unable to load profile");
   const payload = (await response.json()) as { data: { profile: PublicProfile; jobs: ApiJob[] } };
   return { profile: payload.data.profile, jobs: payload.data.jobs.map(mapJob) };
+}
+
+export async function updatePublicProfileVote(
+  handle: string,
+  vote: ProfileVote | null,
+): Promise<Pick<PublicProfile, "upvote" | "downvote" | "viewerVote">> {
+  const response = await fetch(`${apiUrl}/profiles/${encodeURIComponent(handle)}/vote`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ vote }),
+  });
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null) as { error?: string } | null;
+    throw new Error(payload?.error ?? (response.status === 401 ? "Sign in to vote" : "Unable to update vote"));
+  }
+  const payload = (await response.json()) as {
+    data: Pick<PublicProfile, "upvote" | "downvote" | "viewerVote">;
+  };
+  return payload.data;
 }
 
 export async function createPublicJobShareLink(handle: string, jobId: string): Promise<string> {

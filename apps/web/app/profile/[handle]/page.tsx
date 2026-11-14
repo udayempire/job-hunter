@@ -1,17 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { useAuth } from "../../../components/auth-provider";
 import { Avatar } from "../../../components/avatar";
 import { JobList } from "../../../components/job-list";
 import { updateJobStatus } from "../../../lib/jobs-api";
 import {
   getPublicProfile,
+  updatePublicProfileVote,
   type PublicProfile,
+  type ProfileVote,
 } from "../../../lib/profiles-api";
 import { AppBar } from "../../../components/app-bar";
+import { Icon } from "../../../components/icon";
 import type { Job, JobStatus } from "../../../components/types";
 
 function timeSince(date: string | null) {
@@ -29,11 +33,11 @@ function timeSince(date: string | null) {
 export default function PublicProfilePage() {
   const params = useParams<{ handle: string }>();
   const { user, loading } = useAuth();
+  const router = useRouter();
   const queryClient = useQueryClient();
-  const {
-    data,
-    isPending: profileLoading,
-  } = useQuery({
+  const [votePending, setVotePending] = useState(false);
+  const [voteError, setVoteError] = useState("");
+  const { data, isPending: profileLoading } = useQuery({
     queryKey: ["public-profile", params.handle],
     queryFn: () => getPublicProfile(params.handle),
     enabled: Boolean(params.handle),
@@ -41,7 +45,38 @@ export default function PublicProfilePage() {
   const profile = data?.profile ?? null;
   const jobs = data?.jobs ?? [];
 
-  const isOwner = user?.profile?.handle?.toLowerCase() === params.handle.toLowerCase();
+  const isOwner =
+    user?.profile?.handle?.toLowerCase() === params.handle.toLowerCase();
+  async function handleVote(vote: ProfileVote) {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+    if (!profile || votePending) return;
+
+    setVotePending(true);
+    setVoteError("");
+    try {
+      const result = await updatePublicProfileVote(
+        params.handle,
+        profile.viewerVote === vote ? null : vote,
+      );
+      queryClient.setQueryData<{ profile: PublicProfile; jobs: Job[] }>(
+        ["public-profile", params.handle],
+        (current) =>
+          current
+            ? { ...current, profile: { ...current.profile, ...result } }
+            : current,
+      );
+    } catch (error) {
+      setVoteError(
+        error instanceof Error ? error.message : "Unable to update vote",
+      );
+    } finally {
+      setVotePending(false);
+    }
+  }
+
   async function handleStatusChange(id: string, status: JobStatus) {
     queryClient.setQueryData<{ profile: PublicProfile; jobs: Job[] }>(
       ["public-profile", params.handle],
@@ -144,6 +179,37 @@ export default function PublicProfilePage() {
                 <p className="mt-2 max-w-xl text-sm leading-5 text-[var(--copy)]">
                   {profile.headline || "Building the next chapter."}
                 </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    aria-label={`Upvote ${profile.displayName || profile.handle}`}
+                    aria-pressed={profile.viewerVote === "UPVOTE"}
+                    title="Upvote this profile"
+                    disabled={votePending}
+                    onClick={() => void handleVote("UPVOTE")}
+                    className={`inline-flex cursor-pointer items-center gap-1.5 border px-2.5 py-1.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${profile.viewerVote === "UPVOTE" ? "border-[#32634b] bg-[#1f4d3a] text-[#b9e7cb]" : "border-[var(--border)] bg-[var(--control)] text-[var(--copy)] hover:border-[#32634b]"}`}
+                  >
+                    <Icon name="thumb-up" size={15} />
+                    {profile.upvote}
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Downvote ${profile.displayName || profile.handle}`}
+                    aria-pressed={profile.viewerVote === "DOWNVOTE"}
+                    title="Downvote this profile"
+                    disabled={votePending}
+                    onClick={() => void handleVote("DOWNVOTE")}
+                    className={`inline-flex cursor-pointer items-center gap-1.5 border px-2.5 py-1.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${profile.viewerVote === "DOWNVOTE" ? "border-[#70403a] bg-[#3a2421] text-[var(--error)]" : "border-[var(--border)] bg-[var(--control)] text-[var(--copy)] hover:border-[#70403a]"}`}
+                  >
+                    <Icon name="thumb-down" size={15} />
+                    {profile.downvote}
+                  </button>
+                </div>
+                {voteError && (
+                  <p className="mt-2 text-xs text-[var(--error)]" role="status">
+                    {voteError}
+                  </p>
+                )}
               </div>
             </div>
           </div>

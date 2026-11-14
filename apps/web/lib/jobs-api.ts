@@ -37,6 +37,7 @@ function mapStatus(status: string): JobStatus {
     REVIEW: "Review",
     APPLIED: "Applied",
     REJECTED: "Rejected",
+    ACCEPTED: "Accepted",
   };
   return statuses[status] ?? "Saved";
 }
@@ -136,7 +137,7 @@ export async function createJob(input: JobDraft): Promise<Job> {
 }
 
 export async function updateJobStatus(id: string, status: JobStatus): Promise<JobDetails> {
-  const statusMap: Record<JobStatus, string> = { Saved: "SAVED", Review: "REVIEW", Applied: "APPLIED", Rejected: "REJECTED" };
+  const statusMap: Record<JobStatus, string> = { Saved: "SAVED", Review: "REVIEW", Applied: "APPLIED", Rejected: "REJECTED", Accepted: "ACCEPTED" };
   const response = await fetch(`${apiUrl}/jobs/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
