@@ -45,20 +45,33 @@ enum ProfileVoteType {
   DOWNVOTE
 }
 
+enum RecruiterVerificationStatus {
+  UNVERIFIED
+  VERIFIED
+}
+
+enum McpAuditOutcome {
+  SUCCESS
+  DENIED
+  ERROR
+}
+
 model User {
-  id            String        @id @default(cuid())
-  email         String        @unique
-  googleId      String?       @unique
-  emailVerified Boolean       @default(false)
-  name          String?
-  image         String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  profile       Profile?
-  jobs          Job[]
-  shareLinks    ShareLink[]
-  authSessions  AuthSession[]
-  profileVotes  ProfileVote[]
+  id                    String                 @id @default(cuid())
+  email                 String                 @unique
+  googleId              String?                @unique
+  emailVerified         Boolean                @default(false)
+  name                  String?
+  image                 String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  profile               Profile?
+  jobs                  Job[]
+  shareLinks            ShareLink[]
+  authSessions          AuthSession[]
+  profileVotes          ProfileVote[]
+  mcpConnections        McpConnection[]
+  mcpAuthorizationCodes McpAuthorizationCode[]
 }
 
 model AuthSession {
@@ -129,6 +142,8 @@ model Job {
   matchReason     String?            @db.Text
   missingSkills   Json?
   resumeVersion   String?
+  researchSources Json?
+  lastEnrichedAt  DateTime?
   status          JobStatus          @default(SAVED)
   visibility      JobVisibility      @default(PRIVATE)
   ownerId         String?
@@ -138,6 +153,7 @@ model Job {
   recruiters      RecruiterContact[]
   owner           User?              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   shareLinks      ShareLink[]
+  mcpAuditEvents  McpAuditEvent[]
 
   @@unique([ownerId, url])
   @@index([ownerId])
@@ -148,15 +164,99 @@ model Job {
 }
 
 model RecruiterContact {
-  id        String   @id @default(cuid())
-  jobId     String
-  role      String?
-  email     String?
-  link      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  id                 String                      @id @default(cuid())
+  jobId              String
+  name               String?
+  role               String?
+  email              String?
+  link               String?
+  sourceUrl          String?
+  notes              String?                     @db.Text
+  verificationStatus RecruiterVerificationStatus @default(UNVERIFIED)
+  createdAt          DateTime                    @default(now())
+  updatedAt          DateTime                    @updatedAt
+  job                Job                         @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
+  @@index([jobId])
+}
+
+model McpOAuthClient {
+  id                      String                 @id @default(cuid())
+  clientId                String                 @unique
+  clientName              String
+  redirectUris            String[]
+  tokenEndpointAuthMethod String                 @default("none")
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @updatedAt
+  connections             McpConnection[]
+  authorizationCodes      McpAuthorizationCode[]
+}
+
+model McpConnection {
+  id            String          @id @default(cuid())
+  userId        String
+  oauthClientId String
+  scopes        String[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  lastUsedAt    DateTime?
+  revokedAt     DateTime?
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  oauthClient   McpOAuthClient  @relation(fields: [oauthClientId], references: [id], onDelete: Cascade)
+  tokens        McpToken[]
+  auditEvents   McpAuditEvent[]
+
+  @@index([userId, revokedAt])
+  @@index([oauthClientId])
+}
+
+model McpAuthorizationCode {
+  id            String         @id @default(cuid())
+  codeHash      String         @unique
+  userId        String
+  oauthClientId String
+  redirectUri   String
+  codeChallenge String
+  scopes        String[]
+  resource      String
+  expiresAt     DateTime
+  usedAt        DateTime?
+  createdAt     DateTime       @default(now())
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  oauthClient   McpOAuthClient @relation(fields: [oauthClientId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([oauthClientId])
+  @@index([expiresAt])
+}
+
+model McpToken {
+  id               String        @id @default(cuid())
+  connectionId     String
+  accessTokenHash  String        @unique
+  refreshTokenHash String        @unique
+  accessExpiresAt  DateTime
+  refreshExpiresAt DateTime
+  revokedAt        DateTime?
+  createdAt        DateTime      @default(now())
+  connection       McpConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@index([connectionId, revokedAt])
+  @@index([accessExpiresAt])
+  @@index([refreshExpiresAt])
+}
+
+model McpAuditEvent {
+  id           String          @id @default(cuid())
+  connectionId String
+  jobId        String?
+  toolName     String
+  outcome      McpAuditOutcome
+  createdAt    DateTime        @default(now())
+  connection   McpConnection   @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  job          Job?            @relation(fields: [jobId], references: [id], onDelete: SetNull)
+
+  @@index([connectionId, createdAt])
   @@index([jobId])
 }
 

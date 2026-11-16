@@ -2,9 +2,14 @@ export type JobStatus = "Saved" | "Review" | "Applied" | "Rejected" | "Accepted"
 export type JobVisibility = "PRIVATE" | "PROFILE";
 
 export type RecruiterContact = {
+  id?: string;
+  name?: string;
   role?: string;
   email?: string;
   link?: string;
+  sourceUrl?: string;
+  notes?: string;
+  verificationStatus?: "UNVERIFIED" | "VERIFIED";
 };
 
 export type JobDraft = {
