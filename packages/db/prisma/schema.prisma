@@ -17,17 +17,6 @@ enum JobStatus {
   ACCEPTED
 }
 
-enum ApplicationStatus {
-  DRAFT
-  READY
-  APPLIED
-  SCREENING
-  INTERVIEW
-  OFFER
-  REJECTED
-  WITHDRAWN
-}
-
 enum JobVisibility {
   PRIVATE
   PROFILE
@@ -57,21 +46,20 @@ enum McpAuditOutcome {
 }
 
 model User {
-  id                    String                 @id @default(cuid())
-  email                 String                 @unique
-  googleId              String?                @unique
-  emailVerified         Boolean                @default(false)
-  name                  String?
-  image                 String?
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-  profile               Profile?
-  jobs                  Job[]
-  shareLinks            ShareLink[]
-  authSessions          AuthSession[]
-  profileVotes          ProfileVote[]
-  mcpConnections        McpConnection[]
-  mcpAuthorizationCodes McpAuthorizationCode[]
+  id             String          @id @default(cuid())
+  email          String          @unique
+  googleId       String?         @unique
+  emailVerified  Boolean         @default(false)
+  name           String?
+  image          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  profile        Profile?
+  jobs           Job[]
+  shareLinks     ShareLink[]
+  authSessions   AuthSession[]
+  profileVotes   ProfileVote[]
+  mcpAuditEvents McpAuditEvent[]
 }
 
 model AuthSession {
@@ -149,7 +137,6 @@ model Job {
   ownerId         String?
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
-  applications    Application[]
   recruiters      RecruiterContact[]
   owner           User?              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   shareLinks      ShareLink[]
@@ -180,83 +167,20 @@ model RecruiterContact {
   @@index([jobId])
 }
 
-model McpOAuthClient {
-  id                      String                 @id @default(cuid())
-  clientId                String                 @unique
-  clientName              String
-  redirectUris            String[]
-  tokenEndpointAuthMethod String                 @default("none")
-  createdAt               DateTime               @default(now())
-  updatedAt               DateTime               @updatedAt
-  connections             McpConnection[]
-  authorizationCodes      McpAuthorizationCode[]
-}
-
-model McpConnection {
-  id            String          @id @default(cuid())
-  userId        String
-  oauthClientId String
-  scopes        String[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  lastUsedAt    DateTime?
-  revokedAt     DateTime?
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  oauthClient   McpOAuthClient  @relation(fields: [oauthClientId], references: [id], onDelete: Cascade)
-  tokens        McpToken[]
-  auditEvents   McpAuditEvent[]
-
-  @@index([userId, revokedAt])
-  @@index([oauthClientId])
-}
-
-model McpAuthorizationCode {
-  id            String         @id @default(cuid())
-  codeHash      String         @unique
-  userId        String
-  oauthClientId String
-  redirectUri   String
-  codeChallenge String
-  scopes        String[]
-  resource      String
-  expiresAt     DateTime
-  usedAt        DateTime?
-  createdAt     DateTime       @default(now())
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  oauthClient   McpOAuthClient @relation(fields: [oauthClientId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([oauthClientId])
-  @@index([expiresAt])
-}
-
-model McpToken {
-  id               String        @id @default(cuid())
-  connectionId     String
-  accessTokenHash  String        @unique
-  refreshTokenHash String        @unique
-  accessExpiresAt  DateTime
-  refreshExpiresAt DateTime
-  revokedAt        DateTime?
-  createdAt        DateTime      @default(now())
-  connection       McpConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
-
-  @@index([connectionId, revokedAt])
-  @@index([accessExpiresAt])
-  @@index([refreshExpiresAt])
-}
-
 model McpAuditEvent {
   id           String          @id @default(cuid())
-  connectionId String
+  userId       String
+  workosUserId String
+  clientId     String
   jobId        String?
   toolName     String
   outcome      McpAuditOutcome
   createdAt    DateTime        @default(now())
-  connection   McpConnection   @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   job          Job?            @relation(fields: [jobId], references: [id], onDelete: SetNull)
 
-  @@index([connectionId, createdAt])
+  @@index([userId, createdAt])
+  @@index([clientId, createdAt])
   @@index([jobId])
 }
 
@@ -280,21 +204,3 @@ model ShareLink {
   @@index([revokedAt])
 }
 
-model Application {
-  id               String            @id @default(cuid())
-  jobId            String
-  resumeVersion    String?
-  coverLetter      String?           @db.Text
-  recruiterMessage String?           @db.Text
-  answers          Json?
-  status           ApplicationStatus @default(DRAFT)
-  appliedAt        DateTime?
-  followUpAt       DateTime?
-  notes            String?           @db.Text
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  job              Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
-
-  @@index([status])
-  @@index([followUpAt])
-}

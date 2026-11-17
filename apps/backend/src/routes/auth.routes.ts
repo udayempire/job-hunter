@@ -8,8 +8,8 @@ const frontendUrl = () => process.env.FRONTEND_URL ?? "http://localhost:3001";
 const persistentCookieLifetimeSeconds = 10 * 365 * 24 * 60 * 60;
 
 authRouter.get("/google", (request, response) => {
-  const returnTo = sharedJobReturnPath(request.query.returnTo);
-  response.redirect(googleAuthorizationUrl(returnTo ?? undefined));
+  const returnTo = authReturnPath(request.query.returnTo);
+  response.redirect(googleAuthorizationUrl(returnTo?.path));
 });
 
 authRouter.get("/google/callback", async (request, response) => {
@@ -40,10 +40,13 @@ authRouter.get("/google/callback", async (request, response) => {
     await db.authSession.create({ data: { userId: user.id, refreshTokenHash: hashRefreshToken(refreshToken), expiresAt: refreshTokenExpiry() } });
     setCookie(response, "access_token", accessToken, persistentCookieLifetimeSeconds);
     setCookie(response, "refresh_token", refreshToken, 30 * 24 * 60 * 60);
-    const returnTo = sharedJobReturnPath(request.query.state);
+    const returnTo = authReturnPath(request.query.state);
+    if (returnTo?.target === "backend") {
+      return response.redirect(returnTo.path);
+    }
     const destination = profile
-      ? returnTo ?? "/"
-      : `/onboarding${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`;
+      ? returnTo?.path ?? "/"
+      : `/onboarding${returnTo ? `?returnTo=${encodeURIComponent(returnTo.path)}` : ""}`;
     return response.redirect(`${frontendUrl()}${destination}`);
   } catch (error) {
     console.error("Google sign-in failed", error);
@@ -117,12 +120,32 @@ async function userIdFromRequest(request: Request) {
   try { return await readAccessToken(token); } catch { return null; }
 }
 
-function sharedJobReturnPath(value: unknown) {
-  if (typeof value !== "string" || !value.startsWith("/share/jobs/") || value.startsWith("//")) return null;
+function authReturnPath(value: unknown): { path: string; target: "frontend" | "backend" } | null {
+  if (typeof value !== "string" || value.startsWith("//")) return null;
   try {
-    const parsed = new URL(value, frontendUrl());
-    if (parsed.pathname.split("/").length < 4) return null;
-    return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+    if (value.startsWith("/share/jobs/")) {
+      const parsed = new URL(value, frontendUrl());
+      if (parsed.pathname.split("/").length < 4) return null;
+      return {
+        path: `${parsed.pathname}${parsed.search}${parsed.hash}`,
+        target: "frontend",
+      };
+    }
+    if (value.startsWith("/api/auth/workos?")) {
+      const parsed = new URL(value, "http://backend.local");
+      const externalAuthId = parsed.searchParams.get("external_auth_id")?.trim();
+      if (
+        parsed.pathname !== "/api/auth/workos" ||
+        !externalAuthId ||
+        externalAuthId.length > 512 ||
+        [...parsed.searchParams.keys()].some((key) => key !== "external_auth_id")
+      ) return null;
+      return {
+        path: `/api/auth/workos?external_auth_id=${encodeURIComponent(externalAuthId)}`,
+        target: "backend",
+      };
+    }
+    return null;
   } catch {
     return null;
   }

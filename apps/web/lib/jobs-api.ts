@@ -22,13 +22,11 @@ export type ApiJob = {
   visibility: "PRIVATE" | "PROFILE";
   createdAt: string;
   updatedAt?: string;
-  applications?: Array<{ id: string; status: string; appliedAt: string | null; followUpAt: string | null; notes: string | null }>;
 };
 
 export type JobDetails = Job & {
   createdAt: string;
   updatedAt: string;
-  applications: Array<{ id: string; status: string; appliedAt: string | null; followUpAt: string | null; notes: string | null }>;
 };
 
 function mapStatus(status: string): JobStatus {
@@ -68,7 +66,7 @@ export function mapJob(job: ApiJob): Job {
 }
 
 function mapJobDetails(job: ApiJob): JobDetails {
-  return { ...mapJob(job), createdAt: job.createdAt, updatedAt: job.updatedAt ?? job.createdAt, applications: job.applications ?? [] };
+  return { ...mapJob(job), createdAt: job.createdAt, updatedAt: job.updatedAt ?? job.createdAt };
 }
 
 export async function getJobs(): Promise<Job[]> {

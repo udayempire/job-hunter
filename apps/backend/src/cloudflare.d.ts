@@ -13,4 +13,7 @@ interface Env {
   GOOGLE_CLIENT_SECRET?: string;
   GOOGLE_REDIRECT_URI?: string;
   JWT_SECRET?: string;
+  MCP_SERVER_URL?: string;
+  WORKOS_API_KEY?: string;
+  WORKOS_AUTHKIT_DOMAIN?: string;
 }

@@ -4,23 +4,13 @@ import { readAccessToken } from "./jwt.js";
 export type AuthenticatedRequest = Request & { userId: string };
 
 export async function requireAuth(request: Request, response: Response, next: NextFunction) {
-  const token = readCookie(request, "access_token");
-  if (!token) {
+  const userId = await userIdFromCookie(request);
+  if (!userId) {
     response.status(401).json({ error: "Authentication required" });
     return;
   }
-
-  try {
-    const userId = await readAccessToken(token);
-    if (!userId) {
-      response.status(401).json({ error: "Authentication required" });
-      return;
-    }
-    (request as AuthenticatedRequest).userId = userId;
-    next();
-  } catch {
-    response.status(401).json({ error: "Authentication required" });
-  }
+  (request as AuthenticatedRequest).userId = userId;
+  next();
 }
 
 export async function optionalAuth(request: Request, _response: Response, next: NextFunction) {
@@ -34,6 +24,16 @@ export async function optionalAuth(request: Request, _response: Response, next: 
     }
   }
   next();
+}
+
+export async function userIdFromCookie(request: Request) {
+  const token = readCookie(request, "access_token");
+  if (!token) return null;
+  try {
+    return await readAccessToken(token);
+  } catch {
+    return null;
+  }
 }
 
 function readCookie(request: Request, name: string) {

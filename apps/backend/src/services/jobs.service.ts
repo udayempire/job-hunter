@@ -56,7 +56,7 @@ export async function getJob(userId: string, idValue: unknown) {
   const id = requiredId(idValue);
   const job = await db.job.findUnique({
     where: { id, ownerId: userId },
-    include: { applications: true, recruiters: true },
+    include: { recruiters: true },
   });
 
   if (!job) throw new JobServiceError("Job not found", 404);
@@ -232,7 +232,7 @@ export async function updateJob(
     return await db.job.update({
       where: { id },
       data,
-      include: { applications: true, recruiters: true },
+      include: { recruiters: true },
     });
   } catch (error) {
     if (isPrismaError(error, "P2025")) {

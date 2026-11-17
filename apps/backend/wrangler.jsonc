@@ -7,6 +7,7 @@
   "vars": {
     "COOKIE_CROSS_SITE": "true",
     "EXTENSION_ORIGINS": "chrome-extension://igjomiklldkcenldapmemokmnjddeggk",
+    "MCP_SERVER_URL": "https://api.jobhunti.space/mcp",
   },
   "observability": {
     "enabled": true,

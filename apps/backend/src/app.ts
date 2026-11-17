@@ -1,5 +1,6 @@
 import cors from "cors";
 import express, { type Express } from "express";
+import workosAuthRouter from "./mcp/workos-auth.routes.js";
 import apiRouter from "./routes/index.js";
 
 export function createApp(initialize?: () => void): Express {
@@ -27,6 +28,7 @@ export function createApp(initialize?: () => void): Express {
     credentials: true,
   }));
   app.use(express.json());
+  app.use(workosAuthRouter);
   app.use("/api", apiRouter);
 
   app.get("/health", (_request, response) => {
