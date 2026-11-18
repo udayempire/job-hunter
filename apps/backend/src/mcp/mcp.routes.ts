@@ -2,11 +2,10 @@ import { getOAuthProtectedResourceMetadataUrl, requireBearerAuth } from "@modelc
 import { toNodeHandler } from "@modelcontextprotocol/node";
 import { createMcpHandler } from "@modelcontextprotocol/server";
 
-import express, { NextFunction, Request, Response, Router } from "express";=
+import express, { NextFunction, Request, Response, Router } from "express";
 import { mcpServerUrl } from "./config.js";
 import { createJobHuntiMcpServer } from "./mcp.server.js";
 import { workosTokenVerifier } from "./workos-token.js";
-import { createJob } from "../services/jobs.service.js";
 
 const mcpRouter: Router = express.Router();
 const resourceUrl = mcpServerUrl();
