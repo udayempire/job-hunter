@@ -56,8 +56,11 @@ function registerListJobsTool(server: McpServer, principal: McpPrincipal) {
         },
         async (input) => {
             try {
-                return successResult(await listJobs(principal.userId, input));
+                const result = await listJobs(principal.userId, input);
+                await recordAudit(principal, "list_jobs", McpAuditOutcome.SUCCESS);
+                return successResult(result);
             } catch (error) {
+                await recordAudit(principal, "list_jobs", auditOutcome(error));
                 return errorResult(error, "Failed to list jobs");
             }
         },
@@ -83,8 +86,11 @@ function registerGetJobTool(server: McpServer, principal: McpPrincipal) {
         },
         async ({ id }) => {
             try {
-                return successResult(await getJob(principal.userId, id));
+                const job = await getJob(principal.userId, id);
+                await recordAudit(principal, "get_job", McpAuditOutcome.SUCCESS, job.id);
+                return successResult(job);
             } catch (error) {
+                await recordAudit(principal, "get_job", auditOutcome(error));
                 return errorResult(error, "Failed to load the job");
             }
         },
@@ -198,8 +204,10 @@ function registerPipelineSummaryTool(
                     (sum, count) => sum + count,
                     0,
                 );
+                await recordAudit(principal, "get_pipeline_summary", McpAuditOutcome.SUCCESS);
                 return successResult({ total, byStatus });
             } catch (error) {
+                await recordAudit(principal, "get_pipeline_summary", auditOutcome(error));
                 return errorResult(error, "Failed to summarize the job pipeline");
             }
         },
