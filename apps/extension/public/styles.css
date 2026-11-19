@@ -37,6 +37,11 @@ body {
   font-weight: 700;
   letter-spacing: .12em;
   text-transform: uppercase;
+  text-decoration: none;
+}
+
+.brand:hover {
+  color: #e5c66e;
 }
 
 .brand-logo {
