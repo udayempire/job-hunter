@@ -8,6 +8,7 @@
     "COOKIE_CROSS_SITE": "true",
     "EXTENSION_ORIGINS": "chrome-extension://igjomiklldkcenldapmemokmnjddeggk",
     "MCP_SERVER_URL": "https://api.jobhunti.space/mcp",
+    "WORKOS_AUTHKIT_DOMAIN": "https://fantastic-tune-67.authkit.app",
   },
   "observability": {
     "enabled": true,
