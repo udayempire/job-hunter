@@ -1,6 +1,6 @@
 # Job Hunti
 
-Job Hunti is a job-tracking application for saving, organizing, and reviewing job opportunities while you browse. It is a Bun/Turborepo monorepo with a Next.js frontend, an Express API that runs locally and as a Cloudflare Worker in production, a Prisma/PostgreSQL data layer, and a Chrome extension for capturing jobs from supported job sites.
+Job Hunti is a job-tracking application for saving, organizing, and reviewing job opportunities while you browse. It is a Bun/Turborepo monorepo with a Next.js frontend, an Express API that runs locally and as a Cloudflare Worker in production, a Prisma/PostgreSQL data layer, a Chrome extension for capturing jobs from supported job sites, and a remote MCP server so Claude, Codex, or any other MCP client can research and work with your saved jobs directly.
 
 ## Repository structure
 
@@ -34,6 +34,23 @@ You can also select text on a page and use it for a field, sign in from the popu
 Site-specific extraction adapters currently cover LinkedIn, Indeed, Greenhouse, Lever, Workday, Y Combinator, Wellfound, Naukri, Unstop, and Glassdoor. A generic DOM/metadata fallback is used on other pages. Extracted values should still be reviewed before saving because page layouts can change.
 
 See the [extension development guide](apps/extension/README.md) for permissions, environment configuration, reviewer instructions, and publishing notes. The [Chrome Web Store listing draft](apps/extension/STORE_LISTING.md) contains the current product and privacy copy.
+
+## Job Hunti MCP server
+
+Job Hunti exposes a remote [MCP](https://modelcontextprotocol.io) server so you can work with your saved jobs from your own AI client — Claude, Codex, or any other MCP-compatible tool — instead of only through the website.
+
+- **Endpoint**: `POST /mcp`, stateless Streamable HTTP, JSON responses (no SSE).
+- **Auth**: [WorkOS AuthKit Standalone Connect](https://workos.com/docs/authkit/connect/standalone). Your AI client authenticates through your existing Job Hunti Google login — there is no separate MCP account or API key to manage. WorkOS issues a short-lived access token scoped to your user.
+- **Tools**: `list_jobs`, `get_job`, `create_job`, `update_job`, `get_pipeline_summary`. Every call is scoped to the authenticated user's own jobs; `update_job` is how an AI enriches a saved job (for example, attaching researched recruiter contacts) without fabricating data it can't source.
+- **Auditing**: every tool call, read or write, is recorded in `McpAuditEvent` with the outcome, the calling client, and the affected job.
+
+The implementation lives in [apps/backend/src/mcp](apps/backend/src/mcp). To connect from Claude Code:
+
+```sh
+claude mcp add --transport http job-hunti https://api.jobhunti.space/mcp
+```
+
+The first tool call will open your browser for the WorkOS/Google login; after that, your client has its own token and can call the tools directly.
 
 ## Prerequisites
 
@@ -71,6 +88,14 @@ GOOGLE_CLIENT_ID=""
 GOOGLE_CLIENT_SECRET=""
 GOOGLE_REDIRECT_URI="http://localhost:4000/api/auth/google/callback"
 JWT_SECRET="use-a-long-random-secret-at-least-32-characters"
+```
+
+These three are only needed if you're working on the MCP server; the rest of the app runs without them:
+
+```dotenv
+MCP_SERVER_URL="http://localhost:4000/mcp"
+WORKOS_AUTHKIT_DOMAIN="https://your-staging-project.authkit.app"
+WORKOS_API_KEY=""
 ```
 
 Update `apps/web/.env`:
@@ -170,6 +195,8 @@ bun run --cwd apps/backend wrangler tail job-hunter-backend --format pretty
 ```
 
 The frontend is deployed separately. Configure its host with `NEXT_PUBLIC_API_URL` for the production API URL and `NEXT_PUBLIC_SITE_URL` for the public website URL.
+
+Production Worker secrets include `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `JWT_SECRET`, `FRONTEND_URL`, and `WORKOS_API_KEY`. `MCP_SERVER_URL` and `WORKOS_AUTHKIT_DOMAIN` are plain vars in `wrangler.jsonc`. WorkOS's staging and production environments are configured independently — nothing carries over between them, so the Connect Login URI, MCP resource indicator, and JWT template must be set up separately in each.
 
 Ask a maintainer before changing production database bindings, OAuth callback URLs, or Worker secrets.
 
