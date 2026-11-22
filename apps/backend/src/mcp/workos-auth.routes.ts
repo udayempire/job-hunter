@@ -11,6 +11,10 @@ workosAuthRouter.get("/.well-known/oauth-protected-resource/mcp", (_request, res
     response.json({
       resource: mcpServerUrl().toString(),
       authorization_servers: [workosIssuer()],
+      // Not yet enforced end-to-end: WorkOS AuthKit must also be configured to
+      // issue these scopes before a token actually carries them. See the
+      // hasScope() comment in mcp/tools/jobs.tools.ts.
+      scopes_supported: ["jobs:read", "jobs:write"],
     });
   } catch (error) {
     console.error("WorkOS MCP metadata is not configured", error);

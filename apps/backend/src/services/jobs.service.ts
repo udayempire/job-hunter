@@ -23,33 +23,88 @@ type UpdateJobOptions = {
   markEnriched?: boolean;
 };
 
-export async function listJobs(userId: string, input: JobListInput) {
+function buildJobsWhere(userId: string, input: JobListInput): Prisma.JobWhereInput {
   const status = statusValue(input.status);
   const search = stringValue(input.search);
+  return {
+    ownerId: userId,
+    ...(status ? { status } : {}),
+    ...(search
+      ? {
+          OR: [
+            { title: { contains: search, mode: "insensitive" as const } },
+            { company: { contains: search, mode: "insensitive" as const } },
+            { description: { contains: search, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+  };
+}
+
+export async function listJobs(userId: string, input: JobListInput) {
+  const where = buildJobsWhere(userId, input);
   const skip = paginationValue(input.skip, 0, 10_000);
   const take = paginationValue(input.take, 20, 100);
 
-  const jobs = await db.job.findMany({
-    where: {
-      ownerId: userId,
-      ...(status ? { status } : {}),
-      ...(search
-        ? {
-            OR: [
-              { title: { contains: search, mode: "insensitive" as const } },
-              { company: { contains: search, mode: "insensitive" as const } },
-              { description: { contains: search, mode: "insensitive" as const } },
-            ],
-          }
-        : {}),
-    },
-    orderBy: { createdAt: "desc" },
-    skip,
-    take,
-    include: { recruiters: true },
-  });
+  const [jobs, total] = await Promise.all([
+    db.job.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+      include: { recruiters: true },
+    }),
+    db.job.count({ where }),
+  ]);
 
-  return { jobs, pagination: { skip, take, count: jobs.length } };
+  return {
+    jobs,
+    pagination: { skip, take, total, hasMore: skip + jobs.length < total },
+  };
+}
+
+/**
+ * Lean variant of listJobs for the MCP tool: omits long free-text fields and
+ * full recruiter records so a list call doesn't flood a model's context.
+ * Callers that need the full record should follow up with getJob(id).
+ */
+export async function listJobsSummary(userId: string, input: JobListInput) {
+  const where = buildJobsWhere(userId, input);
+  const skip = paginationValue(input.skip, 0, 10_000);
+  const take = paginationValue(input.take, 20, 100);
+
+  const [jobs, total] = await Promise.all([
+    db.job.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+      select: {
+        id: true,
+        company: true,
+        title: true,
+        status: true,
+        location: true,
+        fitScore: true,
+        applyLink: true,
+        url: true,
+        createdAt: true,
+        updatedAt: true,
+        _count: { select: { recruiters: true } },
+      },
+    }),
+    db.job.count({ where }),
+  ]);
+
+  const summaries = jobs.map(({ _count, ...job }) => ({
+    ...job,
+    recruiterCount: _count.recruiters,
+  }));
+
+  return {
+    jobs: summaries,
+    pagination: { skip, take, total, hasMore: skip + summaries.length < total },
+  };
 }
 
 export async function getJob(userId: string, idValue: unknown) {
@@ -319,19 +374,29 @@ function recruiterContacts(value: unknown): Array<{
       (contact): contact is Record<string, unknown> =>
         typeof contact === "object" && contact !== null,
     )
-    .map((contact) => ({
-      id: stringValue(contact.id),
-      name: stringValue(contact.name),
-      role: stringValue(contact.role),
-      email: stringValue(contact.email),
-      link: stringValue(contact.profileLink ?? contact.link),
-      sourceUrl: stringValue(contact.sourceUrl),
-      notes: stringValue(contact.notes),
-      verificationStatus:
-        stringValue(contact.verificationStatus)?.toUpperCase() === "VERIFIED"
+    .map((contact) => {
+      const sourceUrl = stringValue(contact.sourceUrl);
+      const requestedVerified =
+        stringValue(contact.verificationStatus)?.toUpperCase() === "VERIFIED";
+      if (requestedVerified && !sourceUrl) {
+        throw new JobServiceError(
+          "A recruiter can only be marked VERIFIED when sourceUrl is provided",
+          400,
+        );
+      }
+      return {
+        id: stringValue(contact.id),
+        name: stringValue(contact.name),
+        role: stringValue(contact.role),
+        email: stringValue(contact.email),
+        link: stringValue(contact.profileLink ?? contact.link),
+        sourceUrl,
+        notes: stringValue(contact.notes),
+        verificationStatus: requestedVerified
           ? ("VERIFIED" as const)
           : ("UNVERIFIED" as const),
-    }))
+      };
+    })
     .filter(
       (contact) =>
         contact.id ||

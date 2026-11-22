@@ -9,7 +9,7 @@ import {
     createJob,
     getJob,
     JobServiceError,
-    listJobs,
+    listJobsSummary,
     updateJob,
 } from "../../services/jobs.service.js";
 import {
@@ -22,7 +22,37 @@ type McpPrincipal = {
     userId: string;
     workosUserId: string;
     clientId: string;
+    scopes: string[];
 };
+
+/**
+ * Checks a fine-grained job scope ("jobs:read" / "jobs:write"; write implies read).
+ *
+ * WorkOS AuthKit is not yet configured to issue these scopes, so a token that
+ * carries no "jobs:*" scope at all is treated as unrestricted (legacy/full
+ * access) rather than denied — this check only starts restricting access once
+ * the AuthKit app is configured to hand out "jobs:read" / "jobs:write".
+ */
+function hasScope(principal: McpPrincipal, required: "jobs:read" | "jobs:write"): boolean {
+    const jobScopes = principal.scopes.filter((scope) => scope.startsWith("jobs:"));
+    if (jobScopes.length === 0) return true;
+    if (required === "jobs:read") {
+        return jobScopes.includes("jobs:read") || jobScopes.includes("jobs:write");
+    }
+    return jobScopes.includes("jobs:write");
+}
+
+function scopeErrorResult(toolName: string): CallToolResult {
+    return {
+        isError: true,
+        content: [
+            {
+                type: "text",
+                text: `The connected token does not have the scope required to call ${toolName}.`,
+            },
+        ],
+    };
+}
 
 export function registerJobTools(server: McpServer, authInfo: AuthInfo) {
     const principal = principalFromAuthInfo(authInfo);
@@ -40,7 +70,7 @@ function registerListJobsTool(server: McpServer, principal: McpPrincipal) {
         {
             title: "List saved jobs",
             description:
-                "List jobs belonging to the authenticated Job Hunti user. Use search to match company, title, or description, and status to filter the pipeline. Results include saved recruiter contacts. Use this before creating a job when checking whether it may already exist.",
+                "List jobs belonging to the authenticated Job Hunti user as lightweight summaries (no description text or full recruiter records). Use search to match company, title, or description, and status to filter the pipeline. pagination.hasMore tells you whether another page exists. Use this before creating a job when checking whether it may already exist, and call get_job to see full details for one job.",
             inputSchema: z.object({
                 search: z.string().min(1).optional(),
                 status: jobStatusSchema.optional(),
@@ -55,8 +85,12 @@ function registerListJobsTool(server: McpServer, principal: McpPrincipal) {
             },
         },
         async (input) => {
+            if (!hasScope(principal, "jobs:read")) {
+                await recordAudit(principal, "list_jobs", McpAuditOutcome.DENIED);
+                return scopeErrorResult("list_jobs");
+            }
             try {
-                const result = await listJobs(principal.userId, input);
+                const result = await listJobsSummary(principal.userId, input);
                 await recordAudit(principal, "list_jobs", McpAuditOutcome.SUCCESS);
                 return successResult(result);
             } catch (error) {
@@ -85,6 +119,10 @@ function registerGetJobTool(server: McpServer, principal: McpPrincipal) {
             },
         },
         async ({ id }) => {
+            if (!hasScope(principal, "jobs:read")) {
+                await recordAudit(principal, "get_job", McpAuditOutcome.DENIED, id);
+                return scopeErrorResult("get_job");
+            }
             try {
                 const job = await getJob(principal.userId, id);
                 await recordAudit(principal, "get_job", McpAuditOutcome.SUCCESS, job.id);
@@ -113,6 +151,10 @@ function registerCreateJobTool(server: McpServer, principal: McpPrincipal) {
             },
         },
         async (input) => {
+            if (!hasScope(principal, "jobs:write")) {
+                await recordAudit(principal, "create_job", McpAuditOutcome.DENIED);
+                return scopeErrorResult("create_job");
+            }
             try {
                 const job = await createJob(principal.userId, input);
                 await recordAudit(
@@ -146,10 +188,17 @@ function registerUpdateJobTool(server: McpServer, principal: McpPrincipal) {
             },
         },
         async ({ id, ...changes }) => {
+            if (!hasScope(principal, "jobs:write")) {
+                await recordAudit(principal, "update_job", McpAuditOutcome.DENIED, id);
+                return scopeErrorResult("update_job");
+            }
             try {
+                // Only mark the job "enriched" when the changes carry an actual
+                // source: a research citation, or a recruiter with a sourceUrl.
+                // A bare recruiter name/email with no source doesn't count.
                 const researched =
                     Boolean(changes.researchSources?.length) ||
-                    Boolean(changes.recruiters?.length);
+                    Boolean(changes.recruiters?.some((recruiter) => Boolean(recruiter.sourceUrl)));
                 const job = await updateJob(principal.userId, id, changes, {
                     appendRecruiters: true,
                     markEnriched: researched,
@@ -188,6 +237,10 @@ function registerPipelineSummaryTool(
             },
         },
         async () => {
+            if (!hasScope(principal, "jobs:read")) {
+                await recordAudit(principal, "get_pipeline_summary", McpAuditOutcome.DENIED);
+                return scopeErrorResult("get_pipeline_summary");
+            }
             try {
                 const groupedJobs = await db.job.groupBy({
                     by: ["status"],
@@ -220,7 +273,12 @@ function principalFromAuthInfo(authInfo: AuthInfo): McpPrincipal {
     if (typeof userId !== "string" || typeof workosUserId !== "string") {
         throw new Error("Authenticated MCP identity is incomplete");
     }
-    return { userId, workosUserId, clientId: authInfo.clientId };
+    return {
+        userId,
+        workosUserId,
+        clientId: authInfo.clientId,
+        scopes: authInfo.scopes ?? [],
+    };
 }
 
 async function recordAudit(
