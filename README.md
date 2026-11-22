@@ -50,6 +50,8 @@ The implementation lives in [apps/backend/src/mcp](apps/backend/src/mcp). To con
 claude mcp add --transport http job-hunti https://api.jobhunti.space/mcp
 ```
 
+For any other client, point an AI agent at **https://jobhunti.space/mcp-setup.md** ([source](apps/web/public/mcp-setup.md)) and ask it to set up the connection — it has copy-pasteable config for Claude Desktop, Codex, Cursor, VS Code, and a generic Streamable HTTP fallback, plus a verification step and troubleshooting table.
+
 The first tool call will open your browser for the WorkOS/Google login; after that, your client has its own token and can call the tools directly.
 
 ## Prerequisites
