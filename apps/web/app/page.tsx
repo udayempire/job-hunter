@@ -6,11 +6,7 @@ import { useState } from "react";
 import { ArrowDown, ArrowRight, Check, Copy, LockKeyhole } from "lucide-react";
 import { Dashboard } from "../components/dashboard";
 import { useAuth } from "../components/auth-provider";
-
-const mcpServerUrl = "https://api.jobhunti.space/mcp";
-const mcpSetupGuideUrl = "https://jobhunti.space/mcp-setup.md";
-const mcpClaudeCodeCommand = `claude mcp add --transport http job-hunti ${mcpServerUrl}`;
-const mcpAgentPrompt = `Set up the Job Hunti MCP server for me: add ${mcpServerUrl} as a remote MCP server (Streamable HTTP, OAuth sign-in — no API key needed), then follow ${mcpSetupGuideUrl} to finish connecting and verify it works.`;
+import { mcpAgentPrompt } from "../lib/mcp";
 
 function CopyButton({ text, label }: { text: string; label: string }) {
   const [copied, setCopied] = useState(false);
@@ -31,7 +27,7 @@ function CopyButton({ text, label }: { text: string; label: string }) {
       type="button"
       onClick={handleCopy}
       aria-label={label}
-      className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-medium text-zinc-300 transition hover:bg-white/10 hover:text-white"
+      className="inline-flex shrink-0 items-center gap-1.5 rounded-none border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-medium text-zinc-300 transition hover:bg-white/10 hover:text-white"
     >
       {copied ? (
         <>
@@ -357,34 +353,26 @@ function Landing() {
             </h2>
             <p className="mt-5 max-w-[520px] text-base leading-[1.7] text-zinc-300">
               Job Hunti runs a remote MCP server, so Claude, Codex, or any
-              MCP-compatible client can read and update your saved jobs
-              directly — no exporting, no pasting context by hand.
+              MCP-compatible client can read and update your saved jobs directly
+              no exporting, no pasting context by hand.
             </p>
             <div className="my-[26px] grid gap-3">
               <span className="flex items-center gap-2.5 text-sm text-zinc-300 [&_svg]:shrink-0 [&_svg]:text-[#f5c53d]">
-                <Check size={15} /> List, read, create and update jobs from
-                your AI client
+                <Check size={15} /> List, read, create and update jobs from your
+                AI client
               </span>
               <span className="flex items-center gap-2.5 text-sm text-zinc-300 [&_svg]:shrink-0 [&_svg]:text-[#f5c53d]">
-                <Check size={15} /> Signs in with your existing Google login —
-                no separate API key
+                <Check size={15} /> Signs in with your existing Google login no
+                separate API key
               </span>
               <span className="flex items-center gap-2.5 text-sm text-zinc-300 [&_svg]:shrink-0 [&_svg]:text-[#f5c53d]">
-                <LockKeyhole size={15} /> Every call is scoped to your jobs
-                and logged for review
+                <LockKeyhole size={15} /> Every call is scoped to your jobs and
+                logged for review
               </span>
             </div>
-            <a
-              href={mcpSetupGuideUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#f5c53d] transition hover:text-[#ffd866]"
-            >
-              View setup guide <ArrowRight size={14} />
-            </a>
           </div>
-          <div className="rounded-[23px]! border border-white/10 bg-[#141414] p-[35px] shadow-[0_20px_50px_#0000005c]">
-            <div className="rounded-[15px]! border border-white/10 bg-black p-[22px] font-mono text-[13px] leading-[1.8] text-zinc-300">
+          <div className="rounded-none! border border-white/10 bg-[#141414] p-[35px] shadow-[0_20px_50px_#0000005c]">
+            <div className="rounded-none! border border-white/10 bg-black p-[22px] font-mono text-[13px] leading-[1.8] text-zinc-300">
               <div className="mb-4 flex items-center justify-between gap-1.5">
                 <div className="flex items-center gap-1.5">
                   <span className="size-2.5 rounded-full bg-[#ff5f57]" />
@@ -392,36 +380,17 @@ function Landing() {
                   <span className="size-2.5 rounded-full bg-[#28c840]" />
                 </div>
                 <CopyButton
-                  text={mcpClaudeCodeCommand}
-                  label="Copy the claude mcp add command"
+                  text={mcpAgentPrompt}
+                  label="Copy a setup prompt to paste into your AI agent"
                 />
               </div>
-              <p>
-                <span className="text-[#f5c53d]">$</span> claude mcp add
-                --transport http job-hunti \
-              </p>
-              <p className="pl-4">{mcpServerUrl}</p>
+              <p>{mcpAgentPrompt}</p>
               <p className="mt-3 text-zinc-500">
                 # list_jobs, get_job, create_job,
               </p>
               <p className="text-zinc-500">
                 # update_job, get_pipeline_summary
               </p>
-            </div>
-            <div className="mt-4 flex items-start justify-between gap-3 rounded-[15px]! border border-white/10 bg-[#1a1a1a] p-[18px]">
-              <div>
-                <p className="text-[13px] font-semibold text-white">
-                  Using Claude Desktop, Cursor, Codex, or another agent?
-                </p>
-                <p className="mt-1 text-[13px] leading-[1.6] text-zinc-400">
-                  Copy this, paste it into your agent, and it will connect
-                  itself.
-                </p>
-              </div>
-              <CopyButton
-                text={mcpAgentPrompt}
-                label="Copy a setup prompt to paste into your AI agent"
-              />
             </div>
           </div>
         </div>

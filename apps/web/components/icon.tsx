@@ -19,7 +19,9 @@ type IconName =
   | "download"
   | "trash"
   | "thumb-up"
-  | "thumb-down";
+  | "thumb-down"
+  | "bot"
+  | "cube";
 
 export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   const common = {
@@ -151,6 +153,21 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
       <>
         <path d="m12 3-1.2 5.8L5 10l5.8 1.2L12 17l1.2-5.8L19 10l-5.8-1.2L12 3Z" />
         <path d="m19 16-.5 2.5L16 19l2.5.5L19 22l.5-2.5L22 19l-2.5-.5L19 16Z" />
+      </>
+    ),
+    bot: (
+      <>
+        <rect x="5" y="9" width="14" height="10" rx="3" />
+        <path d="M12 9V5" />
+        <circle cx="12" cy="4" r="1" fill="currentColor" stroke="none" />
+        <circle cx="9" cy="14" r="1.1" fill="currentColor" stroke="none" />
+        <circle cx="15" cy="14" r="1.1" fill="currentColor" stroke="none" />
+      </>
+    ),
+    cube: (
+      <>
+        <path d="M12 3 4 7v10l8 4 8-4V7Z" />
+        <path d="M4 7l8 4 8-4M12 11v10" />
       </>
     ),
   };

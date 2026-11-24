@@ -5,6 +5,7 @@ import { useState } from "react";
 import { AddJobDialog } from "./add-job-dialog";
 import { Icon } from "./icon";
 import { JobList } from "./job-list";
+import { McpOnboardPill } from "./mcp-onboard-pill";
 import type { Job, JobDraft, JobStatus } from "./types";
 import {
   createJob,
@@ -108,7 +109,7 @@ export function Dashboard() {
               Track, manage, and move forward on your job applications.
             </p>
           </div>
-          <div className="w-full shrink-0 sm:w-auto">
+          <div className="flex w-full shrink-0 flex-col items-start gap-3 sm:w-auto sm:items-end">
             {user ? (
               <AddJobDialog
                 onAdd={handleAdd}
@@ -126,6 +127,7 @@ export function Dashboard() {
                 Sign in to add a job
               </a>
             )}
+            {user ? <McpOnboardPill /> : null}
           </div>
         </section>
         <JobList
